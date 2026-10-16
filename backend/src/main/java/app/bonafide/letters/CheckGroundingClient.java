@@ -30,8 +30,9 @@ public class CheckGroundingClient implements Grounding {
                 request.addFacts(GroundingFact.newBuilder().setFactText(fact).build());
             }
             return client.checkGrounding(request.build()).getSupportScore();
-        } catch (IOException e) {
-            return null; // grounding unavailable: the quote checker still gates the letter
+        } catch (Exception e) {
+            // Grounding unavailable (permissions, outage): the quote checker still gates the letter.
+            return null;
         }
     }
 }
