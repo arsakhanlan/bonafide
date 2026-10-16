@@ -92,7 +92,7 @@ public class LetterService {
         // One extra loop pass when only grounding is short: the checker's facts are the same,
         // so the writer gets one clear instruction to keep every sentence inside them.
         if (!result.passed() && result.problems().stream().anyMatch(p -> p.contains("grounding"))) {
-            draft = runLoop(caseId, loopContext, "The grounding score is below the minimum. Rewrite the letter "
+            draft = runLoopOnce(caseId, loopContext, "The grounding score is below the minimum. Rewrite the letter "
                     + "so that every sentence states a fact from the context or one of the required requests, "
                     + "with nothing else. Keep the citations and amounts exact.");
             cleaned = removeFailingCitations(draft, context);
@@ -108,6 +108,13 @@ public class LetterService {
     private Draft runLoop(String caseId, Map<String, Object> loopContext, String message) {
         AgentRunner.RunWithState run = runner.runWithState(
                 factory.letterLoop(), caseId, Map.of("context", loopContext),
+                List.of(Part.fromText(message)));
+        return Json.parse(asText(run.state().get("draft")), Draft.class);
+    }
+
+    private Draft runLoopOnce(String caseId, Map<String, Object> loopContext, String message) {
+        AgentRunner.RunWithState run = runner.runWithState(
+                factory.letterLoopOnce(), caseId, Map.of("context", loopContext),
                 List.of(Part.fromText(message)));
         return Json.parse(asText(run.state().get("draft")), Draft.class);
     }

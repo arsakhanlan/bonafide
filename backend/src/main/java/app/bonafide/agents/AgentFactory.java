@@ -116,6 +116,15 @@ public class AgentFactory {
                 .build();
     }
 
+    /** One quick writer+checker round for the grounding retry pass. */
+    public LoopAgent letterLoopOnce() {
+        return LoopAgent.builder()
+                .name("letter_loop_once")
+                .subAgents(writer(), checker())
+                .maxIterations(1)
+                .build();
+    }
+
     private static java.lang.reflect.Method method(Class<?> cls, String name, Class<?>... params) {
         try {
             return cls.getMethod(name, params);
