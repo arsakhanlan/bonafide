@@ -1,0 +1,92 @@
+[
+  {
+    "clock": "BANK_FILE_GRIEVANCE",
+    "who": "BANK",
+    "days": 7,
+    "title": "Bank files your grievance",
+    "ruleRef": "MHA SOP (2 Jan 2026), clause 10.1(a)",
+    "status": "IN_FORCE",
+    "startedBy": "letter:L1_BRANCH"
+  },
+  {
+    "clock": "OFFICER_DECIDE",
+    "who": "OFFICER",
+    "days": 15,
+    "title": "Officer decides on your case",
+    "ruleRef": "MHA SOP, clause 10.1(d)-(f)",
+    "status": "IN_FORCE",
+    "startedBy": "milestone:BANK_FILED"
+  },
+  {
+    "clock": "BACKSTOP_NOTIFY",
+    "who": "BANK",
+    "days": 75,
+    "title": "Bank warns the police",
+    "ruleRef": "MHA SOP, clause 10.1, 90-day paragraph",
+    "status": "IN_FORCE",
+    "startedBy": "milestone:BANK_FILED"
+  },
+  {
+    "clock": "BACKSTOP_90",
+    "who": "BANK",
+    "days": 90,
+    "title": "Bank lifts the hold unless police extend it",
+    "ruleRef": "MHA SOP, clause 10.1, 90-day paragraph",
+    "status": "IN_FORCE",
+    "startedBy": "milestone:BANK_FILED"
+  },
+  {
+    "clock": "PERSON_ANSWER_NOTICE",
+    "who": "PERSON",
+    "days": 15,
+    "title": "You answer the officer's notice",
+    "ruleRef": "MHA SOP, clause 10.1(c); Process 1(iii)",
+    "status": "IN_FORCE",
+    "startedBy": "milestone:OFFICER_NOTICE"
+  },
+  {
+    "clock": "PERSON_ASK_REVIEW",
+    "who": "PERSON",
+    "days": 15,
+    "title": "You ask for a review",
+    "ruleRef": "MHA SOP, clause 10.1(f)",
+    "status": "IN_FORCE",
+    "startedBy": "milestone:OFFICER_REFUSED"
+  },
+  {
+    "clock": "DISTRICT_OFFICER_DECIDE",
+    "who": "DISTRICT_OFFICER",
+    "days": 15,
+    "title": "District officer decides",
+    "ruleRef": "MHA SOP, clause 10.1(f)",
+    "status": "IN_FORCE",
+    "startedBy": "milestone:OFFICER_SILENT"
+  },
+  {
+    "clock": "PERSON_CONTEST_REFUND",
+    "who": "PERSON",
+    "days": 15,
+    "title": "You object to the refund to the victim",
+    "ruleRef": "MHA SOP, Process 1(vii)",
+    "status": "IN_FORCE",
+    "startedBy": "milestone:REFUND_TO_VICTIM_NOTICE"
+  },
+  {
+    "clock": "PERSON_STATE_APPEAL",
+    "who": "PERSON",
+    "days": 15,
+    "title": "You appeal to the State Grievance Officer",
+    "ruleRef": "MHA SOP, clause 10.2",
+    "status": "IN_FORCE",
+    "startedBy": "milestone:DIGITAL_BLOCKED"
+  },
+  {
+    "clock": "RBI_MULE_HOLDS",
+    "who": "BANK",
+    "days": 0,
+    "title": "RBI draft directions on bank's own holds",
+    "ruleRef": "RBI draft directions, 11 Sep 2026",
+    "status": "DRAFT",
+    "startedBy": "never"
+  }
+]

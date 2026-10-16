@@ -21,6 +21,14 @@ public class AgentFactory {
     private final RuleFinderTool ruleFinderTool;
     private final DraftChecker draftChecker;
 
+    public Prompts prompts() {
+        return prompts;
+    }
+
+    public BonafideProperties properties() {
+        return properties;
+    }
+
     public AgentFactory(Prompts prompts, BonafideProperties properties,
                         RuleFinderTool ruleFinderTool, DraftChecker draftChecker) {
         this.prompts = prompts;

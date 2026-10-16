@@ -38,6 +38,11 @@ public class ApiExceptionHandler {
         return error(HttpStatus.BAD_REQUEST, "BAD_REQUEST", e.getMessage());
     }
 
+    @ExceptionHandler(LetterController.PlaceholdersLeft.class)
+    public ResponseEntity<Map<String, Object>> placeholders(LetterController.PlaceholdersLeft e) {
+        return error(HttpStatus.BAD_REQUEST, "BAD_REQUEST", "Fill in the highlighted gaps ({{Your name}}) before approving.");
+    }
+
     @ExceptionHandler({MethodArgumentNotValidException.class, ConstraintViolationException.class})
     public ResponseEntity<Map<String, Object>> badRequest(Exception e) {
         return error(HttpStatus.BAD_REQUEST, "BAD_REQUEST", "The request is not valid.");
