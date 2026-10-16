@@ -104,9 +104,9 @@
     "date": "2023-12-25",
     "status": "IN_FORCE",
     "summaryUrl": null,
-    "url": null,
-    "file": null,
-    "fetched": false
+    "url": "https://sudhirrao.com/insights/section-106-of-the-bharatiya-nagarik-suraksha-sanhita-2023-bnss",
+    "file": "bnss-106.txt",
+    "fetched": true
   },
   {
     "id": "rbi-draft-mule-2026",
