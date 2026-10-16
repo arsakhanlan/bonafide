@@ -24,6 +24,15 @@ public class FirestoreRuleRepository implements RuleRepository {
     }
 
     @Override
+    public void clear() {
+        try {
+            firestore.recursiveDelete(firestore.collection("rule_chunks")).get();
+        } catch (Exception e) {
+            throw new IllegalStateException("Clearing rule_chunks failed", e);
+        }
+    }
+
+    @Override
     public void save(RuleChunk chunk, double[] vector) {
         Map<String, Object> data = new HashMap<>();
         data.put("docId", chunk.docId());

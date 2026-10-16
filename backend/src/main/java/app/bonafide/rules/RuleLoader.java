@@ -28,7 +28,9 @@ public class RuleLoader {
     private static final Pattern PAGE_MARKER = Pattern.compile("^=== PAGE \\d+ ===$");
     private static final Pattern PAGE_OF = Pattern.compile("^Page \\d+ of \\d+$");
     private static final Pattern SECTION = Pattern.compile("^\\s*(\\d{1,3})\\.\\s+\\((\\d+)\\)\\s*(.*)$");
-    private static final Pattern CLAUSE = Pattern.compile("^\\s*(\\d{1,2}\\.\\d{1,2}(?:\\.\\d+)?(?:\\([a-z]+\\))?)\\s+(.*)$");
+    // (?!\.\d) keeps dates like "10.12.2024" out; only clause refs like "10.1" or "10.1(a)" match.
+    private static final Pattern CLAUSE =
+            Pattern.compile("^\\s*(\\d{1,2}\\.\\d{1,2})(?!\\.\\d)(?:\\([a-z]+\\))?\\s+(.*)$");
     private static final Pattern LETTER = Pattern.compile("^\\s*\\(([a-z]+)\\)\\s+(.*)$");
     private static final int MAX_CHUNK = 1200;
 
@@ -44,6 +46,7 @@ public class RuleLoader {
 
     public int load() throws IOException {
         Path dir = Path.of(properties.rulesDir());
+        rules.clear();
         List<Map<String, Object>> sources = new JsonMapper().readValue(
                 Files.readString(dir.resolve("sources.json")), List.class);
         int saved = 0;
