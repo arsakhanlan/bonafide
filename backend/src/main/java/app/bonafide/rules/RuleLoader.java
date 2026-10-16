@@ -64,6 +64,7 @@ public class RuleLoader {
                     (String) source.get("id"),
                     (String) source.get("status"),
                     String.valueOf(source.get("date")),
+                    (String) source.get("url"),
                     cleaned);
             for (RuleChunk chunk : chunks) {
                 double[] vector = toArray(embedder.embed(chunk.text()));
@@ -89,7 +90,7 @@ public class RuleLoader {
     }
 
     /** SOP by clause ("clause 10.1(a)"), statutes by section ("section 106(1)"), else paragraphs. */
-    static List<RuleChunk> split(String docId, String status, String date, String text) {
+    static List<RuleChunk> split(String docId, String status, String date, String sourceUrl, String text) {
         List<RuleChunk> chunks = new ArrayList<>();
         StringBuilder current = new StringBuilder();
         String currentRef = "whole document";
@@ -100,17 +101,17 @@ public class RuleLoader {
             Matcher clause = CLAUSE.matcher(line);
             Matcher letter = LETTER.matcher(line);
             if (section.find()) {
-                flush(docId, status, date, currentRef, parts, current.toString(), chunks);
+                flush(docId, status, date, sourceUrl, currentRef, parts, current.toString(), chunks);
                 currentRef = "section " + section.group(1) + "(" + section.group(2) + ")";
                 parts = 1;
                 current = new StringBuilder(line);
             } else if (clause.find()) {
-                flush(docId, status, date, currentRef, parts, current.toString(), chunks);
+                flush(docId, status, date, sourceUrl, currentRef, parts, current.toString(), chunks);
                 currentRef = "clause " + clause.group(1);
                 parts = 1;
                 current = new StringBuilder(line);
             } else if (letter.find() && currentRef.startsWith("clause")) {
-                flush(docId, status, date, currentRef, parts, current.toString(), chunks);
+                flush(docId, status, date, sourceUrl, currentRef, parts, current.toString(), chunks);
                 currentRef = currentRef + "(" + letter.group(1) + ")";
                 parts = 1;
                 current = new StringBuilder(line);
@@ -118,18 +119,18 @@ public class RuleLoader {
                 current.append(line).append('\n');
             }
         }
-        flush(docId, status, date, currentRef, parts, current.toString(), chunks);
+        flush(docId, status, date, sourceUrl, currentRef, parts, current.toString(), chunks);
         return chunks;
     }
 
-    private static void flush(String docId, String status, String date, String ref, int parts,
-                              String text, List<RuleChunk> out) {
+    private static void flush(String docId, String status, String date, String sourceUrl,
+                              String ref, int parts, String text, List<RuleChunk> out) {
         String body = text.trim();
         if (body.isEmpty()) {
             return;
         }
         if (body.length() <= MAX_CHUNK) {
-            out.add(new RuleChunk(docId, ref, body, status, date));
+            out.add(new RuleChunk(docId, ref, body, status, date, sourceUrl));
             return;
         }
         // Long chunks are cut at word boundaries; later parts get "(part N)" in the ref.
@@ -140,13 +141,13 @@ public class RuleLoader {
                 cut = MAX_CHUNK;
             }
             out.add(new RuleChunk(docId, ref + (parts > 1 ? " (part " + parts + ")" : ""),
-                    remaining.substring(0, cut).trim(), status, date));
+                    remaining.substring(0, cut).trim(), status, date, sourceUrl));
             remaining = remaining.substring(cut).trim();
             parts++;
         }
         if (!remaining.isEmpty()) {
             out.add(new RuleChunk(docId, ref + (parts > 1 ? " (part " + parts + ")" : ""),
-                    remaining, status, date));
+                    remaining, status, date, sourceUrl));
         }
     }
 

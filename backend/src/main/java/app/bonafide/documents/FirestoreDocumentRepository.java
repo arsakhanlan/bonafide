@@ -1,6 +1,8 @@
 package app.bonafide.documents;
 
 import com.google.cloud.firestore.Firestore;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
@@ -22,5 +24,19 @@ public class FirestoreDocumentRepository implements DocumentRepository {
         } catch (Exception e) {
             throw new IllegalStateException("Saving document " + docId + " on " + caseId + " failed", e);
         }
+    }
+
+    @Override
+    public List<Map<String, Object>> findByCase(String caseId) {
+        List<Map<String, Object>> documents = new ArrayList<>();
+        try {
+            for (var snapshot : firestore.collection("cases").document(caseId)
+                    .collection("documents").get().get().getDocuments()) {
+                documents.add(snapshot.getData());
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("Reading documents on " + caseId + " failed", e);
+        }
+        return documents;
     }
 }

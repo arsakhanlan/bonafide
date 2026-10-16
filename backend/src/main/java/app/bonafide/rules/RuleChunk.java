@@ -6,7 +6,8 @@ public record RuleChunk(
         String ref,
         String text,
         String status,
-        String date) {
+        String date,
+        String sourceUrl) {
 
     public String id() {
         return docId + "-" + ref.toLowerCase()

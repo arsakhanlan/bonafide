@@ -13,4 +13,6 @@ public interface RuleRepository {
 
     /** An exact ref lookup (the rule-map must-includes), any status. */
     Optional<RuleChunk> findByRef(String ref);
+
+    Optional<RuleChunk> findById(String chunkId);
 }

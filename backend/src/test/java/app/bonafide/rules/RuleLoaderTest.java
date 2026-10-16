@@ -21,7 +21,7 @@ class RuleLoaderTest {
                 (i) where the amount is reported, the bank shall
                 9.2 Next clause text
                 """;
-        List<RuleChunk> chunks = RuleLoader.split("sop", "IN_FORCE", "2026-01-02", text);
+        List<RuleChunk> chunks = RuleLoader.split("sop", "IN_FORCE", "2026-01-02", "https://example.gov.in/sop", text);
         assertThat(chunks).extracting(RuleChunk::ref)
                 .containsExactly("clause 9.1", "clause 9.1(i)", "clause 9.2");
         assertThat(chunks.getFirst().text()).contains("hold only the reported amount");
@@ -33,7 +33,7 @@ class RuleLoaderTest {
                 106. (1) Any police officer may seize any property
                 107. (1) Attachment can only be ordered by the Magistrate
                 """;
-        List<RuleChunk> chunks = RuleLoader.split("bnss", "IN_FORCE", "2023-12-25", text);
+        List<RuleChunk> chunks = RuleLoader.split("bnss", "IN_FORCE", "2023-12-25", "https://example.gov.in/bnss", text);
         assertThat(chunks).extracting(RuleChunk::ref)
                 .containsExactly("section 106(1)", "section 107(1)");
     }
@@ -41,7 +41,7 @@ class RuleLoaderTest {
     @Test
     void longChunksGetParts() {
         String longText = "x ".repeat(1500);
-        List<RuleChunk> chunks = RuleLoader.split("doc", "IN_FORCE", "2026-01-01", longText);
+        List<RuleChunk> chunks = RuleLoader.split("doc", "IN_FORCE", "2026-01-01", null, longText);
         assertThat(chunks).hasSizeGreaterThan(1);
         assertThat(chunks.getLast().ref()).contains("part");
         for (RuleChunk chunk : chunks) {
@@ -51,7 +51,7 @@ class RuleLoaderTest {
 
     @Test
     void chunkIdsAreDeterministicSoRerunsReplace() {
-        RuleChunk chunk = new RuleChunk("mha-sop-2026", "clause 10.1(a)", "text", "IN_FORCE", "2026-01-02");
+        RuleChunk chunk = new RuleChunk("mha-sop-2026", "clause 10.1(a)", "text", "IN_FORCE", "2026-01-02", "https://example.gov.in/sop");
         assertThat(chunk.id()).isEqualTo("mha-sop-2026-clause-10-1-a");
     }
 }
