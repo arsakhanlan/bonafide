@@ -14,7 +14,8 @@ public record CheckContext(
         BigDecimal release,
         double groundingMin,
         Map<String, Object> facts,
-        List<Map<String, Object>> evidence) {
+        List<Map<String, Object>> evidence,
+        String personNote) {
 
     public RuleChunk chunkById(String chunkId) {
         return chunks.stream().filter(c -> c.id().equals(chunkId)).findFirst().orElse(null);

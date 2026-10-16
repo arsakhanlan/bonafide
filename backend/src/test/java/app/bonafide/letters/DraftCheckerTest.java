@@ -29,7 +29,8 @@ class DraftCheckerTest {
                     "complaintNo", "31210260054321", "policeStation", "Cyber Police Station, Patna",
                     "officer", "", "disputedPayments", java.util.List.of(
                             java.util.Map.of("utr", "601234567890", "on", "2026-10-15", "amount", 2000.0, "from", "UPI customer"))),
-            java.util.List.of(java.util.Map.of("label", "Who you are", "status", "HAVE")));
+            java.util.List.of(java.util.Map.of("label", "Who you are", "status", "HAVE")),
+            "A customer paid for a repair.");
 
     private static app.bonafide.config.BonafideProperties properties() {
         return new app.bonafide.config.BonafideProperties(

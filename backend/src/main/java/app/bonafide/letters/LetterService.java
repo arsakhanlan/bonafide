@@ -57,7 +57,8 @@ public class LetterService {
             BigDecimal disputed,
             BigDecimal frozen,
             BigDecimal release,
-            List<Map<String, Object>> evidence) {
+            List<Map<String, Object>> evidence,
+            String personNote) {
     }
 
     public DraftResult draft(String caseId, LetterKind kind, CaseData data) {
@@ -65,7 +66,7 @@ public class LetterService {
         List<RuleChunk> chunks = findChunks(caseId, spec, data);
         CheckContext context = new CheckContext(
                 spec, chunks, data.disputed(), data.frozen(), data.release(), 0.6,
-                data.facts(), data.evidence());
+                data.facts(), data.evidence(), data.personNote());
 
         TraceWriter.Handle writing = trace.start(caseId, "WRITER", "Writing your letter…");
         Map<String, Object> loopContext = new LinkedHashMap<>();

@@ -72,7 +72,8 @@ public class DraftChecker {
                 decimal(context.get("release")),
                 properties.groundingMin(),
                 asMap(context.get("facts")),
-                asList(context.get("evidence")));
+                asList(context.get("evidence")),
+                (String) context.get("personNote"));
     }
 
     private LetterSpec specOf(String kind) {
@@ -228,6 +229,9 @@ public class DraftChecker {
         }
         for (Map<String, Object> item : context.evidence()) {
             facts.add("Evidence " + str(item.get("label")) + ": " + str(item.get("status")) + ".");
+        }
+        if (context.personNote() != null && !context.personNote().isBlank()) {
+            facts.add("The person says: " + context.personNote());
         }
         facts.add("The disputed amount is " + context.disputed()
                 + " rupees, the frozen amount is " + context.frozen()

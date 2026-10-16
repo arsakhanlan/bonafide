@@ -191,7 +191,8 @@ public class FirstRunWorkflow {
 
         List<Map<String, Object>> evidence = evidenceOf(documents.findByCase(caseId), sorter);
         LetterService.DraftResult letter = letters.draft(caseId, LetterKind.L1_BRANCH,
-                new LetterService.CaseData(caseNow.facts(), money.disputed(), money.frozen(), money.release(), evidence));
+                new LetterService.CaseData(caseNow.facts(), money.disputed(), money.frozen(), money.release(),
+                        evidence, caseNow.personNote()));
 
         List<Map<String, Object>> plan = new ArrayList<>();
         plan.add(Map.of("text", "Hand letter 1 to your branch", "who", "YOU", "dueOn", "", "status", "NOW"));

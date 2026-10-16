@@ -98,7 +98,7 @@ public class CaseBossTools {
         LetterService.CaseData data = new LetterService.CaseData(
                 case_.facts(),
                 number(money.get("disputed")), number(money.get("frozen")), number(money.get("release")),
-                case_.evidence());
+                case_.evidence(), case_.personNote());
         LetterService.DraftResult result = letterService.draft(caseId, LetterKind.valueOf(kind), data);
         cases.update(caseId, Map.of(
                 "stage", Stage.LETTER_READY.name(),
