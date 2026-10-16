@@ -58,7 +58,8 @@ public class LetterService {
             BigDecimal frozen,
             BigDecimal release,
             List<Map<String, Object>> evidence,
-            String personNote) {
+            String personNote,
+            boolean reminder) {
     }
 
     public DraftResult draft(String caseId, LetterKind kind, CaseData data) {
@@ -84,18 +85,31 @@ public class LetterService {
                 "requiredFields", spec.requiredFields(), "guidance", spec.guidance(),
                 "maxWords", spec.maxWords()));
 
-        AgentRunner.RunWithState run = runner.runWithState(
-                factory.letterLoop(), caseId, Map.of("context", loopContext),
-                List.of(Part.fromText("Write the " + kind + " letter.\nContext:\n" + Json.write(loopContext))));
-        Draft draft = Json.parse(asText(run.state().get("draft")), Draft.class);
-        writing.done("Drafted. Checking every quote…");
-
+        Draft draft = runLoop(caseId, loopContext, "Write the " + kind + " letter.\nContext:\n" + Json.write(loopContext));
         Draft cleaned = removeFailingCitations(draft, context);
         DraftChecker.CheckResult result = checker.evaluate(cleaned, context);
 
+        // One extra loop pass when only grounding is short: the checker's facts are the same,
+        // so the writer gets one clear instruction to keep every sentence inside them.
+        if (!result.passed() && result.problems().stream().anyMatch(p -> p.contains("grounding"))) {
+            draft = runLoop(caseId, loopContext, "The grounding score is below the minimum. Rewrite the letter "
+                    + "so that every sentence states a fact from the context or one of the required requests, "
+                    + "with nothing else. Keep the citations and amounts exact.");
+            cleaned = removeFailingCitations(draft, context);
+            result = checker.evaluate(cleaned, context);
+        }
+        writing.done("Drafted. Checking every quote…");
+
         String letterId = "l_" + java.util.UUID.randomUUID().toString().substring(0, 7);
-        letters.save(caseId, letterId, letterMap(letterId, kind, cleaned, context, result));
+        letters.save(caseId, letterId, letterMap(letterId, kind, cleaned, context, result, data.reminder()));
         return new DraftResult(letterId, cleaned, result);
+    }
+
+    private Draft runLoop(String caseId, Map<String, Object> loopContext, String message) {
+        AgentRunner.RunWithState run = runner.runWithState(
+                factory.letterLoop(), caseId, Map.of("context", loopContext),
+                List.of(Part.fromText(message)));
+        return Json.parse(asText(run.state().get("draft")), Draft.class);
     }
 
     private List<RuleChunk> findChunks(String caseId, LetterSpec spec, CaseData data) {
@@ -151,7 +165,8 @@ public class LetterService {
     }
 
     private Map<String, Object> letterMap(
-            String letterId, LetterKind kind, Draft draft, CheckContext context, DraftChecker.CheckResult result) {
+            String letterId, LetterKind kind, Draft draft, CheckContext context,
+            DraftChecker.CheckResult result, boolean reminder) {
         List<Map<String, Object>> citations = new ArrayList<>();
         for (Citation citation : draft.citations() == null ? List.<Citation>of() : draft.citations()) {
             RuleChunk chunk = context.chunkById(citation.chunkId());
@@ -182,7 +197,7 @@ public class LetterService {
         letter.put("sentOn", null);
         letter.put("sentHow", null);
         letter.put("chunkIds", context.chunks().stream().map(RuleChunk::id).toList());
-        letter.put("reminder", false);
+        letter.put("reminder", reminder);
         return letter;
     }
 

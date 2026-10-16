@@ -46,7 +46,7 @@ check "money 180000/2000/178000" \
 echo "== 5. Letter =="
 LETTER=$(curl -s "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$CASE_ID/letters" \
   -H "Authorization: Bearer $TOKEN" | jq -c '.documents[0] // {}')
-LETTER_ID=$(echo "$LETTER" | jq -r '.documents[0].name | split("/") | last // empty')
+LETTER_ID=$(echo "$LETTER" | jq -r '.name | split("/") | last // empty')
 check "an L1 letter exists" "$([ -n "$LETTER_ID" ]; echo $?)"
 check "letter passed its checks" \
   "$(echo "$LETTER" | jq -e '.fields.checks.mapValue.fields.passed.booleanValue == true' >/dev/null; echo $?)"
@@ -54,7 +54,7 @@ check "letter has >= 1 citation" \
   "$(echo "$LETTER" | jq -e '(.fields.citations.arrayValue.values | length) >= 1' >/dev/null; echo $?)"
 
 echo "== 6. Approve (placeholders filled) =="
-BODY=$(echo "$LETTER" | jq -r '.fields.body.stringValue' | sed 's/{{Your name}}/Ravi Sharma/g; s/{{Your phone}}/98xxxxxx00/g')
+BODY=$(echo "$LETTER" | jq -r '.fields.body.stringValue' | sed -E 's/\{\{[^}]*\}\}/Ravi Sharma/g')
 CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE_URL/api/cases/$CASE_ID/letters/$LETTER_ID/approve" \
   -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d "$(jq -n --arg b "$BODY" '{body: $b}')")
 check "approve returns 200" "$([ "$CODE" = "200" ]; echo $?)"
