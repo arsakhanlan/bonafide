@@ -70,7 +70,9 @@ public class DraftChecker {
                 decimal(context.get("disputed")),
                 decimal(context.get("frozen")),
                 decimal(context.get("release")),
-                properties.groundingMin());
+                properties.groundingMin(),
+                asMap(context.get("facts")),
+                asList(context.get("evidence")));
     }
 
     private LetterSpec specOf(String kind) {
@@ -204,15 +206,47 @@ public class DraftChecker {
         };
     }
 
+    /** The grounding facts: the rule chunks plus a plain summary of the case, so every
+     *  sentence the letter states is backed by something the checker can verify against. */
     private static List<String> factsOf(CheckContext context) {
         List<String> facts = new ArrayList<>();
         for (RuleChunk chunk : context.chunks()) {
             facts.add(chunk.text());
         }
+        Map<String, Object> f = context.facts();
+        if (!f.isEmpty()) {
+            facts.add("The person's bank is " + str(f.get("bank")) + ", branch " + str(f.get("branch"))
+                    + ", account ending " + str(f.get("accountLast4")) + ".");
+            facts.add("The account was frozen on " + str(f.get("freezeOn")) + " (freeze type "
+                    + str(f.get("freezeType")) + ") by " + str(f.get("policeStation"))
+                    + " for complaint " + str(f.get("complaintNo")) + ".");
+            facts.add("The investigating officer is " + str(f.get("officer")) + ".");
+            for (Map<String, Object> payment : asList(f.get("disputedPayments"))) {
+                facts.add("A disputed payment: UTR " + str(payment.get("utr")) + " on " + str(payment.get("on"))
+                        + " of amount " + str(payment.get("amount")) + " rupees from " + str(payment.get("from")) + ".");
+            }
+        }
+        for (Map<String, Object> item : context.evidence()) {
+            facts.add("Evidence " + str(item.get("label")) + ": " + str(item.get("status")) + ".");
+        }
         facts.add("The disputed amount is " + context.disputed()
                 + " rupees, the frozen amount is " + context.frozen()
                 + " rupees, and the release amount is " + context.release() + " rupees.");
         return facts;
+    }
+
+    private static String str(Object value) {
+        return value == null ? "not known" : String.valueOf(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> asMap(Object value) {
+        return value instanceof Map ? (Map<String, Object>) value : Map.of();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<Map<String, Object>> asList(Object value) {
+        return value instanceof List ? (List<Map<String, Object>>) value : List.of();
     }
 
     private static java.math.BigDecimal decimal(Object value) {

@@ -64,7 +64,8 @@ public class LetterService {
         LetterSpec spec = catalog.get(kind);
         List<RuleChunk> chunks = findChunks(caseId, spec, data);
         CheckContext context = new CheckContext(
-                spec, chunks, data.disputed(), data.frozen(), data.release(), 0.6);
+                spec, chunks, data.disputed(), data.frozen(), data.release(), 0.6,
+                data.facts(), data.evidence());
 
         TraceWriter.Handle writing = trace.start(caseId, "WRITER", "Writing your letter…");
         Map<String, Object> loopContext = new LinkedHashMap<>();

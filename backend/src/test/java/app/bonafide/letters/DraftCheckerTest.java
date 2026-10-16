@@ -22,7 +22,14 @@ class DraftCheckerTest {
     private final CheckContext context = new CheckContext(
             new LetterCatalog().get(LetterKind.L1_BRANCH),
             List.of(RULE),
-            new BigDecimal("2000"), new BigDecimal("180000"), new BigDecimal("178000"), 0.6);
+            new BigDecimal("2000"), new BigDecimal("180000"), new BigDecimal("178000"), 0.6,
+            java.util.Map.of(
+                    "bank", "Demo Bank", "branch", "FC Road, Pune", "accountLast4", "4821",
+                    "freezeType", "WHOLE_ACCOUNT", "freezeOn", "2026-10-16",
+                    "complaintNo", "31210260054321", "policeStation", "Cyber Police Station, Patna",
+                    "officer", "", "disputedPayments", java.util.List.of(
+                            java.util.Map.of("utr", "601234567890", "on", "2026-10-15", "amount", 2000.0, "from", "UPI customer"))),
+            java.util.List.of(java.util.Map.of("label", "Who you are", "status", "HAVE")));
 
     private static app.bonafide.config.BonafideProperties properties() {
         return new app.bonafide.config.BonafideProperties(
