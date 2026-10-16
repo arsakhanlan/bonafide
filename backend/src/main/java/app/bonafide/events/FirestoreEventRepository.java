@@ -71,10 +71,14 @@ public class FirestoreEventRepository implements EventRepository {
 
     @Override
     public void finish(String caseId, String eventId, EventStatus status, String error) {
-        update(caseId, eventId, Map.of(
-                "status", status.name(),
-                "error", error,
-                "finishedAt", FieldValue.serverTimestamp()));
+        // Firestore rejects null field values, so the error field is only present when there is one.
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("status", status.name());
+        if (error != null) {
+            fields.put("error", error);
+        }
+        fields.put("finishedAt", FieldValue.serverTimestamp());
+        update(caseId, eventId, fields);
     }
 
     @Override
