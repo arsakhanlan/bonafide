@@ -37,13 +37,20 @@ class FirstRunWorkflowTest {
     private final TraceWriter trace = new TraceWriter(steps);
     private final Clock clock = Clock.fixed(Instant.parse("2026-10-16T12:00:00Z"), ZoneId.of("Asia/Kolkata"));
 
-    /** The real AgentRunner would call Gemini; the test substitutes a canned Reader answer. */
+    /** The real AgentRunner would call Gemini; the test substitutes canned Reader and Sorter answers. */
     private final AgentRunner runner = new AgentRunner() {
         @Override
         @SuppressWarnings("unchecked")
         public <T> T runJson(
                 BaseAgent agent, String caseId, Map<String, Object> initialState, List<Part> parts, Class<T> type) {
-            return (T) raviOutput();
+            if (type == ReaderOutput.class) {
+                return (T) raviOutput();
+            }
+            if (type == app.bonafide.agents.outputs.SorterOutput.class) {
+                return (T) new app.bonafide.agents.outputs.SorterOutput(
+                        "GENUINE", List.of("The payment matches the bill and the chat."), List.of(), "SHOP_UPI", false);
+            }
+            throw new IllegalArgumentException("Unexpected type in test: " + type);
         }
     };
 

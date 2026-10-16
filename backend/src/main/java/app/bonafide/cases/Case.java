@@ -28,7 +28,9 @@ public record Case(
         Map<String, Object> nextStep,
         Map<String, Object> referral,
         List<Map<String, Object>> history,
-        Map<String, Object> demo) {
+        Map<String, Object> demo,
+        String personNote,
+        boolean answersAsked) {
 
     private static final char[] ALPHABET = "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
     private static final SecureRandom RANDOM = new SecureRandom();
@@ -42,7 +44,7 @@ public record Case(
                         "text", "Add your papers to get started"),
                 null,
                 List.of(Map.of("on", LocalDate.now().toString(), "text", "You started your case")),
-                demo);
+                demo, null, false);
     }
 
     public static String newId() {

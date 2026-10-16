@@ -8,6 +8,9 @@ public interface CaseRepository {
 
     Optional<Case> find(String caseId);
 
+    /** The raw document, including server-only fields the app contract does not show. */
+    Optional<Map<String, Object>> findRaw(String caseId);
+
     void save(Case case_);
 
     void setBusy(String caseId, boolean busy);

@@ -34,6 +34,16 @@ public class FirestoreCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Optional<Map<String, Object>> findRaw(String caseId) {
+        try {
+            var snapshot = firestore.collection("cases").document(caseId).get().get();
+            return snapshot.exists() ? Optional.of(snapshot.getData()) : Optional.empty();
+        } catch (Exception e) {
+            throw new IllegalStateException("Reading raw case " + caseId + " failed", e);
+        }
+    }
+
+    @Override
     public void save(Case case_) {
         try {
             firestore.collection("cases").document(case_.id()).set(toMap(case_)).get();
@@ -98,6 +108,8 @@ public class FirestoreCaseRepository implements CaseRepository {
         map.put("referral", c.referral());
         map.put("history", c.history());
         map.put("demo", c.demo());
+        map.put("personNote", c.personNote());
+        map.put("answersAsked", c.answersAsked());
         return map;
     }
 
@@ -120,7 +132,9 @@ public class FirestoreCaseRepository implements CaseRepository {
                 asMap(map.get("nextStep")),
                 asMap(map.get("referral")),
                 asList(map.get("history")),
-                asMap(map.get("demo")));
+                asMap(map.get("demo")),
+                (String) map.get("personNote"),
+                Boolean.TRUE.equals(map.get("answersAsked")));
     }
 
     private static Instant timestampToInstant(Object value) {

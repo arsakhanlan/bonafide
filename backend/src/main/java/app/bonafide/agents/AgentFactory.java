@@ -34,4 +34,20 @@ public class AgentFactory {
                         .build())
                 .build();
     }
+
+    /** Small model with MEDIUM thinking: its default can stop tool use early. */
+    public LlmAgent sorter() {
+        return LlmAgent.builder()
+                .name("sorter")
+                .description("Checks whether the case is genuine")
+                .model(properties.modelSmall())
+                .instruction(prompts.get("sorter"))
+                .outputSchema(SorterSchema.schema())
+                .generateContentConfig(GenerateContentConfig.builder()
+                        .thinkingConfig(ThinkingConfig.builder()
+                                .thinkingLevel(new ThinkingLevel(ThinkingLevel.Known.MEDIUM))
+                                .build())
+                        .build())
+                .build();
+    }
 }
