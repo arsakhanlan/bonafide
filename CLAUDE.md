@@ -18,7 +18,7 @@ You build the **backend, AI agents, cloud setup, tests and API docs** for Bonafi
 - **Update STATUS after every milestone.** Keep "For the app" (values the teammate needs) and "Contract changes" current.
 - **Commits.**
   - Small commits; run `./mvnw test` green before each one.
-  - Push to `origin main` after each milestone.
+  - **Never push.** Commits stay local; tell the owner when new commits are ready — they sync with GitHub Desktop.
   - Never force-push. Never commit secrets.
   - **Never commit `docs/` or `handover/`.** They stay in this local folder (owner writes the README at the end).
 - **Never guess an API.**
