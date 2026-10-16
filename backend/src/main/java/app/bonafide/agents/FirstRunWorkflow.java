@@ -10,6 +10,8 @@ import app.bonafide.documents.DocumentRepository;
 import app.bonafide.documents.Masking;
 import app.bonafide.documents.PaperService;
 import app.bonafide.events.Event;
+import app.bonafide.letters.LetterKind;
+import app.bonafide.letters.LetterService;
 import app.bonafide.money.DisputedPayment;
 import app.bonafide.money.FreezeType;
 import app.bonafide.money.IndianRupees;
@@ -44,6 +46,7 @@ public class FirstRunWorkflow {
     private final DocumentRepository documents;
     private final TraceWriter trace;
     private final Clock clock;
+    private final LetterService letters;
 
     public FirstRunWorkflow(
             PaperService papers,
@@ -53,7 +56,8 @@ public class FirstRunWorkflow {
             CaseRepository cases,
             DocumentRepository documents,
             TraceWriter trace,
-            Clock clock) {
+            Clock clock,
+            LetterService letters) {
         this.papers = papers;
         this.factory = factory;
         this.runner = runner;
@@ -62,6 +66,7 @@ public class FirstRunWorkflow {
         this.documents = documents;
         this.trace = trace;
         this.clock = clock;
+        this.letters = letters;
     }
 
     public void run(String caseId, Event event) {
@@ -184,18 +189,66 @@ public class FirstRunWorkflow {
                 + IndianRupees.format(money.frozen()) + " frozen · "
                 + IndianRupees.format(money.release()) + " should be free");
 
+        List<Map<String, Object>> evidence = evidenceOf(documents.findByCase(caseId), sorter);
+        LetterService.DraftResult letter = letters.draft(caseId, LetterKind.L1_BRANCH,
+                new LetterService.CaseData(caseNow.facts(), money.disputed(), money.frozen(), money.release(), evidence));
+
         List<Map<String, Object>> plan = new ArrayList<>();
+        plan.add(Map.of("text", "Hand letter 1 to your branch", "who", "YOU", "dueOn", "", "status", "NOW"));
         for (String caution : decision.cautions()) {
             plan.add(Map.of("text", caution, "who", "YOU", "dueOn", "", "status", "LATER"));
         }
         cases.update(caseId, Map.of(
                 "eligibility", eligibility,
                 "money", moneyOf(money),
+                "evidence", evidence,
                 "plan", plan,
                 "stage", Stage.LETTER_READY.name(),
-                "nextStep", Map.of("action", "REVIEW_LETTER", "text", "Check and approve your letter to the branch.")));
-        cases.appendHistory(caseId, Map.of("on", today.toString(), "text", "Your money maths is ready"));
-        trace.start(caseId, "CASE_BOSS", "Your money maths is ready").done("Your money maths is ready");
+                "nextStep", Map.of("action", "REVIEW_LETTER", "text", "Check and approve your letter to the branch.",
+                        "letterId", letter.letterId())));
+        cases.appendHistory(caseId, Map.of("on", today.toString(), "text", "Your letter is ready to check"));
+        trace.start(caseId, "CASE_BOSS", "Your letter is ready to check").done("Your letter is ready to check");
+    }
+
+    /** The five things officers check (BUILD_SPEC §13), from the documents the person sent. */
+    private static List<Map<String, Object>> evidenceOf(List<Map<String, Object>> docs, SorterOutput sorter) {
+        List<Map<String, Object>> evidence = new ArrayList<>();
+        evidence.add(item("identity", "Who you are", "Aadhaar or PAN", docs, List.of("ID"), null));
+        evidence.add(item("sourceOfFunds", "Where the money came from", "Bill and chat for this payment",
+                docs, List.of("INVOICE", "CHAT"), null));
+        evidence.add(item("business", "Your business or work",
+                "Shop registration (Udyam or GST) or a photo of your shop board",
+                docs, List.of("OTHER"), "registration|gst|udyam|shop"));
+        evidence.add(item("bankingPattern", "Your normal banking",
+                "A bank statement of 3 months or more", docs, List.of("STATEMENT"), null));
+        boolean haveSource = evidence.get(1).get("status").equals("HAVE");
+        boolean genuine = "GENUINE".equals(sorter.status());
+        evidence.add(item("linkToOffence", "Why this payment is not fraud",
+                "Your proof of work or goods", docs,
+                haveSource && genuine ? List.of("INVOICE", "CHAT") : List.of(),
+                haveSource && genuine ? null : "unmatched"));
+        return evidence;
+    }
+
+    private static Map<String, Object> item(String key, String label, String hint,
+                                            List<Map<String, Object>> docs, List<String> kinds, String summaryRegex) {
+        List<String> docIds = new ArrayList<>();
+        boolean have = false;
+        for (Map<String, Object> doc : docs) {
+            String kind = (String) doc.get("kind");
+            if (kinds.contains(kind)) {
+                if (summaryRegex != null) {
+                    String summary = String.valueOf(doc.getOrDefault("summary", ""));
+                    if (!summary.toLowerCase().matches(".*(" + summaryRegex + ").*")) {
+                        continue;
+                    }
+                }
+                docIds.add(String.valueOf(doc.getOrDefault("id", "")));
+                have = true;
+            }
+        }
+        return Map.of("key", key, "label", label,
+                "status", have ? "HAVE" : "MISSING", "docIds", docIds, "hint", hint);
     }
 
     private void saveDocuments(String caseId, PaperService.Prepared prepared, ReaderOutput output) {

@@ -41,6 +41,23 @@ public class AgentRunner {
         }
     }
 
+    /** Runs the agent and also returns the session state afterwards (e.g. the writer's draft). */
+    public RunWithState runWithState(
+            BaseAgent agent, String caseId, Map<String, Object> initialState, List<Part> parts) {
+        InMemoryRunner runner = new InMemoryRunner(agent, APP_NAME);
+        Session session = runner.sessionService()
+                .createSession(APP_NAME, caseId, initialState, sessionId(caseId))
+                .blockingGet();
+        String text = runOnce(runner, session, parts);
+        Session after = runner.sessionService()
+                .getSession(APP_NAME, caseId, session.id(), java.util.Optional.empty())
+                .blockingGet();
+        return new RunWithState(text, after.state());
+    }
+
+    public record RunWithState(String finalText, Map<String, Object> state) {
+    }
+
     private static String runOnce(InMemoryRunner runner, Session session, List<Part> parts) {
         List<String> finalTexts = new ArrayList<>();
         runner.runAsync(session.userId(), session.id(),

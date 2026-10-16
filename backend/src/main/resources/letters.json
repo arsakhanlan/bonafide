@@ -1,0 +1,131 @@
+{
+  "L1_BRANCH": {
+    "title": "Letter to your branch",
+    "to": "The Branch Manager",
+    "purpose": "Hand this to your bank branch with your evidence pack. It asks the bank to share the police details, keep only the disputed amount on hold, and file your grievance on the official module within 7 days.",
+    "requiredFields": [
+      "last 4 digits of the account",
+      "complaint number (or \"not known to me\")",
+      "UTR of the disputed payment",
+      "disputed amount",
+      "frozen amount",
+      "release amount",
+      "the offer to keep the disputed amount on hold",
+      "the request to share the police details",
+      "the request to file on the grievance module within 7 days, citing clause 10.1(a)",
+      "the evidence list",
+      "{{Your name}}",
+      "date"
+    ],
+    "mustIncludeRefs": ["clause 10.1(a)"],
+    "guidance": [
+      "Write to the branch manager, not the police.",
+      "Polite, short sentences, plain English.",
+      "Quote the rules exactly, with markers [1], [2].",
+      "Never promise an outcome; you are asking, not demanding.",
+      "Leave {{Your name}}, {{Your phone}} and the date for the person to fill."
+    ],
+    "maxWords": 450
+  },
+  "L2_OFFICER": {
+    "title": "Letter to the police officer",
+    "to": "The Investigating Officer",
+    "purpose": "Explain with evidence, offer to keep the disputed amount on hold, and ask for a video-call check and written reasons if refused.",
+    "requiredFields": [
+      "complaint number",
+      "police station",
+      "UTR",
+      "disputed amount",
+      "release amount",
+      "the offer to keep the disputed amount on hold",
+      "the evidence list",
+      "a request for a video-call check, citing clause 10.1(c)",
+      "a request for written reasons if refused, citing clause 10.1(e)"
+    ],
+    "mustIncludeRefs": ["clause 10.1(c)", "clause 10.1(e)"],
+    "guidance": [
+      "Write to the officer, not the bank.",
+      "Polite, factual, no accusations.",
+      "Quote the rules exactly, with markers.",
+      "Leave {{Your name}}, {{Your phone}} and the date for the person to fill."
+    ],
+    "maxWords": 450
+  },
+  "L3_REVIEW": {
+    "title": "Review request to the District Grievance Officer",
+    "to": "The District Grievance Officer",
+    "purpose": "Ask for a review within 15 days of the refusal, through the branch, answering each reason the officer gave.",
+    "requiredFields": [
+      "the refusal date",
+      "the officer's reasons, in short",
+      "an answer to each reason",
+      "the evidence",
+      "the 15-day review, citing clause 10.1(f)"
+    ],
+    "mustIncludeRefs": ["clause 10.1(f)"],
+    "guidance": [
+      "Answer each refusal reason briefly, with evidence.",
+      "Politely ask for the review within 15 days.",
+      "Quote the rules exactly, with markers.",
+      "Leave {{Your name}}, {{Your phone}} and the date for the person to fill."
+    ],
+    "maxWords": 450
+  },
+  "L3_DISTRICT": {
+    "title": "Note to the District Grievance Officer",
+    "to": "The District Grievance Officer",
+    "purpose": "The officer stayed silent past 15 days, so the case goes up automatically; this note asks for a decision within 15 days.",
+    "requiredFields": [
+      "the grievance filing date",
+      "\"no decision within 15 calendar days\"",
+      "the automatic escalation, citing clause 10.1(f)",
+      "a request to decide within 15 days"
+    ],
+    "mustIncludeRefs": ["clause 10.1(f)"],
+    "guidance": [
+      "State the dates plainly.",
+      "Ask for a decision within 15 days.",
+      "Quote the rules exactly, with markers.",
+      "Leave {{Your name}}, {{Your phone}} and the date for the person to fill."
+    ],
+    "maxWords": 450
+  },
+  "L4_BACKSTOP": {
+    "title": "90-day request to your branch",
+    "to": "The Branch Manager",
+    "purpose": "Ninety days passed with no lawful direction, so the account holder asks the bank to remove the hold.",
+    "requiredFields": [
+      "the grievance filing date",
+      "\"90 calendar days\" passed with no lawful direction",
+      "the account holder's request to remove the hold, citing the 90-day paragraph of clause 10.1"
+    ],
+    "mustIncludeRefs": ["clause 10.1"],
+    "guidance": [
+      "State the dates plainly.",
+      "Ask the bank to remove the hold.",
+      "Quote the rules exactly, with markers.",
+      "Leave {{Your name}}, {{Your phone}} and the date for the person to fill."
+    ],
+    "maxWords": 450
+  },
+  "L5_LAWYER_NOTES": {
+    "title": "Notes for your lawyer or legal aid",
+    "to": "Notes for your lawyer or free legal aid",
+    "purpose": "A tidy brief for a lawyer or legal aid office. These are notes, never a petition.",
+    "requiredFields": [
+      "the timeline",
+      "the amounts",
+      "the rules and rulings with references",
+      "what has been tried",
+      "the open deadlines",
+      "the line \"These are notes, not a petition.\""
+    ],
+    "mustIncludeRefs": [],
+    "guidance": [
+      "Plain, chronological, factual.",
+      "End with the line: These are notes, not a petition.",
+      "Quote the rules exactly, with markers."
+    ],
+    "maxWords": 900
+  }
+}

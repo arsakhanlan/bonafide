@@ -31,6 +31,7 @@ public class FirestoreRuleRepository implements RuleRepository {
         data.put("text", chunk.text());
         data.put("status", chunk.status());
         data.put("date", chunk.date());
+        data.put("sourceUrl", chunk.sourceUrl());
         data.put("embedding", FieldValue.vector(vector));
         try {
             firestore.collection("rule_chunks").document(chunk.id()).set(data).get();
@@ -53,12 +54,32 @@ public class FirestoreRuleRepository implements RuleRepository {
                         (String) snapshot.get("ref"),
                         (String) snapshot.get("text"),
                         (String) snapshot.get("status"),
-                        (String) snapshot.get("date")));
+                        (String) snapshot.get("date"),
+                        (String) snapshot.get("sourceUrl")));
             }
         } catch (Exception e) {
             throw new IllegalStateException("Vector search failed", e);
         }
         return chunks;
+    }
+
+    @Override
+    public Optional<RuleChunk> findById(String chunkId) {
+        try {
+            var snapshot = firestore.collection("rule_chunks").document(chunkId).get().get();
+            if (!snapshot.exists()) {
+                return Optional.empty();
+            }
+            return Optional.of(new RuleChunk(
+                    (String) snapshot.get("docId"),
+                    (String) snapshot.get("ref"),
+                    (String) snapshot.get("text"),
+                    (String) snapshot.get("status"),
+                    (String) snapshot.get("date"),
+                    (String) snapshot.get("sourceUrl")));
+        } catch (Exception e) {
+            throw new IllegalStateException("Chunk lookup failed", e);
+        }
     }
 
     @Override
@@ -75,7 +96,8 @@ public class FirestoreRuleRepository implements RuleRepository {
                     (String) snapshot.get("ref"),
                     (String) snapshot.get("text"),
                     (String) snapshot.get("status"),
-                    (String) snapshot.get("date")));
+                    (String) snapshot.get("date"),
+                    (String) snapshot.get("sourceUrl")));
         } catch (Exception e) {
             throw new IllegalStateException("Ref lookup failed", e);
         }

@@ -61,6 +61,14 @@ public class TestFakes {
         public void save(String caseId, String docId, Map<String, Object> document) {
             documents.put(caseId + "/" + docId, document);
         }
+
+        @Override
+        public List<Map<String, Object>> findByCase(String caseId) {
+            return documents.entrySet().stream()
+                    .filter(e -> e.getKey().startsWith(caseId + "/"))
+                    .map(Map.Entry::getValue)
+                    .toList();
+        }
     }
 
     @Bean
@@ -71,6 +79,46 @@ public class TestFakes {
     @Bean
     public InMemoryEmbedder embedder() {
         return new InMemoryEmbedder();
+    }
+
+    @Bean
+    public InMemoryLetterRepository letterRepository() {
+        return new InMemoryLetterRepository();
+    }
+
+    @Bean
+    public FakeGrounding grounding() {
+        return new FakeGrounding();
+    }
+
+    public static class InMemoryLetterRepository implements app.bonafide.letters.LetterRepository {
+        public final Map<String, Map<String, Object>> letters = new ConcurrentHashMap<>();
+
+        @Override
+        public void save(String caseId, String letterId, Map<String, Object> letter) {
+            letters.put(caseId + "/" + letterId, letter);
+        }
+
+        @Override
+        public Optional<Map<String, Object>> find(String caseId, String letterId) {
+            return Optional.ofNullable(letters.get(caseId + "/" + letterId));
+        }
+
+        @Override
+        public void update(String caseId, String letterId, Map<String, Object> fields) {
+            letters.computeIfPresent(caseId + "/" + letterId, (k, letter) -> {
+                Map<String, Object> merged = new java.util.HashMap<>(letter);
+                merged.putAll(fields);
+                return merged;
+            });
+        }
+    }
+
+    public static class FakeGrounding implements app.bonafide.letters.Grounding {
+        @Override
+        public Float check(String answerCandidate, List<String> facts, double citationThreshold) {
+            return 0.9f;
+        }
     }
 
     public static class InMemoryRuleRepository implements app.bonafide.rules.RuleRepository {
@@ -89,6 +137,11 @@ public class TestFakes {
         @Override
         public Optional<app.bonafide.rules.RuleChunk> findByRef(String ref) {
             return chunks.values().stream().filter(c -> c.ref().equals(ref)).findFirst();
+        }
+
+        @Override
+        public Optional<app.bonafide.rules.RuleChunk> findById(String chunkId) {
+            return Optional.ofNullable(chunks.get(chunkId));
         }
     }
 
