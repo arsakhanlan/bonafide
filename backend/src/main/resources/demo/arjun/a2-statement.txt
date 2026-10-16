@@ -1,0 +1,10 @@
+Demo Bank, MG Road Branch, Pune
+Account: xxxxxxxx5512
+Statement: 01 Sep 2026 to 16 Oct 2026
+
+Date        Details                Amount     UTR            Balance
+05 Sep 2026 CREDIT  P2P buyer 1    22,000     UTR 612233445561 88,000
+12 Sep 2026 DEBIT   Supplier pay  25,000     UTR 212233445562 63,000
+02 Oct 2026 CREDIT  P2P buyer 2    18,000     UTR 612233445563 81,000
+10 Oct 2026 CREDIT  P2P buyer 3    40,000     UTR 612233445566 1,21,000
+11 Oct 2026 DEBIT   Cash withdrawal 5,000    UTR 212233445567 1,16,000

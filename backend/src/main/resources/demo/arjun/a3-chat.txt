@@ -1,0 +1,7 @@
+P2P exchange chat, 10 Oct 2026
+
+Buyer: I want to buy USDT worth Rs 40,000.
+Arjun: Okay, send the payment to my bank account and share the reference.
+Buyer: Sent Rs 40,000. UTR 612233445566.
+Arjun: Received, releasing 480 USDT now.
+Buyer: Got it, thanks!
