@@ -60,12 +60,16 @@ CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE_URL/api/cases/$CASE
 check "approve returns 200" "$([ "$CODE" = "200" ]; echo $?)"
 
 echo "== 7. Sent -> deadline =="
+SENT_ON=$(curl -s "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$CASE_ID" \
+  -H "Authorization: Bearer $TOKEN" | jq -r '.fields.demo.mapValue.fields.today.stringValue // empty')
 CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE_URL/api/cases/$CASE_ID/letters/$LETTER_ID/sent" \
-  -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d '{"sentOn":"2026-10-19","how":"BRANCH"}')
+  -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+  -d "$(jq -n --arg d "$SENT_ON" '{sentOn: $d, how: "BRANCH"}')")
 check "sent returns 200" "$([ "$CODE" = "200" ]; echo $?)"
+EXPECTED_DUE=$(date -j -v+7d -f '%Y-%m-%d' "$SENT_ON" '+%Y-%m-%d' 2>/dev/null || date -d "$SENT_ON + 7 days" '+%Y-%m-%d')
 DEADLINE=$(curl -s "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$CASE_ID/deadlines/BANK_FILE_GRIEVANCE" \
   -H "Authorization: Bearer $TOKEN" | jq -r '.fields.dueOn.stringValue // empty')
-check "BANK_FILE_GRIEVANCE due 2026-10-26 (got $DEADLINE)" "$([ "$DEADLINE" = "2026-10-26" ]; echo $?)"
+check "BANK_FILE_GRIEVANCE due sentOn+7 = $EXPECTED_DUE (got $DEADLINE)" "$([ "$DEADLINE" = "$EXPECTED_DUE" ]; echo $?)"
 
 echo "== 8. Skip 8 days -> reminder letter =="
 SKIP=$(curl -s -X POST "$BASE_URL/api/demo/cases/$CASE_ID/skip" -H "Authorization: Bearer $TOKEN" \
@@ -135,10 +139,11 @@ CODE=200
 for i in $(seq 1 20); do
   CODE=$(curl -s -o /dev/null -w '%{http_code}' "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$CASE_ID" \
     -H "Authorization: Bearer $TOKEN")
-  [ "$CODE" = "404" ] && break
+  [ "$CODE" = "404" ] || [ "$CODE" = "403" ] && break
   sleep 2
 done
-check "case is gone from Firestore" "$([ "$CODE" = "404" ]; echo $?)"
+# Firestore rules return 403 for documents that do not exist (resource is null in the rule).
+check "case is gone from Firestore" "$([ "$CODE" = "404" ] || [ "$CODE" = "403" ]; echo $?)"
 
 echo
 echo "PASS=$PASS FAIL=$FAIL"
