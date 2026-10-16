@@ -1,0 +1,22 @@
+{
+  "name": "ravi-whole",
+  "personNote": "I run a phone repair shop on FC Road, Pune. A customer paid me Rs 2,000 by UPI for a screen repair on 15 Oct. The next day my whole account was frozen by a cyber police station in Patna. I have the bill and the chat to prove it.",
+  "papers": [
+    {
+      "kind": "NOTICE",
+      "text": "Demo Bank. Your account xxxxxxxx4821 is frozen (whole account) on 2026-10-16 by Cyber Police Station, Patna, complaint 31210260054321. Disputed UTR 601234567890 on 2026-10-15 for Rs 2,000. Balance Rs 1,80,000."
+    },
+    {
+      "kind": "STATEMENT",
+      "text": "Demo Bank, FC Road Branch, Pune\nAccount: xxxxxxxx4821\n15 Oct 2026 CREDIT 2,000 UTR 601234567890 Balance 1,80,000\n01 Aug 2026 CREDIT 48,200 UTR 111111111104 Balance 1,30,700"
+    }
+  ],
+  "expected": {
+    "status": "GENUINE",
+    "money": {
+      "disputed": 2000,
+      "frozen": 180000,
+      "release": 178000
+    }
+  }
+}

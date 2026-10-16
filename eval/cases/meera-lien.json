@@ -1,0 +1,22 @@
+{
+  "name": "meera-lien",
+  "personNote": "I do freelance design. A client paid me Rs 12,500 and now the police put a hold of Rs 12,500 on my account.",
+  "papers": [
+    {
+      "kind": "NOTICE",
+      "text": "Demo Bank. An amount hold of Rs 12,500 has been placed on your account xxxxxxxx3390 as per the direction of Cyber Police Station, Indore, complaint 31774455667788. The hold is on the amount Rs 12,500 only."
+    },
+    {
+      "kind": "STATEMENT",
+      "text": "Demo Bank, Baner Branch\n05 Aug 2026 CREDIT 12,500 UTR 619922334466 Balance 52,500"
+    }
+  ],
+  "expected": {
+    "status": "GENUINE",
+    "money": {
+      "disputed": 12500,
+      "frozen": 12500,
+      "release": 0
+    }
+  }
+}

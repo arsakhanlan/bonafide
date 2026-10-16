@@ -1,0 +1,13 @@
+{
+  "name": "victim",
+  "personNote": "I was cheated online and lost Rs 30,000. The bank froze MY account too and I want my money back from the fraudster.",
+  "papers": [
+    {
+      "kind": "NOTICE",
+      "text": "Demo Bank. Your account xxxxxxxx1155 has been put on hold as per complaint 312222333344."
+    }
+  ],
+  "expected": {
+    "status": "VICTIM"
+  }
+}

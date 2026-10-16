@@ -1,0 +1,22 @@
+{
+  "name": "two-payments",
+  "personNote": "Two of my customers' payments are disputed: Rs 1,000 and Rs 1,500. My whole account with Rs 60,000 is frozen.",
+  "papers": [
+    {
+      "kind": "NOTICE",
+      "text": "Demo Bank. Your account xxxxxxxx2200 is frozen (whole account) on 2026-10-14 by Cyber Police Station, Nagpur, complaint 319988776655. Disputed UTR 601111111111 on 2026-10-12 for Rs 1,000 and UTR 602222222222 on 2026-10-13 for Rs 1,500. Balance Rs 60,000."
+    },
+    {
+      "kind": "STATEMENT",
+      "text": "Demo Bank\n12 Oct 2026 CREDIT 1,000 UTR 601111111111 Balance 58,500\n13 Oct 2026 CREDIT 1,500 UTR 602222222222 Balance 60,000"
+    }
+  ],
+  "expected": {
+    "status": "GENUINE",
+    "money": {
+      "disputed": 2500,
+      "frozen": 60000,
+      "release": 57500
+    }
+  }
+}

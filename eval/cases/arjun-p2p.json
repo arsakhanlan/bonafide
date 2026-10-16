@@ -1,0 +1,22 @@
+{
+  "name": "arjun-p2p",
+  "personNote": "I sell USDT on a P2P exchange. A buyer paid Rs 40,000 by bank transfer and Rs 9,800 of it is now disputed. The bank holds Rs 40,000.",
+  "papers": [
+    {
+      "kind": "NOTICE",
+      "text": "Demo Bank. An amount hold of Rs 40,000 has been placed on your account xxxxxxxx5512 as per the direction of Cyber Police Station, Jaipur, complaint 31556677889900. The disputed payment is UTR 612233445566, dated 10 Oct 2026, amount Rs 9,800."
+    },
+    {
+      "kind": "STATEMENT",
+      "text": "Demo Bank, MG Road Branch\n10 Oct 2026 CREDIT 40,000 UTR 612233445566 Balance 1,21,000"
+    }
+  ],
+  "expected": {
+    "status": "GENUINE",
+    "money": {
+      "disputed": 9800,
+      "frozen": 40000,
+      "release": 30200
+    }
+  }
+}

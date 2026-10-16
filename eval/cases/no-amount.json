@@ -1,0 +1,16 @@
+{
+  "name": "no-amount",
+  "personNote": "The bank's message says my account is on hold but does not say how much is held.",
+  "papers": [
+    {
+      "kind": "NOTICE",
+      "text": "Demo Bank. Your account xxxxxxxx6613 has been placed under a debit freeze. Please visit your branch."
+    }
+  ],
+  "expected": {
+    "status": "GENUINE",
+    "problems_include": [
+      "NO_AMOUNT_GIVEN"
+    ]
+  }
+}

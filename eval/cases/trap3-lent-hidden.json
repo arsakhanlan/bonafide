@@ -1,0 +1,17 @@
+{
+  "name": "trap3-lent-hidden",
+  "personNote": "I have a small shop. Also, for the last year, I have let my brother use this account to receive money for his clients, and he pays me a little for it.",
+  "papers": [
+    {
+      "kind": "NOTICE",
+      "text": "Demo Bank. Your account xxxxxxxx4821 is frozen (whole account) on 2026-10-16 by Cyber Police Station, Patna, complaint 31210260054321. Disputed UTR 601234567890 on 2026-10-15 for Rs 2,000. Balance Rs 1,80,000."
+    },
+    {
+      "kind": "STATEMENT",
+      "text": "Demo Bank, FC Road Branch, Pune\nAccount: xxxxxxxx4821\n15 Oct 2026 CREDIT 2,000 UTR 601234567890 Balance 1,80,000\n01 Aug 2026 CREDIT 48,200 UTR 111111111104 Balance 1,30,700"
+    }
+  ],
+  "expected": {
+    "status": "LENT_ACCOUNT"
+  }
+}

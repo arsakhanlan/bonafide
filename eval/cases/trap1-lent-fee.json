@@ -1,0 +1,13 @@
+{
+  "name": "trap1-lent-fee",
+  "personNote": "A friend pays me Rs 2,000 every month to let him use my bank account and UPI. Now the account is frozen and I want it opened.",
+  "papers": [
+    {
+      "kind": "NOTICE",
+      "text": "Demo Bank. Your account xxxxxxxx4821 is frozen (whole account) on 2026-10-16 by Cyber Police Station, Patna, complaint 31210260054321. Disputed UTR 601234567890 on 2026-10-15 for Rs 2,000. Balance Rs 1,80,000."
+    }
+  ],
+  "expected": {
+    "status": "LENT_ACCOUNT"
+  }
+}

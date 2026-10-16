@@ -1,0 +1,20 @@
+{
+  "name": "missing-details",
+  "personNote": "My account was frozen but the message does not say which police station or officer, and there is no complaint number.",
+  "papers": [
+    {
+      "kind": "NOTICE",
+      "text": "Demo Bank. Your account xxxxxxxx9044 has been frozen. Contact your branch for details."
+    },
+    {
+      "kind": "STATEMENT",
+      "text": "Demo Bank\n14 Oct 2026 CREDIT 3,500 UTR 615566778899 Balance 45,000"
+    }
+  ],
+  "expected": {
+    "status": "GENUINE",
+    "problems_include": [
+      "MISSING_DETAILS"
+    ]
+  }
+}

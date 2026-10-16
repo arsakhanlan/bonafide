@@ -1,0 +1,13 @@
+{
+  "name": "trap2-lent-upi",
+  "personNote": "My cousin runs a betting site and I gave him my UPI id and bank account for a 10 percent cut. The bank froze the account.",
+  "papers": [
+    {
+      "kind": "NOTICE",
+      "text": "Demo Bank. Your account xxxxxxxx4821 is frozen (whole account) on 2026-10-16 by Cyber Police Station, Patna, complaint 31210260054321. Disputed UTR 601234567890 on 2026-10-15 for Rs 2,000. Balance Rs 1,80,000."
+    }
+  ],
+  "expected": {
+    "status": "LENT_ACCOUNT"
+  }
+}
