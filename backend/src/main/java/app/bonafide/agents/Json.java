@@ -23,6 +23,14 @@ public final class Json {
         }
     }
 
+    public static String write(Object value) {
+        try {
+            return MAPPER.writeValueAsString(value);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Could not serialise " + value.getClass().getSimpleName(), e);
+        }
+    }
+
     /** The model sometimes wraps the JSON in ```json fences. */
     static String stripFences(String text) {
         String trimmed = text == null ? "" : text.trim();

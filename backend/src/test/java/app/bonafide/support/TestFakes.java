@@ -65,6 +65,7 @@ public class TestFakes {
 
     public static class InMemoryCaseRepository implements CaseRepository {
         public final Map<String, Case> cases = new ConcurrentHashMap<>();
+        private final Map<String, Map<String, Object>> raw = new ConcurrentHashMap<>();
 
         @Override
         public Optional<Case> find(String caseId) {
@@ -72,19 +73,24 @@ public class TestFakes {
         }
 
         @Override
+        public Optional<Map<String, Object>> findRaw(String caseId) {
+            return Optional.ofNullable(raw.get(caseId));
+        }
+
+        @Override
         public void save(Case case_) {
             cases.put(case_.id(), case_);
+            raw.put(case_.id(), new java.util.HashMap<>());
         }
 
         @Override
         public void setBusy(String caseId, boolean busy) {
-            cases.computeIfPresent(caseId, (id, c) -> new Case(c.id(), c.uid(), c.language(), c.stage(), busy,
-                    c.title(), c.createdAt(), c.updatedAt(), c.facts(), c.questions(), c.eligibility(), c.money(),
-                    c.evidence(), c.plan(), c.nextStep(), c.referral(), c.history(), c.demo()));
+            update(caseId, Map.of("busy", busy));
         }
 
         @Override
         public void update(String caseId, Map<String, Object> fields) {
+            raw.computeIfAbsent(caseId, id -> new java.util.HashMap<>()).putAll(fields);
             cases.computeIfPresent(caseId, (id, c) -> new Case(
                     c.id(), c.uid(), c.language(),
                     fields.containsKey("stage") ? Stage.valueOf((String) fields.get("stage")) : c.stage(),
@@ -92,12 +98,16 @@ public class TestFakes {
                     fields.containsKey("title") ? (String) fields.get("title") : c.title(),
                     c.createdAt(), c.updatedAt(),
                     fields.containsKey("facts") ? asMap(fields.get("facts")) : c.facts(),
-                    c.questions(),
+                    fields.containsKey("questions") ? asList(fields.get("questions")) : c.questions(),
                     c.eligibility(),
                     fields.containsKey("money") ? asMap(fields.get("money")) : c.money(),
-                    c.evidence(), c.plan(),
+                    c.evidence(),
+                    fields.containsKey("plan") ? asList(fields.get("plan")) : c.plan(),
                     fields.containsKey("nextStep") ? asMap(fields.get("nextStep")) : c.nextStep(),
-                    c.referral(), c.history(), c.demo()));
+                    fields.containsKey("referral") ? asMap(fields.get("referral")) : c.referral(),
+                    c.history(), c.demo(),
+                    fields.containsKey("personNote") ? (String) fields.get("personNote") : c.personNote(),
+                    fields.containsKey("answersAsked") ? Boolean.TRUE.equals(fields.get("answersAsked")) : c.answersAsked()));
         }
 
         @Override
@@ -107,13 +117,19 @@ public class TestFakes {
                 history.add(line);
                 return new Case(c.id(), c.uid(), c.language(), c.stage(), c.busy(), c.title(),
                         c.createdAt(), c.updatedAt(), c.facts(), c.questions(), c.eligibility(), c.money(),
-                        c.evidence(), c.plan(), c.nextStep(), c.referral(), history, c.demo());
+                        c.evidence(), c.plan(), c.nextStep(), c.referral(), history, c.demo(),
+                        c.personNote(), c.answersAsked());
             });
         }
 
         @SuppressWarnings("unchecked")
         private static Map<String, Object> asMap(Object value) {
             return value == null ? Map.of() : (Map<String, Object>) value;
+        }
+
+        @SuppressWarnings("unchecked")
+        private static List<Map<String, Object>> asList(Object value) {
+            return value == null ? List.of() : (List<Map<String, Object>>) value;
         }
 
         @Override

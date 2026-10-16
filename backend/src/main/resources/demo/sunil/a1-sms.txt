@@ -1,0 +1,13 @@
+Demo Bank
+
+Dear Customer,
+
+Your savings account xxxxxxxx7741 has been put on debit freeze on 14 Oct 2026 as per the direction of Cyber Police Station, Bhopal, in connection with complaint no. 31550770012233.
+
+The freeze covers the whole account balance of Rs 45,000.
+
+The disputed payment is UTR 618822334455, dated 12 Oct 2026, amount Rs 18,000.
+
+Please contact the Cyber Police Station, Bhopal for further details.
+
+- Demo Bank, Camp Branch, Pune
