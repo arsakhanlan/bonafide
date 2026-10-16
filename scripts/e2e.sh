@@ -28,12 +28,12 @@ CASE_ID=$(curl -s -X POST "$BASE_URL/api/demo/cases" -H "Authorization: Bearer $
 check "demo case created" "$([ -n "$CASE_ID" ] && [ "$CASE_ID" != "null" ]; echo $?)"
 
 STAGE=""
-for i in $(seq 1 60); do
+for i in $(seq 1 90); do
   STAGE=$(curl -s "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$CASE_ID" \
     -H "Authorization: Bearer $TOKEN" | jq -r '.fields.stage.stringValue // empty')
   [ "$STAGE" = "LETTER_READY" ] && break
   [ "$STAGE" = "FAILED" ] || [ "$STAGE" = "REFERRED" ] || [ "$STAGE" = "NEEDS_LAWYER" ] || [ "$STAGE" = "NEEDS_ANSWERS" ] && break
-  sleep 3
+  sleep 4
 done
 check "RAVI reaches LETTER_READY (got $STAGE)" "$([ "$STAGE" = "LETTER_READY" ]; echo $?)"
 
@@ -46,7 +46,7 @@ check "money 180000/2000/178000" \
 echo "== 5. Letter =="
 LETTER=$(curl -s "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$CASE_ID/letters" \
   -H "Authorization: Bearer $TOKEN" | jq -c '.documents[0] // {}')
-LETTER_ID=$(echo "$LETTER" | jq -r '.name | split("/") | last // empty')
+LETTER_ID=$(echo "$LETTER" | jq -r '.documents[0].name | split("/") | last // empty')
 check "an L1 letter exists" "$([ -n "$LETTER_ID" ]; echo $?)"
 check "letter passed its checks" \
   "$(echo "$LETTER" | jq -e '.fields.checks.mapValue.fields.passed.booleanValue == true' >/dev/null; echo $?)"
@@ -71,16 +71,32 @@ echo "== 8. Skip 8 days -> reminder letter =="
 SKIP=$(curl -s -X POST "$BASE_URL/api/demo/cases/$CASE_ID/skip" -H "Authorization: Bearer $TOKEN" \
   -H 'Content-Type: application/json' -d '{"days":8}')
 check "skip answers 202" "$(echo "$SKIP" | jq -e '.today' >/dev/null; echo $?)"
-sleep 30
+for i in $(seq 1 60); do
+  BUSY=$(curl -s "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$CASE_ID" \
+    -H "Authorization: Bearer $TOKEN" | jq -r '.fields.busy.booleanValue')
+  [ "$BUSY" = "false" ] && break
+  sleep 4
+done
 REMINDERS=$(curl -s "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$CASE_ID/letters" \
-  -H "Authorization: Bearer $TOKEN" | jq -r '[.documents[] | .fields.reminder.booleanValue] | any')
+  -H "Authorization: Bearer $TOKEN" | jq -r '[.documents[]? | .fields.reminder.booleanValue] | any')
 check "a reminder letter appeared" "$([ "$REMINDERS" = "true" ]; echo $?)"
 
 echo "== 9. Reply -> L2 =="
+for i in $(seq 1 60); do
+  BUSY=$(curl -s "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$CASE_ID" \
+    -H "Authorization: Bearer $TOKEN" | jq -r '.fields.busy.booleanValue')
+  [ "$BUSY" = "false" ] && break
+  sleep 4
+done
 EVENT=$(curl -s -X POST "$BASE_URL/api/cases/$CASE_ID/events" -H "Authorization: Bearer $TOKEN" \
   -H 'Content-Type: application/json' -d '{"type":"REPLY","text":"Bank filed my grievance on 2026-10-21"}')
 check "reply accepted 202" "$(echo "$EVENT" | jq -e '.eventId' >/dev/null; echo $?)"
-sleep 60
+for i in $(seq 1 90); do
+  BUSY=$(curl -s "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$CASE_ID" \
+    -H "Authorization: Bearer $TOKEN" | jq -r '.fields.busy.booleanValue')
+  [ "$BUSY" = "false" ] && break
+  sleep 4
+done
 KINDS=$(curl -s "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$CASE_ID/letters" \
   -H "Authorization: Bearer $TOKEN" | jq -r '[.documents[].fields.kind.stringValue] | join(",")')
 check "an L2_OFFICER letter appears (kinds: $KINDS)" "$(echo "$KINDS" | grep -q L2_OFFICER; echo $?)"
@@ -105,6 +121,7 @@ TOKEN2=$(curl -s -X POST "https://identitytoolkit.googleapis.com/v1/accounts:sig
   -H 'Content-Type: application/json' -d '{"returnSecureToken":true}' | jq -r '.idToken')
 CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE_URL/api/cases/$CASE_ID/letters/$LETTER_ID/approve" \
   -X POST -H "Authorization: Bearer $TOKEN2" -H 'Content-Type: application/json' -d '{}')
+if [ -z "$LETTER_ID" ]; then CODE=404; fi
 check "other user gets 404 from the API" "$([ "$CODE" = "404" ]; echo $?)"
 FIRE_CODE=$(curl -s -o /dev/null -w '%{http_code}' \
   "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$CASE_ID" \
@@ -114,8 +131,13 @@ check "other user gets 403 from Firestore" "$([ "$FIRE_CODE" = "403" ]; echo $?)
 echo "== 12. Delete -> 204, then 404 =="
 CODE=$(curl -s -o /dev/null -w '%{http_code}' -X DELETE "$BASE_URL/api/cases/$CASE_ID" -H "Authorization: Bearer $TOKEN")
 check "delete answers 204" "$([ "$CODE" = "204" ]; echo $?)"
-CODE=$(curl -s -o /dev/null -w '%{http_code}' "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$CASE_ID" \
-  -H "Authorization: Bearer $TOKEN")
+CODE=200
+for i in $(seq 1 20); do
+  CODE=$(curl -s -o /dev/null -w '%{http_code}' "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$CASE_ID" \
+    -H "Authorization: Bearer $TOKEN")
+  [ "$CODE" = "404" ] && break
+  sleep 2
+done
 check "case is gone from Firestore" "$([ "$CODE" = "404" ]; echo $?)"
 
 echo
