@@ -29,6 +29,17 @@ public class GcsFileStore implements FileStore {
     }
 
     @Override
+    public void write(String path, byte[] content, String mime) {
+        try {
+            storage.create(com.google.cloud.storage.BlobInfo.newBuilder(BlobId.of(bucket, path))
+                    .setContentType(mime == null ? "application/octet-stream" : mime)
+                    .build(), content);
+        } catch (Exception e) {
+            throw new IllegalStateException("Writing " + path + " failed", e);
+        }
+    }
+
+    @Override
     public void deletePrefix(String prefix) {
         for (Blob blob : storage.list(bucket, com.google.cloud.storage.Storage.BlobListOption.prefix(prefix)).iterateAll()) {
             storage.delete(blob.getBlobId());

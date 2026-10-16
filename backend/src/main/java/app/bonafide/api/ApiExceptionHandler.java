@@ -1,6 +1,7 @@
 package app.bonafide.api;
 
 import app.bonafide.cases.CaseService;
+import app.bonafide.demo.DemoService;
 import jakarta.validation.ConstraintViolationException;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -25,6 +26,16 @@ public class ApiExceptionHandler {
     @ExceptionHandler(Busy.class)
     public ResponseEntity<Map<String, Object>> busy(Busy e) {
         return error(HttpStatus.CONFLICT, "BUSY", "Agents are still working on this case.");
+    }
+
+    @ExceptionHandler(DemoService.DemoOff.class)
+    public ResponseEntity<Map<String, Object>> demoOff(DemoService.DemoOff e) {
+        return error(HttpStatus.FORBIDDEN, "DEMO_OFF", "Demo mode is off.");
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> badRequest(IllegalArgumentException e) {
+        return error(HttpStatus.BAD_REQUEST, "BAD_REQUEST", e.getMessage());
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class, ConstraintViolationException.class})

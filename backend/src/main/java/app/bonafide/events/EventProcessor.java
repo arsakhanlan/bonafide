@@ -55,8 +55,9 @@ public class EventProcessor {
             } else {
                 steps.write(caseId, "SYSTEM", "Something went wrong reading your papers. Please upload clearer copies.", "FAILED");
                 events.finish(caseId, eventId, EventStatus.FAILED, e.getMessage());
-                cases.updateStageNextStep(caseId, Stage.FAILED,
-                        Map.of("action", "UPLOAD_PAPERS", "text", "Upload clearer papers"));
+                cases.update(caseId, Map.of(
+                        "stage", Stage.FAILED.name(),
+                        "nextStep", Map.of("action", "UPLOAD_PAPERS", "text", "Upload clearer papers")));
             }
             cases.setBusy(caseId, false);
         }
