@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: bonafide-api
+
+server:
+  port: ${PORT:8080}
+
+bonafide:
+  demo-mode: true
