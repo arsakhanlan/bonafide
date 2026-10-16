@@ -13,11 +13,14 @@ public final class ErrorResponses {
 
     public static byte[] bytes(String code, String message) {
         try {
-            return MAPPER.writeValueAsBytes(new ErrorBody(code, message));
+            return MAPPER.writeValueAsBytes(new Envelope(new ErrorBody(code, message)));
         } catch (Exception e) {
             return ("{\"error\":{\"code\":\"INTERNAL\",\"message\":\"Unexpected error\"}}")
                     .getBytes(StandardCharsets.UTF_8);
         }
+    }
+
+    private record Envelope(ErrorBody error) {
     }
 
     private record ErrorBody(String code, String message) {
