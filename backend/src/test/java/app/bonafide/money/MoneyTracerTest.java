@@ -225,6 +225,16 @@ class MoneyTracerTest {
     }
 
     @Test
+    void theNoticeAmountWinsWhenTheMatchedCreditIsBigger() {
+        // Arjun: 9,800 disputed inside a 40,000 transfer; hold 40,000 -> release 30,200.
+        MoneyResult r = tracer.trace(input(FreezeType.AMOUNT_HOLD, "40000", null,
+                List.of(payment("U1", "2026-10-10", "9800")),
+                List.of(credit("2026-10-10", "40000", "U1"))));
+        assertThat(r.disputed()).isEqualByComparingTo("9800");
+        assertThat(r.release()).isEqualByComparingTo("30200");
+    }
+
+    @Test
     void withoutAStatementTheNoticeAmountsAreTrusted() {
         MoneyResult r = tracer.trace(input(FreezeType.AMOUNT_HOLD, "2000", null,
                 List.of(payment("U1", "2026-10-13", "2000")), List.of()));

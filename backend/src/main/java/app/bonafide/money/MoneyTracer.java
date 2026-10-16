@@ -72,7 +72,7 @@ public class MoneyTracer {
                 if (!lineUsed[j] && lines.get(j).isCredit() && p.utr().equalsIgnoreCase(lines.get(j).utr())) {
                     lineUsed[j] = true;
                     paymentMatched[i] = true;
-                    matched.add(lines.get(j).amount());
+                    matched.add(disputedAmount(p, lines.get(j)));
                     break;
                 }
             }
@@ -104,11 +104,20 @@ public class MoneyTracer {
                         && !line.on().isAfter(p.on().plusDays(1))) {
                     lineUsed[j] = true;
                     paymentMatched[i] = true;
-                    matched.add(line.amount());
+                    matched.add(disputedAmount(p, line));
                     break;
                 }
             }
         }
+    }
+
+    /** The notice's own amount wins (e.g. 9,800 disputed inside a 40,000 transfer), capped at the credit. */
+    private static BigDecimal disputedAmount(DisputedPayment payment, StatementLine line) {
+        BigDecimal notice = payment.amount();
+        if (notice == null) {
+            return line.amount();
+        }
+        return notice.min(line.amount());
     }
 
     private static BigDecimal frozenOf(MoneyInput in) {
