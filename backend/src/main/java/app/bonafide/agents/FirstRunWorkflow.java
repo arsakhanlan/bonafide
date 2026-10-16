@@ -153,8 +153,12 @@ public class FirstRunWorkflow {
         List<Map<String, Object>> questions = new ArrayList<>();
         for (SorterOutput.Question q : sorter.questions() == null
                 ? List.<SorterOutput.Question>of() : sorter.questions()) {
-            questions.add(Map.of("id", q.id(), "text", q.text(), "choices",
-                    q.choices() == null ? List.of() : q.choices(), "answer", null));
+            Map<String, Object> question = new HashMap<>();
+            question.put("id", q.id() == null ? "" : q.id());
+            question.put("text", q.text() == null ? "" : q.text());
+            question.put("choices", q.choices() == null ? List.of() : q.choices());
+            question.put("answer", null);
+            questions.add(question);
         }
         cases.update(caseId, Map.of(
                 "questions", questions,
