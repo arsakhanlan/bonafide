@@ -79,7 +79,8 @@ public class LetterService {
                 "status", c.status(), "sourceUrl", c.sourceUrl() == null ? "" : c.sourceUrl())).toList());
         loopContext.put("spec", Map.of(
                 "title", spec.title(), "to", spec.to(), "purpose", spec.purpose(),
-                "requiredFields", spec.requiredFields(), "guidance", spec.guidance()));
+                "requiredFields", spec.requiredFields(), "guidance", spec.guidance(),
+                "maxWords", spec.maxWords()));
 
         AgentRunner.RunWithState run = runner.runWithState(
                 factory.letterLoop(), caseId, Map.of("context", loopContext),
