@@ -1,0 +1,8 @@
+{
+  "title": "Meera — freelance designer",
+  "note": "I do freelance logo design. A client paid me Rs 12,500 in August. Now my bank says a hold of Rs 12,500 was put on my account by the police. I am not sure what the payment was for exactly, it was some project.",
+  "papers": [
+    { "file": "a1-sms.txt", "kind": "NOTICE", "mime": "text/plain" },
+    { "file": "a2-statement.txt", "kind": "STATEMENT", "mime": "application/pdf" }
+  ]
+}

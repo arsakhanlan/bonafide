@@ -1,0 +1,10 @@
+Demo Bank, Baner Branch, Pune
+Account: xxxxxxxx3390
+Statement: 01 Aug 2026 to 16 Oct 2026
+
+Date        Details                Amount     UTR            Balance
+05 Aug 2026 CREDIT  Freelance payment 12,500   UTR 619922334466 52,500
+14 Aug 2026 DEBIT   Rent           18,000     UTR 219922334467 34,500
+01 Sep 2026 CREDIT  Freelance payment 9,000    UTR 619922334468 43,500
+12 Sep 2026 DEBIT   Laptop EMI     4,500      UTR 219922334469 39,000
+05 Oct 2026 CREDIT  Freelance payment 15,000   UTR 619922334470 54,000

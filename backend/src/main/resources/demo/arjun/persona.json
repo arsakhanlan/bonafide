@@ -1,0 +1,9 @@
+{
+  "title": "Arjun — crypto P2P seller",
+  "note": "I sell USDT on a peer-to-peer crypto exchange. A buyer paid me Rs 40,000 by bank transfer for USDT, and I released the coins. Out of that, Rs 9,800 is now disputed by the police. My bank has put a hold of Rs 40,000 on my account.",
+  "papers": [
+    { "file": "a1-sms.txt", "kind": "NOTICE", "mime": "text/plain" },
+    { "file": "a2-statement.txt", "kind": "STATEMENT", "mime": "application/pdf" },
+    { "file": "a3-chat.txt", "kind": "CHAT", "mime": "text/plain" }
+  ]
+}
