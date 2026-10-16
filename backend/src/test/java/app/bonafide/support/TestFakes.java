@@ -125,6 +125,11 @@ public class TestFakes {
         public final Map<String, app.bonafide.rules.RuleChunk> chunks = new ConcurrentHashMap<>();
 
         @Override
+        public void clear() {
+            chunks.clear();
+        }
+
+        @Override
         public void save(app.bonafide.rules.RuleChunk chunk, double[] vector) {
             chunks.put(chunk.id(), chunk);
         }

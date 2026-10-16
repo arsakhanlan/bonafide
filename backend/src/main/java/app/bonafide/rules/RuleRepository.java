@@ -6,6 +6,9 @@ import java.util.Optional;
 /** Port over the Firestore rule_chunks collection. */
 public interface RuleRepository {
 
+    /** Removes every chunk, so a reload starts clean (chunk ids are deterministic). */
+    void clear();
+
     void save(RuleChunk chunk, double[] vector);
 
     /** Top-N chunks by cosine distance, IN_FORCE only (pre-filter). */
