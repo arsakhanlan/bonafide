@@ -63,6 +63,42 @@ public class TestFakes {
         }
     }
 
+    @Bean
+    public InMemoryRuleRepository ruleRepository() {
+        return new InMemoryRuleRepository();
+    }
+
+    @Bean
+    public InMemoryEmbedder embedder() {
+        return new InMemoryEmbedder();
+    }
+
+    public static class InMemoryRuleRepository implements app.bonafide.rules.RuleRepository {
+        public final Map<String, app.bonafide.rules.RuleChunk> chunks = new ConcurrentHashMap<>();
+
+        @Override
+        public void save(app.bonafide.rules.RuleChunk chunk, double[] vector) {
+            chunks.put(chunk.id(), chunk);
+        }
+
+        @Override
+        public List<app.bonafide.rules.RuleChunk> findNearest(double[] queryVector, int limit) {
+            return chunks.values().stream().limit(limit).toList();
+        }
+
+        @Override
+        public Optional<app.bonafide.rules.RuleChunk> findByRef(String ref) {
+            return chunks.values().stream().filter(c -> c.ref().equals(ref)).findFirst();
+        }
+    }
+
+    public static class InMemoryEmbedder implements app.bonafide.rules.Embedder {
+        @Override
+        public List<Float> embed(String text) {
+            return List.of(0.1f, 0.2f);
+        }
+    }
+
     public static class InMemoryCaseRepository implements CaseRepository {
         public final Map<String, Case> cases = new ConcurrentHashMap<>();
         private final Map<String, Map<String, Object>> raw = new ConcurrentHashMap<>();

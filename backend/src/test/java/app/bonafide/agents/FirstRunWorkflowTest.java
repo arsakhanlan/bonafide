@@ -61,7 +61,7 @@ class FirstRunWorkflowTest {
         workflow = new FirstRunWorkflow(
                 papers, new AgentFactory(new Prompts(), new app.bonafide.config.BonafideProperties(
                         "asia-southeast1", "", "gemini-3.8-flash", "gemini-3.5-flash-lite",
-                        "gemini-embedding-2", "", 0.6, true, "", "")),
+                        "gemini-embedding-2", "", 0.6, true, "", "", "../data/rules")),
                 runner, new MoneyTracer(new RuleMapLoader()), cases, documents, trace, clock);
         cases.save(Case.newCase("c1", "u1", "en", clock.instant(), null));
     }

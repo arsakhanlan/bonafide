@@ -14,5 +14,6 @@ public record BonafideProperties(
         @DefaultValue("0.6") double groundingMin,
         @DefaultValue("true") boolean demoMode,
         @DefaultValue("") String serviceUrl,
-        @DefaultValue("") String schedulerSa) {
+        @DefaultValue("") String schedulerSa,
+        @DefaultValue("../data/rules") String rulesDir) {
 }
