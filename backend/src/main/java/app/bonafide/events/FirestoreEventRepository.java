@@ -2,9 +2,12 @@ package app.bonafide.events;
 
 import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.FieldValue;
+import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.Firestore;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.context.annotation.Profile;
@@ -38,6 +41,9 @@ public class FirestoreEventRepository implements EventRepository {
                 return CreateResult.CREATED;
             }).get();
         } catch (Exception e) {
+            if (String.valueOf(e.getMessage()).contains("ALREADY_EXISTS")) {
+                return CreateResult.BUSY; // idempotent event ids: already woken, skip quietly
+            }
             throw new IllegalStateException("Creating event on " + caseId + " failed", e);
         }
     }
@@ -69,6 +75,34 @@ public class FirestoreEventRepository implements EventRepository {
                 "status", status.name(),
                 "error", error,
                 "finishedAt", FieldValue.serverTimestamp()));
+    }
+
+    @Override
+    public List<Event> sweepStale(java.time.Instant runningCutoff, java.time.Instant pendingCutoff) {
+        List<Event> stale = new ArrayList<>();
+        try {
+            for (var snapshot : firestore.collectionGroup("events")
+                    .where(Filter.greaterThanOrEqualTo("createdAt",
+                            Timestamp.of(java.util.Date.from(pendingCutoff.minusSeconds(86400)))))
+                    .get().get().getDocuments()) {
+                String status = (String) snapshot.get("status");
+                Timestamp started = (Timestamp) snapshot.get("startedAt");
+                Timestamp created = (Timestamp) snapshot.get("createdAt");
+                boolean staleRunning = "RUNNING".equals(status) && started != null
+                        && started.toDate().toInstant().isBefore(runningCutoff);
+                boolean stalePending = "PENDING".equals(status) && created != null
+                        && created.toDate().toInstant().isBefore(pendingCutoff);
+                if (staleRunning || stalePending) {
+                    String caseId = snapshot.getReference().getParent().getParent().getId();
+                    Event event = fromMap(snapshot.getId(), snapshot.getData());
+                    stale.add(new Event(event.id(), caseId, event.type(), event.payload(), event.status(),
+                            event.attempts(), event.error(), event.createdAt(), event.startedAt(), event.finishedAt()));
+                }
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("The stale-event sweep failed", e);
+        }
+        return stale;
     }
 
     @Override

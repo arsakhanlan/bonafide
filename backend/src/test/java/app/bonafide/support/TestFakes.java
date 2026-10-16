@@ -82,6 +82,47 @@ public class TestFakes {
     }
 
     @Bean
+    public InMemoryDeadlineStore deadlineStore() {
+        return new InMemoryDeadlineStore();
+    }
+
+    public static class InMemoryDeadlineStore implements app.bonafide.deadlines.DeadlineStore {
+        private final Map<String, Map<String, app.bonafide.deadlines.Deadline>> byCase = new ConcurrentHashMap<>();
+
+        @Override
+        public void put(String caseId, app.bonafide.deadlines.Deadline deadline) {
+            byCase.computeIfAbsent(caseId, k -> new ConcurrentHashMap<>()).put(deadline.clock(), deadline);
+        }
+
+        @Override
+        public List<app.bonafide.deadlines.Deadline> findAll(String caseId) {
+            return new ArrayList<>(byCase.getOrDefault(caseId, Map.of()).values());
+        }
+
+        @Override
+        public void markStatus(String caseId, String clock, app.bonafide.deadlines.Deadline.Status status) {
+            byCase.computeIfPresent(caseId, (k, deadlines) -> {
+                app.bonafide.deadlines.Deadline current = deadlines.get(clock);
+                if (current == null) {
+                    return deadlines;
+                }
+                deadlines.put(clock, new app.bonafide.deadlines.Deadline(current.clock(), current.who(), current.title(),
+                        current.startOn(), current.dueOn(), status, current.ruleRef(),
+                        current.demo(), current.caseId(), current.uid()));
+                return deadlines;
+            });
+        }
+
+        @Override
+        public List<app.bonafide.deadlines.Deadline> findMissed(java.time.LocalDate today) {
+            return byCase.values().stream()
+                    .flatMap(deadlines -> deadlines.values().stream())
+                    .filter(d -> d.status() == app.bonafide.deadlines.Deadline.Status.PENDING && today.isAfter(d.dueOn()))
+                    .toList();
+        }
+    }
+
+    @Bean
     public InMemoryLetterRepository letterRepository() {
         return new InMemoryLetterRepository();
     }
@@ -93,6 +134,14 @@ public class TestFakes {
 
     public static class InMemoryLetterRepository implements app.bonafide.letters.LetterRepository {
         public final Map<String, Map<String, Object>> letters = new ConcurrentHashMap<>();
+
+        @Override
+        public List<Map<String, Object>> findByCase(String caseId) {
+            return letters.entrySet().stream()
+                    .filter(e -> e.getKey().startsWith(caseId + "/"))
+                    .map(Map.Entry::getValue)
+                    .toList();
+        }
 
         @Override
         public void save(String caseId, String letterId, Map<String, Object> letter) {
@@ -272,6 +321,11 @@ public class TestFakes {
             events.computeIfPresent(key(caseId, eventId), (k, e) ->
                     new Event(e.id(), e.caseId(), e.type(), e.payload(), status, e.attempts(), error,
                             e.createdAt(), e.startedAt(), java.time.Instant.now()));
+        }
+
+        @Override
+        public List<Event> sweepStale(java.time.Instant runningCutoff, java.time.Instant pendingCutoff) {
+            return List.of();
         }
 
         @Override

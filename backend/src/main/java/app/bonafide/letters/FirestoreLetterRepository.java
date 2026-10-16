@@ -1,6 +1,7 @@
 package app.bonafide.letters;
 
 import com.google.cloud.firestore.Firestore;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.context.annotation.Profile;
@@ -14,6 +15,20 @@ public class FirestoreLetterRepository implements LetterRepository {
 
     public FirestoreLetterRepository(Firestore firestore) {
         this.firestore = firestore;
+    }
+
+    @Override
+    public List<Map<String, Object>> findByCase(String caseId) {
+        List<Map<String, Object>> letters = new java.util.ArrayList<>();
+        try {
+            for (var snapshot : firestore.collection("cases").document(caseId)
+                    .collection("letters").get().get().getDocuments()) {
+                letters.add(snapshot.getData());
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("Reading letters on " + caseId + " failed", e);
+        }
+        return letters;
     }
 
     @Override

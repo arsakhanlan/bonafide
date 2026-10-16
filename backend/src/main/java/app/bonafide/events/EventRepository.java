@@ -1,5 +1,6 @@
 package app.bonafide.events;
 
+import java.util.List;
 import java.util.Optional;
 
 /** Port over Firestore for events, including the busy-check transaction (BUILD_SPEC §8, §9). */
@@ -21,4 +22,7 @@ public interface EventRepository {
 
     /** RUNNING → PENDING so the tick can retry a stuck or failed-but-retryable event. */
     void requeue(String caseId, String eventId);
+
+    /** RUNNING older than runningCutoff, or PENDING older than pendingCutoff (for the tick). */
+    List<Event> sweepStale(java.time.Instant runningCutoff, java.time.Instant pendingCutoff);
 }
