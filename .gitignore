@@ -1,0 +1,17 @@
+**/target/
+.idea/
+*.iml
+.vscode/
+.DS_Store
+.env
+.env.*
+*.pem
+*-key.json
+service-account*.json
+.firebase/
+node_modules/
+web/dist/
+
+# Internal planning docs stay local; the public repo gets a README at the end
+docs/
+handover/

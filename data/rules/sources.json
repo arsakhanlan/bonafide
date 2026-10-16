@@ -1,0 +1,122 @@
+[
+  {
+    "id": "mha-sop-2026",
+    "title": "MHA Standard Operating Procedure on holding, suspension of digital banking and release (CFCFRMS)",
+    "issuer": "MHA",
+    "date": "2026-01-02",
+    "status": "IN_FORCE",
+    "url": "https://the420.in/wp-content/uploads/2026/01/sop.pdf",
+    "file": "mha-sop-2026-01-02.txt",
+    "fetched": true
+  },
+  {
+    "id": "bom-hc-kartik-chatur",
+    "title": "Bombay High Court, Kartik Chatur",
+    "issuer": "Bombay High Court",
+    "date": "2025-11-20",
+    "status": "IN_FORCE",
+    "summaryUrl": "https://www.scconline.com/blog/post/2025/12/01/investigating-agency-cannot-debit-freeze-account-u-s-106-bnss-bom-hc/",
+    "url": null,
+    "file": null,
+    "fetched": false
+  },
+  {
+    "id": "del-hc-malabar-gold",
+    "title": "Delhi High Court, Malabar Gold",
+    "issuer": "Delhi High Court",
+    "date": "2026-01-16",
+    "status": "IN_FORCE",
+    "summaryUrl": "https://www.scconline.com/blog/post/2026/02/03/del-hc-on-legality-of-bank-account-freezing-under-bnss/",
+    "url": null,
+    "file": null,
+    "fetched": false
+  },
+  {
+    "id": "raj-hc-shree-balaji",
+    "title": "Rajasthan High Court, Shree Balaji (guidelines)",
+    "issuer": "Rajasthan High Court",
+    "date": "2026-08",
+    "status": "IN_FORCE",
+    "summaryUrl": "https://www.scconline.com/blog/post/2026/09/18/rajasthan-hc-bank-account-freeze-cyber-fraud-guidelines/",
+    "url": null,
+    "file": null,
+    "fetched": false
+  },
+  {
+    "id": "ap-hc-sri-sai-wines",
+    "title": "Andhra Pradesh High Court, Sri Sai Wines",
+    "issuer": "Andhra Pradesh High Court",
+    "date": "2026-06-22",
+    "status": "IN_FORCE",
+    "summaryUrl": "https://www.scconline.com/blog/post/2026/08/01/ap-hc-directs-unfreezing-bank-account-upi-transaction/",
+    "url": null,
+    "file": null,
+    "fetched": false
+  },
+  {
+    "id": "gau-hc-shoe-shop",
+    "title": "Gauhati High Court, shoe-shop lien case",
+    "issuer": "Gauhati High Court",
+    "date": "2026-09",
+    "status": "IN_FORCE",
+    "summaryUrl": "https://www.scconline.com/blog/post/2026/10/01/gauhati-hc-bandhan-bank-directions-defreeze-bank-account-cyber-fraud-lien/",
+    "url": null,
+    "file": null,
+    "fetched": false
+  },
+  {
+    "id": "mp-hc-archana",
+    "title": "Madhya Pradesh High Court, Archana (statewide guidelines)",
+    "issuer": "Madhya Pradesh High Court",
+    "date": "2026-07",
+    "status": "IN_FORCE",
+    "summaryUrl": "https://www.livelaw.in/high-court/madhya-pradesh-high-court/freezing-bank-accounts-guidelines-cybercrime-complaints-grievance-redressal-543201",
+    "url": null,
+    "file": null,
+    "fetched": false
+  },
+  {
+    "id": "all-hc-ritesh-yadav",
+    "title": "Allahabad High Court, Ritesh Yadav",
+    "issuer": "Allahabad High Court",
+    "date": "2026-08",
+    "status": "IN_FORCE",
+    "summaryUrl": null,
+    "url": null,
+    "file": null,
+    "fetched": false
+  },
+  {
+    "id": "sc-smw-3-2025",
+    "title": "Supreme Court, SMW(Crl) 3/2025, order of 4 Aug 2026",
+    "issuer": "Supreme Court of India",
+    "date": "2026-08-04",
+    "status": "IN_FORCE",
+    "summaryUrl": "https://www.verdictum.in/amp/supreme-court/digital-arrest-scams-interim-directions-rbi-1619172",
+    "url": null,
+    "file": null,
+    "fetched": false
+  },
+  {
+    "id": "bnss-106-107-503",
+    "title": "Bharatiya Nagarik Suraksha Sanhita, sections 106, 107, 503",
+    "issuer": "Parliament of India",
+    "date": "2023-12-25",
+    "status": "IN_FORCE",
+    "summaryUrl": null,
+    "url": null,
+    "file": null,
+    "fetched": false
+  },
+  {
+    "id": "rbi-draft-mule-2026",
+    "title": "RBI draft directions on suspected money-mule accounts (bank's own holds only)",
+    "issuer": "RBI",
+    "date": "2026-09-11",
+    "status": "DRAFT",
+    "summaryUrl": "https://taxguru.in/rbi/rbi-proposes-sop-suspected-money-mule-bank-accounts.html",
+    "url": null,
+    "file": null,
+    "fetched": false
+  }
+]
