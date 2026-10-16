@@ -44,6 +44,25 @@ public class TestFakes {
         return new InMemoryStepWriter();
     }
 
+    @Bean
+    public InMemoryFileStore fileStore() {
+        return new InMemoryFileStore();
+    }
+
+    @Bean
+    public InMemoryDocumentRepository documentRepository() {
+        return new InMemoryDocumentRepository();
+    }
+
+    public static class InMemoryDocumentRepository implements app.bonafide.documents.DocumentRepository {
+        public final Map<String, Map<String, Object>> documents = new ConcurrentHashMap<>();
+
+        @Override
+        public void save(String caseId, String docId, Map<String, Object> document) {
+            documents.put(caseId + "/" + docId, document);
+        }
+    }
+
     public static class InMemoryCaseRepository implements CaseRepository {
         public final Map<String, Case> cases = new ConcurrentHashMap<>();
 
@@ -65,10 +84,36 @@ public class TestFakes {
         }
 
         @Override
-        public void updateStageNextStep(String caseId, Stage stage, Map<String, Object> nextStep) {
-            cases.computeIfPresent(caseId, (id, c) -> new Case(c.id(), c.uid(), c.language(), stage, c.busy(),
-                    c.title(), c.createdAt(), c.updatedAt(), c.facts(), c.questions(), c.eligibility(), c.money(),
-                    c.evidence(), c.plan(), nextStep, c.referral(), c.history(), c.demo()));
+        public void update(String caseId, Map<String, Object> fields) {
+            cases.computeIfPresent(caseId, (id, c) -> new Case(
+                    c.id(), c.uid(), c.language(),
+                    fields.containsKey("stage") ? Stage.valueOf((String) fields.get("stage")) : c.stage(),
+                    fields.containsKey("busy") ? Boolean.TRUE.equals(fields.get("busy")) : c.busy(),
+                    fields.containsKey("title") ? (String) fields.get("title") : c.title(),
+                    c.createdAt(), c.updatedAt(),
+                    fields.containsKey("facts") ? asMap(fields.get("facts")) : c.facts(),
+                    c.questions(),
+                    c.eligibility(),
+                    fields.containsKey("money") ? asMap(fields.get("money")) : c.money(),
+                    c.evidence(), c.plan(),
+                    fields.containsKey("nextStep") ? asMap(fields.get("nextStep")) : c.nextStep(),
+                    c.referral(), c.history(), c.demo()));
+        }
+
+        @Override
+        public void appendHistory(String caseId, Map<String, Object> line) {
+            cases.computeIfPresent(caseId, (id, c) -> {
+                List<Map<String, Object>> history = new ArrayList<>(c.history());
+                history.add(line);
+                return new Case(c.id(), c.uid(), c.language(), c.stage(), c.busy(), c.title(),
+                        c.createdAt(), c.updatedAt(), c.facts(), c.questions(), c.eligibility(), c.money(),
+                        c.evidence(), c.plan(), c.nextStep(), c.referral(), history, c.demo());
+            });
+        }
+
+        @SuppressWarnings("unchecked")
+        private static Map<String, Object> asMap(Object value) {
+            return value == null ? Map.of() : (Map<String, Object>) value;
         }
 
         @Override
@@ -128,6 +173,29 @@ public class TestFakes {
 
         private static String key(String caseId, String eventId) {
             return caseId + "/" + eventId;
+        }
+    }
+
+    public static class InMemoryFileStore implements app.bonafide.documents.FileStore {
+        public final Map<String, byte[]> blobs = new ConcurrentHashMap<>();
+
+        @Override
+        public byte[] read(String path) {
+            byte[] content = blobs.get(path);
+            if (content == null) {
+                throw new IllegalArgumentException("File not found: " + path);
+            }
+            return content;
+        }
+
+        @Override
+        public void write(String path, byte[] content, String mime) {
+            blobs.put(path, content);
+        }
+
+        @Override
+        public void deletePrefix(String prefix) {
+            blobs.keySet().removeIf(k -> k.startsWith(prefix));
         }
     }
 

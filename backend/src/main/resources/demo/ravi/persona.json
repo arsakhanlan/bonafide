@@ -1,0 +1,11 @@
+{
+  "title": "Ravi — phone shop, Pune",
+  "note": "I run a small phone repair shop on FC Road, Pune. On 15 Oct a customer paid me Rs 2,000 by UPI for a screen repair. The next morning my whole account was frozen by a cyber police station in Patna, and my balance of Rs 1,80,000 is stuck. I have the bank message, my statement, the repair bill and the chat with the customer.",
+  "papers": [
+    { "file": "a1-sms.txt", "kind": "NOTICE", "mime": "text/plain" },
+    { "file": "a2-statement.txt", "kind": "STATEMENT", "mime": "application/pdf" },
+    { "file": "a3-bill.txt", "kind": "INVOICE", "mime": "text/plain" },
+    { "file": "a4-chat.txt", "kind": "CHAT", "mime": "text/plain" },
+    { "file": "a5-id.txt", "kind": "ID", "mime": "text/plain" }
+  ]
+}

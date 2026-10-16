@@ -12,7 +12,11 @@ public interface CaseRepository {
 
     void setBusy(String caseId, boolean busy);
 
-    void updateStageNextStep(String caseId, Stage stage, Map<String, Object> nextStep);
+    /** Updates the given top-level fields (stage, facts, money, nextStep, …) in one write. */
+    void update(String caseId, Map<String, Object> fields);
+
+    /** Adds one history line without overwriting the others. */
+    void appendHistory(String caseId, Map<String, Object> line);
 
     void deleteAll(String caseId);
 }

@@ -52,12 +52,21 @@ public class FirestoreCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void updateStageNextStep(String caseId, Stage stage, Map<String, Object> nextStep) {
+    public void update(String caseId, Map<String, Object> fields) {
+        try {
+            firestore.collection("cases").document(caseId).update(fields).get();
+        } catch (Exception e) {
+            throw new IllegalStateException("Updating case " + caseId + " failed", e);
+        }
+    }
+
+    @Override
+    public void appendHistory(String caseId, Map<String, Object> line) {
         try {
             firestore.collection("cases").document(caseId)
-                    .update("stage", stage.name(), "nextStep", nextStep).get();
+                    .update("history", com.google.cloud.firestore.FieldValue.arrayUnion(line)).get();
         } catch (Exception e) {
-            throw new IllegalStateException("Updating stage on " + caseId + " failed", e);
+            throw new IllegalStateException("Adding history on " + caseId + " failed", e);
         }
     }
 

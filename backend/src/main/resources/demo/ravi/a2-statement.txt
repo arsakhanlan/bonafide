@@ -1,0 +1,20 @@
+Demo Bank, FC Road Branch, Pune
+Account: xxxxxxxx4821
+Statement: 01 Jul 2026 to 16 Oct 2026
+
+Date        Details                Amount     UTR            Balance
+01 Jul 2026 CREDIT  Ramesh Traders 45,000     UTR 111111111101 45,000
+12 Jul 2026 CREDIT  Mobile World   62,500     UTR 111111111102 1,07,500
+20 Jul 2026 DEBIT   Rent          25,000     UTR 211111111103 82,500
+01 Aug 2026 CREDIT  Screen Supplies 48,200    UTR 111111111104 1,30,700
+08 Aug 2026 DEBIT   Supplier pay  35,000     UTR 211111111105 95,700
+18 Aug 2026 CREDIT  Repair income 22,800     UTR 111111111106 1,18,500
+28 Aug 2026 DEBIT   Rent          25,000     UTR 211111111107 93,500
+05 Sep 2026 CREDIT  Parts sale    31,400     UTR 111111111108 1,24,900
+12 Sep 2026 CREDIT  Repair income 17,900     UTR 111111111109 1,42,800
+21 Sep 2026 DEBIT   Supplier pay 28,000     UTR 211111111110 1,14,800
+01 Oct 2026 CREDIT  Repair income 39,200     UTR 111111111111 1,54,000
+08 Oct 2026 CREDIT  Screen repair  26,000     UTR 111111111112 1,80,000
+15 Oct 2026 CREDIT  UPI customer   2,000      UTR 601234567890 1,82,000
+15 Oct 2026 DEBIT   Cash withdrawal 2,000    UTR 211111111113 1,80,000
+16 Oct 2026 DEBIT   FREEZE whole account frozen by Cyber Police Station, Patna

@@ -1,0 +1,9 @@
+WhatsApp chat, 14-15 Oct 2026
+
+Customer: My phone screen is cracked. Can you replace it?
+Ravi: Yes, it will be Rs 2,000 and takes one day.
+Customer: Okay, do it. I will pay by UPI.
+Ravi: Please send the payment to my UPI ID.
+Customer: Sent Rs 2,000. UTR 601234567890.
+Ravi: Got it, thanks. The phone will be ready tomorrow evening.
+Customer: Great, thanks!
