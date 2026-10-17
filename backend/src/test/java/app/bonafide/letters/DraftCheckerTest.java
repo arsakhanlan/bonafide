@@ -124,6 +124,15 @@ class DraftCheckerTest {
     }
 
     @Test
+    void citationLinksAreFilteredToOfficialDomains() {
+        assertThat(LetterService.allowedLink("https://the420.in/wp-content/uploads/sop.pdf")).isEmpty();
+        assertThat(LetterService.allowedLink("https://mha.gov.in/sop")).isEqualTo("https://mha.gov.in/sop");
+        assertThat(LetterService.allowedLink("https://nalsa.gov.in/legal-aid/")).isEqualTo("https://nalsa.gov.in/legal-aid/");
+        assertThat(LetterService.allowedLink("https://cybercrime.gov.in")).isEqualTo("https://cybercrime.gov.in");
+        assertThat(LetterService.allowedLink(null)).isEmpty();
+    }
+
+    @Test
     void failingCitationsAreRemovedWithTheirMarkers() {
         Draft draft = new Draft(goodDraft().title(), goodDraft().to(), goodDraft().subject(),
                 goodDraft().body().replace(" [1]", " [1] [2]"),

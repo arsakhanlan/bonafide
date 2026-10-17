@@ -123,7 +123,16 @@ public class CaseBossTools {
                         : newStage == Stage.WAITING ? "WAIT"
                         : newStage == Stage.RESOLVED ? "NONE" : "UPLOAD_PAPERS",
                 "text", nextStepText == null ? "" : nextStepText);
-        cases.update(caseId, Map.of("stage", newStage.name(), "nextStep", nextStep));
+        Map<String, Object> fields = new java.util.HashMap<>();
+        fields.put("stage", newStage.name());
+        fields.put("nextStep", nextStep);
+        if (newStage == Stage.RESOLVED) {
+            // Arms the 90-day auto-delete (TTL on cases.expireAt).
+            fields.put("closedAt", com.google.cloud.Timestamp.now());
+            fields.put("expireAt", com.google.cloud.Timestamp.of(
+                    java.util.Date.from(clock.instant().plusSeconds(90L * 24 * 3600))));
+        }
+        cases.update(caseId, fields);
         return Map.of("stage", newStage.name());
     }
 

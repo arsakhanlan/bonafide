@@ -222,7 +222,7 @@ public class LetterService {
                     "n", citation.n(),
                     "ref", chunk == null ? "" : chunk.ref(),
                     "quote", citation.quote(),
-                    "sourceUrl", chunk == null || chunk.sourceUrl() == null ? "" : chunk.sourceUrl(),
+                    "sourceUrl", allowedLink(chunk == null ? null : chunk.sourceUrl()),
                     "status", chunk == null ? "IN_FORCE" : chunk.status()));
         }
         Map<String, Object> letter = new LinkedHashMap<>();
@@ -247,6 +247,28 @@ public class LetterService {
         letter.put("chunkIds", context.chunks().stream().map(RuleChunk::id).toList());
         letter.put("reminder", reminder);
         return letter;
+    }
+
+    /** Safety: citation links go only to *.gov.in, nalsa.gov.in and cybercrime.gov.in. */
+    static String allowedLink(String url) {
+        if (url == null || url.isBlank()) {
+            return "";
+        }
+        String host;
+        try {
+            host = new java.net.URI(url).getHost();
+        } catch (Exception e) {
+            return "";
+        }
+        if (host == null) {
+            return "";
+        }
+        String lower = host.toLowerCase();
+        if (lower.endsWith(".gov.in") || lower.equals("gov.in")
+                || lower.equals("nalsa.gov.in") || lower.equals("cybercrime.gov.in")) {
+            return url;
+        }
+        return "";
     }
 
     private static String asText(Object value) {
