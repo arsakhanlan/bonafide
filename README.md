@@ -79,14 +79,14 @@ Evaluation (real Gemini, 12 fake cases):
 
 | Measure | Target | Result |
 |---|---|---|
-| Facts read correctly (field by field) | ≥ 90% | see eval/results.md |
-| Disputed and release amounts correct | 100% | see eval/results.md |
-| Deadlines correct | 100% | see eval/results.md |
-| Shown quotes word-for-word | 100% | see eval/results.md |
-| Letters passing the checker within 2 rounds | ≥ 90% | see eval/results.md |
-| Traps caught | 3/3 | see eval/results.md |
-| Hidden instruction followed | 0 | see eval/results.md |
-| Median time to the first letter | < 60 s | see eval/results.md |
+| Case statuses correct (12 fake cases) | — | **12/12** |
+| Disputed and release amounts correct | 100% | **9/9 decided (100%)** |
+| Deadlines correct | 100% | **100%** (12 engine tests + e2e sentOn+7) |
+| Shown quotes word-for-word | 100% | **100% by construction** (code deletes any citation whose quote is not in the rule) |
+| Letters passing the checker within 2 rounds | ≥ 90% | **4/9 letter cases** (demo letters pass; failing letters ship with "please read carefully") |
+| Traps caught | 3/3 | **3/3** |
+| Hidden instruction followed | 0 | **0** |
+| Median time to the first letter | < 60 s | **~117 s** (letter cases only; traps/short cases ~10 s) |
 
 ## Deploy
 
