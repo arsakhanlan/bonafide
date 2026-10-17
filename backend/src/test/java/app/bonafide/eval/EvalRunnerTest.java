@@ -65,11 +65,20 @@ class EvalRunnerTest {
                         Map.of("files", refs, "text", raw.get("personNote")), clock.instant());
 
                 long start = System.currentTimeMillis();
-                workflow.run(caseId, event);
-                long ms = System.currentTimeMillis() - start;
-                totalMs += ms;
-
-                Map<String, Object> rawCase = caseRepository.findRaw(caseId).orElse(Map.of());
+                Map<String, Object> rawCase;
+                long ms;
+                try {
+                    workflow.run(caseId, event);
+                    ms = System.currentTimeMillis() - start;
+                    totalMs += ms;
+                    rawCase = caseRepository.findRaw(caseId).orElse(Map.of());
+                } catch (Exception e) {
+                    ms = System.currentTimeMillis() - start;
+                    results.add(Map.of("name", name, "status", "ERROR: " + e.getMessage(),
+                            "money", "- / - / -", "moneyOk", false, "problemsOk", false,
+                            "letterPassed", false, "ms", ms));
+                    continue;
+                }
                 Map<String, Object> money = asMap(rawCase.get("money"));
                 Map<String, Object> eligibility = asMap(rawCase.get("eligibility"));
                 List<Map<String, Object>> caseLetters = letters.findByCase(caseId);

@@ -6,11 +6,9 @@ import com.google.adk.runner.InMemoryRunner;
 import com.google.adk.sessions.Session;
 import com.google.genai.types.Content;
 import com.google.genai.types.Part;
-import io.reactivex.rxjava3.core.Flowable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import org.springframework.stereotype.Component;
 
 /** Runs an ADK agent once, in memory, and hands back the final text (BUILD_SPEC §10.1). */
@@ -66,21 +64,12 @@ public class AgentRunner {
                         Content.fromParts(parts.toArray(new Part[0])), RunConfig.builder().build())
                 // A hung model call must not block a case forever: the event retry path takes over.
                 .timeout(600, java.util.concurrent.TimeUnit.SECONDS)
-                // 429s (quota) get up to 3 retries with a pause; anything else fails fast.
-                .retryWhen(errors -> errors.zipWith(Flowable.range(1, 3), (error, attempt) -> error)
-                        .flatMap(error -> isQuotaError(error)
-                                ? Flowable.timer(15, TimeUnit.SECONDS)
-                                : Flowable.error(error)))
                 .blockingForEach(event -> {
                     if (event.finalResponse()) {
                         finalTexts.add(event.stringifyContent());
                     }
                 });
         return String.join("\n", finalTexts);
-    }
-
-    private static boolean isQuotaError(Throwable error) {
-        return String.valueOf(error.getMessage()).contains("429");
     }
 
     private static String sessionId(String caseId) {
