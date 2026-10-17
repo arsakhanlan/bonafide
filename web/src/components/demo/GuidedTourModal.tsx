@@ -110,32 +110,30 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-xl p-0 overflow-hidden rounded-2xl border-slate-200 dark:border-slate-800 shadow-2xl">
-        {/* Subtle Indian Sovereign Tricolor Top Ribbon Accent */}
-        <div className="h-1 w-full bg-sovereign-tricolor opacity-90" />
+      <DialogContent hideDefaultClose className="w-[calc(100%-1rem)] sm:w-full max-w-xl p-0 overflow-hidden rounded-2xl border-border bg-card shadow-2xl">
+        {/* Subtle Sovereign Accent Top Rim */}
+        <div className="h-1 w-full bg-emerald-500" />
 
-        {/* Step Progress Top Bar */}
-        <div className="bg-gradient-to-br from-[#07170f] via-[#05140c] to-[#040c07] text-white p-4 sm:p-6 pb-4 sm:pb-5 relative overflow-hidden">
-          <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/20 blur-2xl" />
-          <div className="pointer-events-none absolute -left-10 -bottom-10 h-32 w-32 rounded-full bg-amber-500/10 blur-2xl" />
+        {/* Step Progress Top Bar with unified cohesive dark emerald palette */}
+        <div className="bg-gradient-to-br from-emerald-950/90 via-card to-card text-foreground p-4 sm:p-6 pb-4 sm:pb-5 border-b border-border/80 relative overflow-hidden">
+          <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/10 blur-2xl" />
 
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-white/10 text-white shrink-0 shadow-sm border border-white/10">
-                <StepIcon className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-emerald-400" />
+              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0 shadow-sm border border-emerald-500/20">
+                <StepIcon className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <Badge variant="outline" className="text-[10px] font-mono uppercase tracking-wider py-0 h-4 border-emerald-500/40 bg-emerald-950/40 text-emerald-200">
+                  <Badge variant="outline" className="text-[10px] font-mono uppercase tracking-wider py-0 h-4.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
                     {step.badge}
                   </Badge>
-                  {/* Subtle India Sovereign Emblem Pill */}
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0 rounded text-[9px] font-mono font-semibold bg-white/10 text-stone-300 border border-white/10">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    <span>India BNSS §106</span>
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0 rounded text-[9px] font-mono font-semibold bg-secondary text-muted-foreground border border-border/60">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <span>BNSS §106</span>
                   </span>
                 </div>
-                <div className="text-[11px] sm:text-xs text-stone-400 font-mono mt-0.5">
+                <div className="text-[11px] sm:text-xs text-muted-foreground font-mono mt-0.5">
                   Step {currentStep + 1} of {tourSteps.length}
                 </div>
               </div>
@@ -143,14 +141,15 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
 
             <button
               onClick={onClose}
-              className="rounded-lg p-1.5 text-stone-400 hover:text-white hover:bg-white/10 transition-colors"
+              className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              aria-label="Close modal"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
 
           <div key={`headline-${currentStep}`} className={slideDirection === 'forward' ? 'tour-slide-forward' : 'tour-slide-backward'}>
-            <h3 className="text-base sm:text-xl font-bold text-white tracking-tight leading-snug">
+            <h3 className="text-base sm:text-xl font-bold text-foreground tracking-tight leading-snug">
               {step.headline}
             </h3>
           </div>
@@ -169,8 +168,8 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
                   i === currentStep
                     ? 'w-8 bg-emerald-500 shadow-sm shadow-emerald-500/50'
                     : i < currentStep
-                    ? 'w-3 bg-emerald-700 hover:bg-emerald-600'
-                    : 'w-3 bg-stone-700 hover:bg-stone-600'
+                    ? 'w-3 bg-emerald-700/60 dark:bg-emerald-600/60 hover:bg-emerald-600'
+                    : 'w-3 bg-muted hover:bg-muted-foreground/30'
                 }`}
                 aria-label={`Go to step ${i + 1}`}
               />
@@ -181,7 +180,7 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
         {/* Story Body with animated transition */}
         <div
           key={`content-${currentStep}`}
-          className={`p-4 sm:p-6 space-y-3 sm:space-y-4 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed ${
+          className={`p-4 sm:p-6 space-y-3 sm:space-y-4 text-xs sm:text-sm text-foreground/80 leading-relaxed ${
             slideDirection === 'forward' ? 'tour-slide-forward' : 'tour-slide-backward'
           }`}
         >
@@ -191,33 +190,33 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 sm:pt-2">
               <button
                 onClick={() => { selectPersona('RAVI'); onClose(); }}
-                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-400 text-left text-xs bg-slate-50 dark:bg-slate-900/60 transition-colors card-hover-micro active:scale-[0.99]"
+                className="p-2.5 rounded-xl border border-border hover:border-emerald-500/50 text-left text-xs bg-secondary/40 hover:bg-secondary transition-colors card-hover-micro active:scale-[0.99]"
               >
-                <span className="font-bold text-slate-900 dark:text-slate-100 block">Ravi Sharma</span>
+                <span className="font-bold text-foreground block">Ravi Sharma</span>
                 <span className="text-[11px] text-muted-foreground">Shopkeeper (Benchmark Happy Path)</span>
               </button>
 
               <button
                 onClick={() => { selectPersona('MEERA'); onClose(); }}
-                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-400 text-left text-xs bg-slate-50 dark:bg-slate-900/60 transition-colors card-hover-micro active:scale-[0.99]"
+                className="p-2.5 rounded-xl border border-border hover:border-emerald-500/50 text-left text-xs bg-secondary/40 hover:bg-secondary transition-colors card-hover-micro active:scale-[0.99]"
               >
-                <span className="font-bold text-slate-900 dark:text-slate-100 block">Meera Sen</span>
+                <span className="font-bold text-foreground block">Meera Sen</span>
                 <span className="text-[11px] text-muted-foreground">Freelancer (Interactive Q&A)</span>
               </button>
 
               <button
                 onClick={() => { selectPersona('ARJUN'); onClose(); }}
-                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-400 text-left text-xs bg-slate-50 dark:bg-slate-900/60 transition-colors card-hover-micro active:scale-[0.99]"
+                className="p-2.5 rounded-xl border border-border hover:border-emerald-500/50 text-left text-xs bg-secondary/40 hover:bg-secondary transition-colors card-hover-micro active:scale-[0.99]"
               >
-                <span className="font-bold text-slate-900 dark:text-slate-100 block">Arjun Verma</span>
+                <span className="font-bold text-foreground block">Arjun Verma</span>
                 <span className="text-[11px] text-muted-foreground">Crypto P2P Seller (Escrow Logs)</span>
               </button>
 
               <button
                 onClick={() => { selectPersona('SUNIL'); onClose(); }}
-                className="p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:border-slate-400 text-left text-xs bg-slate-50 dark:bg-slate-900/60 transition-colors card-hover-micro active:scale-[0.99]"
+                className="p-2.5 rounded-xl border border-border hover:border-emerald-500/50 text-left text-xs bg-secondary/40 hover:bg-secondary transition-colors card-hover-micro active:scale-[0.99]"
               >
-                <span className="font-bold text-slate-900 dark:text-slate-100 block">Sunil Kumar</span>
+                <span className="font-bold text-foreground block">Sunil Kumar</span>
                 <span className="text-[11px] text-muted-foreground">Account Lending (Legal Aid Referral)</span>
               </button>
             </div>
@@ -225,7 +224,7 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
         </div>
 
         {/* Footer Navigation */}
-        <DialogFooter className="p-3 sm:p-4 px-4 sm:px-6 bg-slate-50/70 dark:bg-slate-900/40 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+        <DialogFooter className="p-3 sm:p-4 px-4 sm:px-6 bg-secondary/30 border-t border-border/80 flex items-center justify-between gap-2">
           <Button
             size="sm"
             variant="ghost"
@@ -240,7 +239,7 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
           <Button
             size="sm"
             onClick={handleNext}
-            className="text-xs font-semibold gap-1.5 px-4 bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 shadow-sm group active:scale-[0.98] transition-all"
+            className="text-xs font-semibold gap-1.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm group active:scale-[0.98] transition-all"
           >
             <span>{step.actionText}</span>
             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />

@@ -276,7 +276,7 @@ export function StatutoryDeadlinesCard() {
           </button>
 
           {showLegalDetails && (
-            <div className="p-3.5 bg-card text-xs text-muted-foreground space-y-2 border-t border-border font-legal">
+            <div className="p-3.5 bg-card text-xs text-muted-foreground space-y-2 border-t border-border font-legal accordion-animate-open">
               <div className="space-y-0.5">
                 <strong className="text-foreground font-sans">1. MHA Cyber SOP Cl. 10.1(a) (Mandatory 7-Day Window):</strong>
                 <p className="text-muted-foreground leading-relaxed pl-2.5 border-l-2 border-border/80">

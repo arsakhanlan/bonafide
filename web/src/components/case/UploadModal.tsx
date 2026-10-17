@@ -13,28 +13,48 @@ import { Badge } from '@/components/ui/badge';
 import { Upload, FileText, Shield, Check, Plus, Trash2 } from 'lucide-react';
 import { DocumentKind } from '@/types/document';
 
+interface UploadItem {
+  id: string;
+  name: string;
+  kind: DocumentKind;
+}
+
 export function UploadModal() {
   const { activeModal, setModal, uploadPapers, isProcessing } = useCase();
 
-  const [filesToUpload, setFilesToUpload] = useState<Array<{ name: string; kind: DocumentKind }>>([
-    { name: 'Bank_Lien_Notice.pdf', kind: 'NOTICE' },
-    { name: 'Account_Statement_Recent.pdf', kind: 'STATEMENT' },
+  const [filesToUpload, setFilesToUpload] = useState<UploadItem[]>([
+    { id: 'init-1', name: 'Bank_Lien_Notice.pdf', kind: 'NOTICE' },
+    { id: 'init-2', name: 'Account_Statement_Recent.pdf', kind: 'STATEMENT' },
   ]);
+  const [removingIds, setRemovingIds] = useState<Record<string, boolean>>({});
 
   if (activeModal !== 'UPLOAD_PAPERS') return null;
 
   const handleAddFile = (kind: DocumentKind, defaultName: string) => {
-    setFilesToUpload([...filesToUpload, { name: defaultName, kind }]);
+    const newItem: UploadItem = {
+      id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+      name: defaultName,
+      kind,
+    };
+    setFilesToUpload(prev => [newItem, ...prev]);
   };
 
-  const handleRemove = (index: number) => {
-    setFilesToUpload(filesToUpload.filter((_, i) => i !== index));
+  const handleRemove = (id: string) => {
+    setRemovingIds(prev => ({ ...prev, [id]: true }));
+    setTimeout(() => {
+      setFilesToUpload(prev => prev.filter(f => f.id !== id));
+      setRemovingIds(prev => {
+        const copy = { ...prev };
+        delete copy[id];
+        return copy;
+      });
+    }, 240);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (filesToUpload.length === 0) return;
-    await uploadPapers(filesToUpload);
+    await uploadPapers(filesToUpload.map(f => ({ name: f.name, kind: f.kind })));
   };
 
   return (
@@ -65,7 +85,7 @@ export function UploadModal() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleAddFile('NOTICE', 'Cyber_Notice_SMS.txt')}
-                  className="h-8 text-xs gap-1 active:scale-[0.98]"
+                  className="h-8 text-xs gap-1 active:scale-[0.98] transition-all hover:border-emerald-500/50"
                 >
                   <Plus className="h-3 w-3" /> + Notice / SMS
                 </Button>
@@ -74,7 +94,7 @@ export function UploadModal() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleAddFile('STATEMENT', 'Bank_Statement_Oct.pdf')}
-                  className="h-8 text-xs gap-1 active:scale-[0.98]"
+                  className="h-8 text-xs gap-1 active:scale-[0.98] transition-all hover:border-emerald-500/50"
                 >
                   <Plus className="h-3 w-3" /> + Bank Statement
                 </Button>
@@ -83,7 +103,7 @@ export function UploadModal() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleAddFile('INVOICE', 'Sale_Tax_Invoice.pdf')}
-                  className="h-8 text-xs gap-1 active:scale-[0.98]"
+                  className="h-8 text-xs gap-1 active:scale-[0.98] transition-all hover:border-emerald-500/50"
                 >
                   <Plus className="h-3 w-3" /> + Bill / Invoice
                 </Button>
@@ -92,40 +112,53 @@ export function UploadModal() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleAddFile('CHAT', 'Client_Chat_Receipt.txt')}
-                  className="h-8 text-xs gap-1 active:scale-[0.98]"
+                  className="h-8 text-xs gap-1 active:scale-[0.98] transition-all hover:border-emerald-500/50"
                 >
                   <Plus className="h-3 w-3" /> + Customer Chat
                 </Button>
               </div>
             </div>
 
-            {/* List of files selected */}
-            <div className="space-y-2 max-h-48 overflow-y-auto">
-              {filesToUpload.map((f, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 text-xs"
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <FileText className="h-4 w-4 text-slate-500 shrink-0" />
-                    <span className="font-medium text-slate-800 dark:text-slate-200 truncate">
-                      {f.name}
-                    </span>
-                    <Badge variant="secondary" className="text-[10px] h-4 py-0 shrink-0">
-                      {f.kind}
-                    </Badge>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleRemove(i)}
-                    className="h-7 w-7 text-rose-500 hover:text-rose-700 shrink-0"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+            {/* List of files selected with add and delete animations */}
+            <div className="space-y-2 max-h-48 overflow-y-auto pr-0.5">
+              {filesToUpload.length === 0 ? (
+                <div className="text-center py-5 text-muted-foreground text-xs border border-dashed rounded-xl border-border">
+                  No documents selected yet. Click any preset above to add.
                 </div>
-              ))}
+              ) : (
+                filesToUpload.map(f => {
+                  const isRemoving = removingIds[f.id];
+                  return (
+                    <div
+                      key={f.id}
+                      className={`flex items-center justify-between p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 text-xs transition-all ${
+                        isRemoving ? 'animate-file-remove' : 'animate-file-add'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                        <span className="font-medium text-slate-800 dark:text-slate-200 truncate">
+                          {f.name}
+                        </span>
+                        <Badge variant="secondary" className="text-[10px] h-4 py-0 shrink-0">
+                          {f.kind}
+                        </Badge>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        disabled={isRemoving}
+                        onClick={() => handleRemove(f.id)}
+                        className="h-7 w-7 text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 shrink-0 transition-colors"
+                        aria-label={`Remove ${f.name}`}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  );
+                })
+              )}
             </div>
 
             {/* Privacy and security guarantee */}

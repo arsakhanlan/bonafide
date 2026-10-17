@@ -296,7 +296,7 @@ export function SwaggerModal({ isOpen, onClose }: SwaggerModalProps) {
                 </p>
 
                 {isExpanded && (
-                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3 animate-in fade-in-0 duration-200">
+                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3 accordion-animate-open">
                     {ep.body && (
                       <div className="space-y-1">
                         <span className="text-[10px] uppercase font-mono text-muted-foreground font-semibold">
