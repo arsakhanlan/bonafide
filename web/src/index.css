@@ -325,11 +325,11 @@
 @keyframes popupZoomIn {
   0% {
     opacity: 0;
-    transform: translate(-50%, -46%) scale(0.94);
+    transform: translate(-50%, -44%) scale(0.92);
   }
-  60% {
+  65% {
     opacity: 1;
-    transform: translate(-50%, -50.5%) scale(1.008);
+    transform: translate(-50%, -50.5%) scale(1.012);
   }
   100% {
     opacity: 1;
@@ -344,16 +344,49 @@
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -46%) scale(0.94);
+    transform: translate(-50%, -46%) scale(0.92);
   }
 }
 
-.animate-popup-in {
-  animation: popupZoomIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+@keyframes overlayFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
+@keyframes overlayFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Explicit Radix Dialog Animation Direct Selectors */
+[data-radix-dialog-overlay][data-state="open"] {
+  animation: overlayFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+[data-radix-dialog-overlay][data-state="closed"] {
+  animation: overlayFadeOut 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+[data-radix-dialog-content][data-state="open"],
+.animate-popup-in {
+  animation: popupZoomIn 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+[data-radix-dialog-content][data-state="closed"],
 .animate-popup-out {
-  animation: popupZoomOut 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: popupZoomOut 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  transform-origin: center center;
+  will-change: transform, opacity;
 }
 
 /* Accordion & Dropdown Smooth Expand & Collapse Transitions */
