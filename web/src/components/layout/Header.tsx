@@ -78,6 +78,17 @@ export function Header() {
             )}
           </div>
 
+          {/* Swagger / API Docs button */}
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setModal('SWAGGER')}
+            className="gap-1.5 font-medium text-xs text-slate-700 dark:text-slate-300"
+          >
+            <ExternalLink className="h-3.5 w-3.5 text-indigo-500" />
+            <span className="hidden sm:inline">Swagger API</span>
+          </Button>
+
           {/* New Case Button */}
           <Button
             size="sm"
