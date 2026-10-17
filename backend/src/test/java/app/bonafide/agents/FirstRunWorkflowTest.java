@@ -54,7 +54,14 @@ class FirstRunWorkflowTest {
     private final Clock clock = Clock.fixed(Instant.parse("2026-10-16T12:00:00Z"), ZoneId.of("Asia/Kolkata"));
 
     /** The real AgentRunner would call Gemini; the test substitutes canned agent answers. */
-    private final AgentRunner runner = new AgentRunner() {
+    private class FakeRunner extends AgentRunner {
+        private volatile SorterOutput sorterAnswer = new SorterOutput(
+                "GENUINE", List.of("The payment matches the bill and the chat."), List.of(), "SHOP_UPI", false);
+
+        void set(SorterOutput answer) {
+            this.sorterAnswer = answer;
+        }
+
         @Override
         @SuppressWarnings("unchecked")
         public <T> T runJson(
@@ -63,8 +70,7 @@ class FirstRunWorkflowTest {
                 return (T) raviOutput();
             }
             if (type == SorterOutput.class) {
-                return (T) new SorterOutput(
-                        "GENUINE", List.of("The payment matches the bill and the chat."), List.of(), "SHOP_UPI", false);
+                return (T) sorterAnswer;
             }
             throw new IllegalArgumentException("Unexpected type in test: " + type);
         }
@@ -79,7 +85,9 @@ class FirstRunWorkflowTest {
                 BaseAgent agent, String caseId, Map<String, Object> initialState, List<Part> parts) {
             return new RunWithState("", Map.of("draft", draftJson()));
         }
-    };
+    }
+
+    private final FakeRunner runner = new FakeRunner();
 
     private FirstRunWorkflow workflow;
 
@@ -89,7 +97,8 @@ class FirstRunWorkflowTest {
         BonafideProperties properties = new BonafideProperties(
                 "asia-southeast1", "", "gemini-3.8-flash", "gemini-3.5-flash-lite",
                 "gemini-embedding-2", "", 0.6, true, "", "", "../data/rules");
-        RuleFinderTool ruleFinderTool = new RuleFinderTool(new InMemoryEmbedder(), rules);
+        RuleFinderTool ruleFinderTool = new RuleFinderTool(new InMemoryEmbedder(), rules,
+                new app.bonafide.support.TestFakes.InMemoryChunkRanker());
         LetterCatalog catalog = new LetterCatalog();
         DraftChecker checker = new DraftChecker(new FakeGrounding(), properties, catalog);
         AgentFactory factory = new AgentFactory(new Prompts(), properties, ruleFinderTool, checker);
@@ -122,6 +131,50 @@ class FirstRunWorkflowTest {
         assertThat(documents.documents).isNotEmpty();
         assertThat(steps.steps).extracting(s -> s.get("agent"))
                 .contains("READER", "SORTER", "MONEY");
+    }
+
+    @Test
+    void lentAccountsGoToDlsaWithNoLetters() {
+        runner.set(new SorterOutput("LENT_ACCOUNT", List.of("reason"), List.of(), "OTHER", false));
+        files.write("uploads/u1/c1/a1.txt", sms().getBytes(StandardCharsets.UTF_8), "text/plain");
+        Event event = Event.newPending("c1", EventType.UPLOAD,
+                Map.of("files", List.of(Map.of("path", "uploads/u1/c1/a1.txt", "kind", "NOTICE", "mime", "text/plain"))),
+                clock.instant());
+        workflow.run("c1", event);
+        Case after = cases.cases.get("c1");
+        assertThat(after.stage()).isEqualTo(Stage.REFERRED);
+        assertThat(after.referral()).containsEntry("to", "DLSA");
+        assertThat(letters.letters).isEmpty();
+    }
+
+    @Test
+    void victimsGoToTheHelplineWithNoLetters() {
+        runner.set(new SorterOutput("VICTIM", List.of("reason"), List.of(), "OTHER", false));
+        files.write("uploads/u1/c1/a1.txt", sms().getBytes(StandardCharsets.UTF_8), "text/plain");
+        Event event = Event.newPending("c1", EventType.UPLOAD,
+                Map.of("files", List.of(Map.of("path", "uploads/u1/c1/a1.txt", "kind", "NOTICE", "mime", "text/plain"))),
+                clock.instant());
+        workflow.run("c1", event);
+        Case after = cases.cases.get("c1");
+        assertThat(after.stage()).isEqualTo(Stage.REFERRED);
+        assertThat(after.referral()).containsEntry("to", "CYBER_HELPLINE");
+        assertThat(letters.letters).isEmpty();
+    }
+
+    @Test
+    void unclearCasesAskQuestionsOnce() {
+        runner.set(new SorterOutput("UNCLEAR", List.of("Cannot tell yet."),
+                List.of(new SorterOutput.Question("q1", "Was this for goods or work?", List.of("Yes", "No"))),
+                "OTHER", false));
+        files.write("uploads/u1/c1/a1.txt", sms().getBytes(StandardCharsets.UTF_8), "text/plain");
+        Event event = Event.newPending("c1", EventType.UPLOAD,
+                Map.of("files", List.of(Map.of("path", "uploads/u1/c1/a1.txt", "kind", "NOTICE", "mime", "text/plain"))),
+                clock.instant());
+        workflow.run("c1", event);
+        Case after = cases.cases.get("c1");
+        assertThat(after.stage()).isEqualTo(Stage.NEEDS_ANSWERS);
+        assertThat(after.questions()).hasSize(1);
+        assertThat(after.answersAsked()).isTrue();
     }
 
     private static String sms() {

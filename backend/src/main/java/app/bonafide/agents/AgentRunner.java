@@ -62,6 +62,8 @@ public class AgentRunner {
         List<String> finalTexts = new ArrayList<>();
         runner.runAsync(session.userId(), session.id(),
                         Content.fromParts(parts.toArray(new Part[0])), RunConfig.builder().build())
+                // A hung model call must not block a case forever: the event retry path takes over.
+                .timeout(600, java.util.concurrent.TimeUnit.SECONDS)
                 .blockingForEach(event -> {
                     if (event.finalResponse()) {
                         finalTexts.add(event.stringifyContent());

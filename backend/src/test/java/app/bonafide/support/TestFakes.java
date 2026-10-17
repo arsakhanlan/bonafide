@@ -203,6 +203,18 @@ public class TestFakes {
         }
     }
 
+    @Bean
+    public InMemoryChunkRanker chunkRanker() {
+        return new InMemoryChunkRanker();
+    }
+
+    public static class InMemoryChunkRanker implements app.bonafide.rules.ChunkRanker {
+        @Override
+        public List<app.bonafide.rules.RuleChunk> rank(String query, List<app.bonafide.rules.RuleChunk> candidates, int keep) {
+            return candidates.stream().limit(keep).toList();
+        }
+    }
+
     public static class InMemoryEmbedder implements app.bonafide.rules.Embedder {
         @Override
         public List<Float> embed(String text) {

@@ -23,6 +23,14 @@ public final class Json {
         }
     }
 
+    public static <T> T parse(String text, tools.jackson.core.type.TypeReference<T> type) {
+        try {
+            return MAPPER.readValue(stripFences(text), type);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Not valid JSON for " + type, e);
+        }
+    }
+
     public static String write(Object value) {
         try {
             return MAPPER.writeValueAsString(value);

@@ -1,5 +1,6 @@
 package app.bonafide.agents;
 
+import app.bonafide.rules.ChunkRanker;
 import app.bonafide.rules.Embedder;
 import app.bonafide.rules.RuleChunk;
 import app.bonafide.rules.RuleRepository;
@@ -20,10 +21,12 @@ public class RuleFinderTool {
 
     private final Embedder embedder;
     private final RuleRepository rules;
+    private final ChunkRanker ranker;
 
-    public RuleFinderTool(Embedder embedder, RuleRepository rules) {
+    public RuleFinderTool(Embedder embedder, RuleRepository rules, ChunkRanker ranker) {
         this.embedder = embedder;
         this.rules = rules;
+        this.ranker = ranker;
     }
 
     public Map<String, Object> searchRules(
@@ -32,7 +35,8 @@ public class RuleFinderTool {
         List<Map<String, String>> results = new ArrayList<>();
         try {
             List<RuleChunk> nearest = rules.findNearest(toArray(embedder.embed(query)), 20);
-            for (RuleChunk chunk : nearest.stream().limit(6).toList()) {
+            List<RuleChunk> top = ranker.rank(query, nearest, 6);
+            for (RuleChunk chunk : top) {
                 Map<String, String> entry = new HashMap<>();
                 entry.put("chunkId", chunk.id());
                 entry.put("ref", chunk.ref());
