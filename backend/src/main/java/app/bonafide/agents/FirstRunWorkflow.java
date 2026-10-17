@@ -14,6 +14,7 @@ import app.bonafide.letters.LetterKind;
 import app.bonafide.letters.LetterRepository;
 import app.bonafide.letters.LetterService;
 import app.bonafide.money.DisputedPayment;
+import app.bonafide.rules.RuleChunk;
 import app.bonafide.money.FreezeType;
 import app.bonafide.money.IndianRupees;
 import app.bonafide.money.MoneyInput;
@@ -38,6 +39,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class FirstRunWorkflow {
+
+    private static final java.util.concurrent.ExecutorService PARALLEL =
+            java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor();
 
     private final PaperService papers;
     private final AgentFactory factory;
@@ -190,6 +194,9 @@ public class FirstRunWorkflow {
     private void continueToMoney(
             String caseId, Case caseNow, SorterOutput sorter, Map<String, Object> eligibility, Decision decision) {
         LocalDate today = todayOf(caseId);
+        // The RuleFinder (an LLM call) runs in parallel with the money tracer (plain code).
+        java.util.concurrent.Future<List<RuleChunk>> chunks = PARALLEL.submit(
+                () -> letters.findChunksFor(caseId, LetterKind.L1_BRANCH, caseNow.facts()));
         TraceWriter.Handle maths = trace.start(caseId, "MONEY", "Working out the money…");
         Map<String, Object> raw = cases.findRaw(caseId).orElse(Map.of());
         MoneyResult money = tracer.trace(moneyInputOf(raw, today));
@@ -200,9 +207,20 @@ public class FirstRunWorkflow {
         List<Map<String, Object>> evidence = evidenceOf(documents.findByCase(caseId), sorter);
         // A re-run (retry or another UPLOAD) must not duplicate the first letter.
         String existing = firstNonReminderL1(caseId);
-        String letterId = existing != null ? existing : letters.draft(caseId, LetterKind.L1_BRANCH,
-                new LetterService.CaseData(caseNow.facts(), money.disputed(), money.frozen(), money.release(),
-                        evidence, caseNow.personNote(), false)).letterId();
+        String letterId;
+        if (existing != null) {
+            letterId = existing;
+        } else {
+            List<RuleChunk> found;
+            try {
+                found = chunks.get();
+            } catch (Exception e) {
+                throw new IllegalStateException("Rule search failed", e);
+            }
+            letterId = letters.draftWithChunks(caseId, LetterKind.L1_BRANCH,
+                    new LetterService.CaseData(caseNow.facts(), money.disputed(), money.frozen(), money.release(),
+                            evidence, caseNow.personNote(), false), found).letterId();
+        }
 
         List<Map<String, Object>> plan = new ArrayList<>();
         plan.add(Map.of("text", "Hand letter 1 to your branch", "who", "YOU", "dueOn", "", "status", "NOW"));

@@ -63,8 +63,19 @@ public class LetterService {
     }
 
     public DraftResult draft(String caseId, LetterKind kind, CaseData data) {
+        List<RuleChunk> chunks = findChunksFor(caseId, kind, data.facts());
+        return draftWithChunks(caseId, kind, data, chunks);
+    }
+
+    /** The RuleFinder part alone, so the workflow can run it in parallel with the money tracer. */
+    public List<RuleChunk> findChunksFor(String caseId, LetterKind kind, Map<String, Object> facts) {
         LetterSpec spec = catalog.get(kind);
-        List<RuleChunk> chunks = findChunks(caseId, spec, data);
+        return findChunks(caseId, spec, new CaseData(facts, null, null, null, List.of(), null, false));
+    }
+
+    /** The loop and save, with the chunks already found. */
+    public DraftResult draftWithChunks(String caseId, LetterKind kind, CaseData data, List<RuleChunk> chunks) {
+        LetterSpec spec = catalog.get(kind);
         CheckContext context = new CheckContext(
                 spec, chunks, data.disputed(), data.frozen(), data.release(), 0.6,
                 data.facts(), data.evidence(), data.personNote());
