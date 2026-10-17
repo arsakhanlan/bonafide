@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash(./mvnw:*)",
+      "Bash(mvn:*)",
+      "Bash(java:*)",
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(gcloud:*)",
+      "Bash(firebase:*)",
+      "Bash(curl:*)",
+      "Bash(jq:*)",
+      "Bash(docker:*)",
+      "Bash(sdk:*)",
+      "Bash(npm i -g firebase-tools)",
+      "Bash(bash scripts/:*)",
+      "Bash(./scripts/:*)",
+      "Bash(../scripts/:*)",
+      "Bash(chmod:*)",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(unzip:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "deny": [
+      "Bash(gcloud projects delete:*)",
+      "Bash(git push:*)",
+      "Edit(web/**)",
+      "Write(web/**)"
+    ]
+  }
+}

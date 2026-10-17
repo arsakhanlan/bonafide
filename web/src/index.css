@@ -1,0 +1,478 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 45 20% 98%;
+    --foreground: 155 35% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 155 35% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 155 35% 10%;
+
+    --primary: 158 84% 30%;
+    --primary-foreground: 45 20% 98%;
+
+    --secondary: 150 15% 94%;
+    --secondary-foreground: 155 35% 12%;
+
+    --muted: 150 15% 94%;
+    --muted-foreground: 150 12% 44%;
+
+    --accent: 158 80% 95%;
+    --accent-foreground: 158 84% 28%;
+
+    --destructive: 347 77% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 150 14% 88%;
+    --input: 150 14% 88%;
+    --ring: 158 84% 30%;
+
+    --radius: 1.125rem;
+  }
+
+  .dark {
+    --background: 155 38% 5%;
+    --foreground: 145 20% 96%;
+
+    --card: 155 28% 9%;
+    --card-foreground: 145 20% 96%;
+
+    --popover: 155 28% 9%;
+    --popover-foreground: 145 20% 96%;
+
+    --primary: 156 75% 48%;
+    --primary-foreground: 155 45% 6%;
+
+    --secondary: 155 20% 15%;
+    --secondary-foreground: 145 20% 96%;
+
+    --muted: 155 20% 15%;
+    --muted-foreground: 150 15% 65%;
+
+    --accent: 155 40% 14%;
+    --accent-foreground: 156 75% 55%;
+
+    --destructive: 347 77% 60%;
+    --destructive-foreground: 145 20% 96%;
+
+    --border: 155 20% 16%;
+    --input: 155 20% 16%;
+    --ring: 156 75% 48%;
+  }
+
+  * {
+    @apply border-border;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior-y: none;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.06) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.05) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.04) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  .dark body {
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.14) 0px, transparent 55%),
+      radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.07) 0px, transparent 50%),
+      radial-gradient(at 50% 50%, rgba(5, 150, 105, 0.05) 0px, transparent 65%),
+      radial-gradient(at 80% 100%, rgba(16, 185, 129, 0.09) 0px, transparent 55%);
+    background-attachment: fixed;
+  }
+
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  .font-legal {
+    font-family: 'Newsreader', Georgia, Cambria, serif;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  }
+}
+
+/* Custom minimal scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.6);
+}
+
+/* Print styles for representation letters */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 15mm 20mm;
+  }
+
+  /* Force canvas to pure light mode & white background in print */
+  html,
+  html.dark,
+  body,
+  .dark body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+    color: #000000 !important;
+    color-scheme: light !important;
+    font-size: 11pt !important;
+    line-height: 1.55 !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: 100% !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide everything on page by default during print */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Make ONLY the legal document container and all its contents visible */
+  #printable-representation-letter,
+  #printable-representation-letter * {
+    visibility: visible !important;
+  }
+
+  /* Position printable document cleanly at top of physical paper */
+  #printable-representation-letter {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt !important;
+    line-height: 1.55 !important;
+  }
+
+  #printable-representation-letter * {
+    color: #000000 !important;
+    border-color: #333333 !important;
+    background-color: transparent !important;
+  }
+}
+
+.num-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sophisticated Elevation Shadows */
+.shadow-subtle {
+  box-shadow: 0 1px 2px 0 rgba(7, 14, 10, 0.04), 0 1px 1px -1px rgba(7, 14, 10, 0.02);
+}
+
+.shadow-card {
+  box-shadow: 0 2px 8px -2px rgba(7, 14, 10, 0.06), 0 1px 3px -1px rgba(7, 14, 10, 0.04);
+}
+
+.shadow-lifted {
+  box-shadow: 0 10px 25px -4px rgba(7, 14, 10, 0.1), 0 4px 10px -3px rgba(7, 14, 10, 0.05);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 25px -4px rgba(16, 185, 129, 0.35);
+}
+
+.glow-aurum {
+  box-shadow: 0 0 25px -4px rgba(245, 158, 11, 0.3);
+}
+
+/* Moving laser highlight line */
+.laser-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(16, 185, 129, 0.4) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite linear;
+}
+
+/* Sovereign watermark guilloche pattern */
+.bg-guilloche {
+  background-image: radial-gradient(rgba(16, 185, 129, 0.12) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Tab Transition Animations */
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tab-animated-content {
+  animation: tabFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Back and forth oscillating animation */
+@keyframes backAndForth {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(3.5px);
+  }
+}
+
+.animate-back-and-forth {
+  display: inline-block;
+  animation: backAndForth 1.4s ease-in-out infinite;
+}
+
+/* Tour slide transitions */
+@keyframes tourSlideForward {
+  from {
+    opacity: 0;
+    transform: translateX(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes tourSlideBackward {
+  from {
+    opacity: 0;
+    transform: translateX(-18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.tour-slide-forward {
+  animation: tourSlideForward 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tour-slide-backward {
+  animation: tourSlideBackward 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Subtle sovereign India tricolor accent gradient */
+.bg-sovereign-tricolor {
+  background: linear-gradient(90deg, #ff9933 0%, #ffffff 50%, #138808 100%);
+}
+
+.bg-sovereign-tricolor-subtle {
+  background: linear-gradient(90deg, rgba(255, 153, 51, 0.25) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(19, 136, 8, 0.25) 100%);
+}
+
+/* Micro-interaction card hover */
+.card-hover-micro {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+.card-hover-micro:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px -4px rgba(16, 185, 129, 0.12);
+}
+
+/* Hide scrollbar for clean mobile snap rails */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Safe area padding for mobile PWA standalone mode */
+.safe-area-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+.safe-area-top {
+  padding-top: max(0.5rem, env(safe-area-inset-top));
+}
+
+/* Modal Popup Open & Close Spring Keyframes */
+@keyframes popupZoomIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -44%) scale(0.92);
+  }
+  65% {
+    opacity: 1;
+    transform: translate(-50%, -50.5%) scale(1.012);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes popupZoomOut {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.92);
+  }
+}
+
+@keyframes overlayFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes overlayFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Explicit Radix Dialog Animation Direct Selectors */
+[data-radix-dialog-overlay][data-state="open"] {
+  animation: overlayFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+[data-radix-dialog-overlay][data-state="closed"] {
+  animation: overlayFadeOut 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+[data-radix-dialog-content][data-state="open"],
+.animate-popup-in {
+  animation: popupZoomIn 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+[data-radix-dialog-content][data-state="closed"],
+.animate-popup-out {
+  animation: popupZoomOut 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+/* Accordion & Dropdown Smooth Expand & Collapse Transitions */
+@keyframes accordionExpand {
+  0% {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    max-height: 1200px;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes accordionCollapse {
+  0% {
+    opacity: 1;
+    max-height: 1200px;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+}
+
+@keyframes dropdownOpen {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.accordion-animate-open {
+  animation: accordionExpand 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+}
+
+.accordion-animate-close {
+  animation: accordionCollapse 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+}
+
+.animate-dropdown-in {
+  animation: dropdownOpen 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Upload file list Add & Delete animations */
+@keyframes fileItemAdd {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fileItemDelete {
+  from {
+    opacity: 1;
+    transform: scale(1);
+    max-height: 60px;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.92) translateX(12px);
+    max-height: 0;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.animate-file-add {
+  animation: fileItemAdd 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-file-remove {
+  animation: fileItemDelete 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
+}

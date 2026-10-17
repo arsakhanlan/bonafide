@@ -1,0 +1,346 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Bonafide API",
+    "version": "0.1.0",
+    "description": "Long-running AI case agent helping innocent people in India get wrongly frozen bank accounts released under Section 106 BNSS (Bharatiya Nagarik Suraksha Sanhita, 2023) and MHA Cyber SOP 2026-01-02.",
+    "contact": {
+      "name": "Bonafide Team",
+      "url": "https://github.com/arsakhanlan/bonafide"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local Spring Boot Server"
+    },
+    {
+      "url": "/",
+      "description": "Current Host / Cloud Run"
+    }
+  ],
+  "paths": {
+    "/api/cases": {
+      "post": {
+        "tags": ["Cases"],
+        "summary": "Create a new case file",
+        "description": "Initializes a blank case in Stage NEW for an authenticated citizen.",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "language": {
+                    "type": "string",
+                    "enum": ["en", "hi"],
+                    "default": "en",
+                    "description": "Preferred language for AI communications and letters"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Case successfully initialized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "caseId": { "type": "string", "example": "c_4g9k2m1" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Missing or invalid Firebase ID token" }
+        }
+      }
+    },
+    "/api/cases/{caseId}": {
+      "delete": {
+        "tags": ["Cases"],
+        "summary": "Delete a case",
+        "description": "Recursively deletes a case and all subcollections (letters, deadlines, documents, steps, events).",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "caseId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Case successfully deleted" },
+          "404": { "description": "Case not found or not owned by user" }
+        }
+      }
+    },
+    "/api/demo/cases": {
+      "post": {
+        "tags": ["Demo"],
+        "summary": "Create benchmark demo persona case",
+        "description": "Initializes one of the 4 judge evaluation personas with preloaded evidence papers.",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["persona"],
+                "properties": {
+                  "persona": {
+                    "type": "string",
+                    "enum": ["RAVI", "MEERA", "ARJUN", "SUNIL"],
+                    "description": "Benchmark persona"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Demo case initialized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "caseId": { "type": "string", "example": "c_ravi89" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/demo/cases/{caseId}/skip": {
+      "post": {
+        "tags": ["Demo"],
+        "summary": "Fast-forward simulated date",
+        "description": "Judges' skip ahead tool: moves pretend today forward and wakes any statutory deadlines crossed.",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "caseId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["days"],
+                "properties": {
+                  "days": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 90,
+                    "example": 8,
+                    "description": "Number of calendar days to advance"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Time advanced and sweep executed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "today": { "type": "string", "example": "2026-10-25" },
+                    "woken": { "type": "integer", "example": 1 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cases/{caseId}/letters/{letterId}/approve": {
+      "post": {
+        "tags": ["Letters"],
+        "summary": "Approve representation letter",
+        "description": "Citizen approves drafted letter. Validates that no {{...}} placeholders remain in the body.",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "caseId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "letterId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "type": "string",
+                    "description": "Optional edited representation body without {{...}} tokens"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Letter approved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "APPROVED" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Placeholders left unresolved in letter body" }
+        }
+      }
+    },
+    "/api/cases/{caseId}/letters/{letterId}/sent": {
+      "post": {
+        "tags": ["Letters"],
+        "summary": "Mark letter delivered & start 7-day clock",
+        "description": "Marks the representation as sent and initiates the statutory 7-day bank grievance deadline.",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "caseId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "letterId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sentOn", "how"],
+                "properties": {
+                  "sentOn": { "type": "string", "format": "date", "example": "2026-10-19" },
+                  "how": {
+                    "type": "string",
+                    "enum": ["BRANCH", "EMAIL", "WHATSAPP", "POST"],
+                    "example": "BRANCH"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Letter marked sent, statutory clock started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "SENT" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cases/{caseId}/events": {
+      "post": {
+        "tags": ["Events"],
+        "summary": "Dispatch case interaction event",
+        "description": "Dispatches citizen interaction to the Case Boss and agent mesh (UPLOAD, ANSWERS, or REPLY).",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "caseId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["type"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["UPLOAD", "ANSWERS", "REPLY", "DEADLINE_PASSED"]
+                  },
+                  "text": { "type": "string", "example": "Bank replied to grievance on 2026-10-21" },
+                  "answers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "questionId": { "type": "string" },
+                        "answer": { "type": "string" }
+                      }
+                    }
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "path": { "type": "string" },
+                        "kind": { "type": "string" },
+                        "mime": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Event accepted and queued for agent dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "eventId": { "type": "string", "example": "ev_98214" }
+                  }
+                }
+              }
+            }
+          },
+          "423": { "description": "Case is currently busy running another agent task" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Firebase Auth ID Token passed in Authorization header: Bearer <token>"
+      }
+    }
+  }
+}
+
