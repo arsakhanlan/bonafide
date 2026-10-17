@@ -39,6 +39,23 @@ declare module 'firebase/firestore' {
     app: FirebaseApp;
   }
   export function getFirestore(app?: FirebaseApp): Firestore;
+  export interface DocumentData {
+    [field: string]: any;
+  }
+  export interface DocumentSnapshot<T = DocumentData> {
+    id: string;
+    exists(): boolean;
+    data(): T | undefined;
+  }
+  export interface QuerySnapshot<T = DocumentData> {
+    docs: Array<{ id: string; data(): T }>;
+  }
+  export interface DocumentReference<T = DocumentData> {}
+  export interface CollectionReference<T = DocumentData> {}
+  export function doc(db: Firestore, path: string, ...pathSegments: string[]): DocumentReference;
+  export function collection(db: Firestore, path: string, ...pathSegments: string[]): CollectionReference;
+  export function onSnapshot(ref: DocumentReference, cb: (snap: DocumentSnapshot) => void): () => void;
+  export function onSnapshot(ref: CollectionReference, cb: (snap: QuerySnapshot) => void): () => void;
 }
 
 declare module 'firebase/storage' {

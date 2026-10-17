@@ -1,4 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { doc, collection, onSnapshot } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
+import * as liveMap from '@/lib/liveMap';
 import { CaseData, AnswerSubmission, Stage } from '@/types/case';
 import { Letter } from '@/types/letter';
 import { Deadline } from '@/types/deadline';
@@ -76,10 +79,61 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
   const currentSimulatedDate = simulatedDateObj.toISOString().split('T')[0];
 
   // Switch persona
-  const selectPersona = useCallback((persona: 'RAVI' | 'MEERA' | 'ARJUN' | 'SUNIL') => {
+  const unsubRef = useRef<null | (() => void)>(null);
+
+  /** Live sync: the server is the source of truth for a backend-created demo case. */
+  const subscribeLive = useCallback((caseId: string) => {
+    unsubRef.current?.();
+    const unsubs: Array<() => void> = [];
+    unsubs.push(onSnapshot(doc(firestore, 'cases', caseId), (snap: any) => {
+      if (!snap.exists()) return;
+      setCaseData(liveMap.mapCase(snap.id, snap.data() || {}));
+    }));
+    unsubs.push(onSnapshot(collection(firestore, `cases/${caseId}/steps`), (snap: any) => {
+      setSteps(snap.docs.map((d: any) => liveMap.mapStep(d.id, d.data() || {})));
+    }));
+    unsubs.push(onSnapshot(collection(firestore, `cases/${caseId}/letters`), (snap: any) => {
+      const list = snap.docs.map((d: any) => liveMap.mapLetter(d.id, d.data() || {}));
+      setLetters(list);
+      setSelectedLetterId((prev) => prev ?? list[0]?.id ?? null);
+    }));
+    unsubs.push(onSnapshot(collection(firestore, `cases/${caseId}/deadlines`), (snap: any) => {
+      setDeadlines(snap.docs.map((d: any) => liveMap.mapDeadline(d.id, d.data() || {})));
+    }));
+    unsubs.push(onSnapshot(collection(firestore, `cases/${caseId}/documents`), (snap: any) => {
+      setDocuments(snap.docs.map((d: any) => liveMap.mapDocument(d.id, d.data() || {})));
+    }));
+    unsubRef.current = () => unsubs.forEach((u) => u());
+  }, []);
+
+  useEffect(() => () => unsubRef.current?.(), []);
+
+  const selectPersona = useCallback(async (persona: 'RAVI' | 'MEERA' | 'ARJUN' | 'SUNIL') => {
     setSelectedPersona(persona);
     setSimulatedDays(0);
     setError(null);
+
+    // Real backend demo case; the mock data is only the offline fallback.
+    try {
+      const res = await api.createDemoCase(persona);
+      if (res.caseId) {
+        unsubRef.current?.();
+        setLetters([]);
+        setDeadlines([]);
+        setDocuments([]);
+        setSteps([{ id: 'step_start', agent: 'SYSTEM', message: 'Starting the agents…', level: 'INFO', timestamp: new Date().toLocaleTimeString() }]);
+        setCaseData({
+          id: res.caseId, uid: 'live', language: 'en', stage: 'NEW', busy: true,
+          title: 'Starting your case…', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+          demo: { persona, today: undefined }, history: [],
+        });
+        subscribeLive(res.caseId);
+        return;
+      }
+    } catch (err) {
+      console.warn('Backend demo case unavailable; using mock data', err);
+    }
+
     const data = MOCK_PERSONAS[persona];
     setCaseData(data.caseData);
     setLetters(data.letters);
@@ -111,7 +165,7 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
         { id: 'd1', name: 'Kotak_Account_Freeze_SMS.txt', kind: 'NOTICE', path: '/uploads/s1.txt', mime: 'text/plain' },
       ]);
     }
-  }, []);
+  }, [subscribeLive]);
 
   const setModal = (modal: ModalType, letterId: string | null = null) => {
     setActiveModal(modal);
