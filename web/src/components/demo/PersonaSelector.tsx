@@ -58,18 +58,18 @@ export function PersonaSelector() {
               onClick={() => selectPersona(p.id)}
               className={`group text-left p-3.5 rounded-xl border transition-all text-xs relative flex flex-col justify-between card-hover-micro min-w-[250px] max-w-[280px] sm:min-w-0 sm:max-w-none flex-1 snap-start shrink-0 sm:shrink ${
                 isSelected
-                  ? 'border-slate-900 bg-slate-900 text-white shadow-card dark:border-white dark:bg-white dark:text-slate-950'
-                  : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 shadow-subtle'
+                  ? 'border-blue-600 bg-blue-50/60 text-foreground ring-2 ring-blue-600/20 dark:border-blue-500 dark:bg-blue-950/30 dark:ring-blue-500/20 shadow-sm'
+                  : 'border-border bg-card hover:border-border/80 shadow-subtle text-foreground'
               }`}
             >
             <div>
               <div className="flex items-center justify-between gap-1 mb-2">
                 <div className="flex items-center gap-2">
                   <div
-                    className={`p-1.5 rounded-lg ${
+                    className={`p-1.5 rounded-lg transition-colors ${
                       isSelected
-                        ? 'bg-white/10 text-white dark:bg-slate-900/10 dark:text-slate-900'
-                        : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-secondary text-muted-foreground'
                     }`}
                   >
                     <Icon className="h-4 w-4 stroke-[1.75]" />
@@ -79,7 +79,7 @@ export function PersonaSelector() {
                   </span>
                 </div>
                 {isSelected && (
-                  <span className="h-4 w-4 rounded-full bg-white text-slate-900 dark:bg-slate-900 dark:text-white flex items-center justify-center shrink-0">
+                  <span className="h-4 w-4 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0">
                     <Check className="h-3 w-3 stroke-[3]" />
                   </span>
                 )}
@@ -90,8 +90,8 @@ export function PersonaSelector() {
                   variant="outline"
                   className={`text-[10px] py-0 h-4 font-normal ${
                     isSelected
-                      ? 'border-white/20 text-white dark:border-slate-900/20 dark:text-slate-900'
-                      : 'border-slate-200 dark:border-slate-800'
+                      ? 'border-blue-500/30 bg-blue-100/60 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+                      : 'border-border text-muted-foreground'
                   }`}
                 >
                   {p.tag}
@@ -101,7 +101,7 @@ export function PersonaSelector() {
               <p
                 className={`text-[11px] leading-relaxed line-clamp-2 ${
                   isSelected
-                    ? 'text-slate-300 dark:text-slate-700'
+                    ? 'text-slate-700 dark:text-slate-300'
                     : 'text-muted-foreground'
                 }`}
               >

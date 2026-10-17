@@ -60,12 +60,12 @@ export function StatutoryDeadlinesCard() {
   ];
 
   return (
-    <Card id="statutory-deadlines-section" className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-sm rounded-2xl overflow-hidden">
-      <CardHeader className="py-3.5 px-4 sm:px-6 border-b border-slate-100 dark:border-slate-800">
+    <Card id="statutory-deadlines-section" className="border-border bg-card shadow-sm rounded-2xl overflow-hidden">
+      <CardHeader className="py-3.5 px-4 sm:px-6 border-b border-border/80">
         <div className="flex flex-wrap items-center justify-between gap-2.5">
           <div className="flex items-center gap-2">
-            <Timer className="h-4 w-4 text-slate-800 dark:text-slate-200" />
-            <CardTitle className="text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+            <Timer className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <CardTitle className="text-sm font-bold tracking-tight text-foreground">
               Statutory Compliance Clocks
             </CardTitle>
           </div>
@@ -76,7 +76,7 @@ export function StatutoryDeadlinesCard() {
                 STATUTORY DEFAULT (DAY 8+)
               </Badge>
             ) : (
-              <Badge variant="outline" className="font-mono text-xs border-slate-300 dark:border-slate-700">
+              <Badge variant="outline" className="font-mono text-xs border-border text-muted-foreground">
                 CLOCK RUNNING: {daysRemaining} DAYS LEFT
               </Badge>
             )}
@@ -89,11 +89,11 @@ export function StatutoryDeadlinesCard() {
         <div
           className={`rounded-xl border p-4 sm:p-5 transition-all ${
             isExpired
-              ? 'border-rose-300 bg-rose-50/40 dark:border-rose-900/60 dark:bg-rose-950/20'
-              : 'border-slate-200 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-950/40'
+              ? 'border-rose-500/30 bg-rose-500/5'
+              : 'border-border bg-secondary/30'
           }`}
         >
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 pb-4 sm:pb-5 border-b border-slate-200/70 dark:border-slate-800">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 pb-4 sm:pb-5 border-b border-border/70">
             {/* Countdown Digits */}
             <div className="space-y-1">
               <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground block">
@@ -104,13 +104,13 @@ export function StatutoryDeadlinesCard() {
                   className={`text-3xl sm:text-5xl font-black font-mono tracking-tight num-tabular ${
                     isExpired
                       ? 'text-rose-600 dark:text-rose-400'
-                      : 'text-slate-900 dark:text-white'
+                      : 'text-foreground'
                   }`}
                 >
                   {isExpired ? '00' : String(daysRemaining).padStart(2, '0')}
                 </span>
                 <div>
-                  <span className="text-sm font-bold text-slate-900 dark:text-slate-100 block">
+                  <span className="text-sm font-bold text-foreground block">
                     {isExpired ? 'Days (Lapsed)' : 'Days Remaining'}
                   </span>
                   <span className="text-xs text-muted-foreground font-mono">
@@ -121,14 +121,14 @@ export function StatutoryDeadlinesCard() {
             </div>
 
             {/* Target Obligation Note */}
-            <div className="rounded-lg bg-white dark:bg-slate-900 p-3 border border-slate-200 dark:border-slate-800 text-xs space-y-1 w-full md:max-w-sm">
-              <div className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
-                <Building2 className="h-3.5 w-3.5 text-slate-600 dark:text-slate-400" />
+            <div className="rounded-xl bg-card p-3 border border-border text-xs space-y-1 w-full md:max-w-sm">
+              <div className="flex items-center gap-1.5 font-bold text-foreground">
+                <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>Obligated: {caseData?.money?.bankName || 'Branch Manager'}</span>
               </div>
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 Must log Section 106 grievance and restrict lien to{' '}
-                <strong className="text-slate-900 dark:text-slate-100 font-mono">₹2,000</strong>. Remaining funds must be unlocked.
+                <strong className="text-foreground font-mono">₹2,000</strong>. Remaining funds must be unlocked.
               </p>
             </div>
           </div>
@@ -136,8 +136,8 @@ export function StatutoryDeadlinesCard() {
           {/* 7 Segmented Blocks */}
           <div className="pt-4 space-y-2">
             <div className="flex items-center justify-between text-xs font-medium">
-              <span className="text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5 text-slate-500" />
+              <span className="text-foreground flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5 text-muted-foreground" />
                 7-Day Compliance Stepper:
               </span>
               <span className="font-mono text-[11px] text-muted-foreground">
@@ -157,10 +157,10 @@ export function StatutoryDeadlinesCard() {
                         isExpired
                           ? 'bg-rose-500'
                           : isPassed
-                          ? 'bg-slate-900 dark:bg-slate-100'
+                          ? 'bg-primary'
                           : isCurrent
                           ? 'bg-blue-600 animate-pulse'
-                          : 'bg-slate-200 dark:bg-slate-800'
+                          : 'bg-muted'
                       }`}
                     />
                     <span
@@ -168,8 +168,8 @@ export function StatutoryDeadlinesCard() {
                         isCurrent
                           ? 'font-bold text-blue-600 dark:text-blue-400'
                           : isPassed
-                          ? 'text-slate-700 dark:text-slate-300'
-                          : 'text-slate-400 dark:text-slate-600'
+                          ? 'text-foreground'
+                          : 'text-muted-foreground/60'
                       }`}
                     >
                       D{day}
@@ -182,21 +182,21 @@ export function StatutoryDeadlinesCard() {
 
           {/* Breach Warning when Expired */}
           {isExpired && (
-            <div className="mt-4 rounded-lg border border-rose-300 bg-rose-100/50 dark:border-rose-900/60 dark:bg-rose-950/30 p-3.5 space-y-2.5">
+            <div className="mt-4 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3.5 space-y-2.5">
               <div className="flex items-start gap-2.5">
                 <AlertOctagon className="h-4 w-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-bold text-rose-950 dark:text-rose-100 text-xs">
+                  <h4 className="font-bold text-rose-950 dark:text-rose-200 text-xs">
                     Statutory Default: Bank Exceeded 7 Calendar Days
                   </h4>
-                  <p className="text-[11px] text-rose-900/90 dark:text-rose-200/90 mt-0.5 leading-relaxed">
+                  <p className="text-[11px] text-rose-900/90 dark:text-rose-300/90 mt-0.5 leading-relaxed font-legal text-xs sm:text-[12.5px]">
                     Under MHA SOP Cl. 10.1(a), the bank was legally required to log your grievance by{' '}
                     <strong>{formatDate(primaryDeadline?.dueOn)}</strong>.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-1 border-t border-rose-200 dark:border-rose-900/60">
+              <div className="flex items-center gap-2 pt-1 border-t border-rose-500/20">
                 <Button
                   size="sm"
                   variant="destructive"
@@ -214,8 +214,8 @@ export function StatutoryDeadlinesCard() {
         {/* 3-Stage Statutory Defense Pipeline */}
         <div className="space-y-2.5">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-              <Scale className="h-3.5 w-3.5 text-slate-700 dark:text-slate-300" />
+            <span className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
+              <Scale className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
               Statutory Defense Pipeline
             </span>
             <span className="text-[11px] text-muted-foreground font-mono">
@@ -233,22 +233,22 @@ export function StatutoryDeadlinesCard() {
                   key={phase.step}
                   className={`p-3.5 rounded-xl border text-xs space-y-1.5 ${
                     isPhaseExpired
-                      ? 'border-rose-300 bg-rose-50/20 dark:border-rose-900/50 dark:bg-rose-950/20'
+                      ? 'border-rose-500/30 bg-rose-500/5'
                       : isActive
-                      ? 'border-slate-900 bg-slate-50 text-slate-900 dark:border-slate-100 dark:bg-slate-900 dark:text-slate-100'
-                      : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/40'
+                      ? 'border-blue-600/40 bg-blue-50/40 text-foreground dark:border-blue-500/40 dark:bg-blue-950/20'
+                      : 'border-border bg-card'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-1">
                     <span className="font-mono text-[10px] text-muted-foreground font-semibold">
                       Phase 0{phase.step}
                     </span>
-                    <Badge variant="outline" className="text-[9px] py-0 h-4 font-mono">
+                    <Badge variant="outline" className="text-[9px] py-0 h-4 font-mono border-border text-muted-foreground">
                       {phase.duration}
                     </Badge>
                   </div>
 
-                  <h5 className="font-bold text-xs text-slate-900 dark:text-slate-100 leading-snug">
+                  <h5 className="font-bold text-xs text-foreground leading-snug">
                     {phase.name}
                   </h5>
 
@@ -262,31 +262,31 @@ export function StatutoryDeadlinesCard() {
         </div>
 
         {/* Collapsible Statutory Rulebook */}
-        <div className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
+        <div className="border border-border rounded-xl overflow-hidden">
           <button
             type="button"
             onClick={() => setShowLegalDetails(!showLegalDetails)}
-            className="w-full flex items-center justify-between p-3 text-xs font-semibold text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="w-full flex items-center justify-between p-3 text-xs font-semibold text-foreground bg-secondary/50 hover:bg-secondary transition-colors"
           >
             <div className="flex items-center gap-2">
-              <Scale className="h-3.5 w-3.5 text-slate-600 dark:text-slate-400" />
+              <Scale className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
               <span>Statutory Rulebook & Legal Remedies</span>
             </div>
             {showLegalDetails ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </button>
 
           {showLegalDetails && (
-            <div className="p-3.5 bg-white dark:bg-slate-950 text-xs text-slate-700 dark:text-slate-300 space-y-2 border-t border-slate-200 dark:border-slate-800">
+            <div className="p-3.5 bg-card text-xs text-muted-foreground space-y-2 border-t border-border font-legal">
               <div className="space-y-0.5">
-                <strong className="text-slate-900 dark:text-slate-100">1. MHA Cyber SOP Cl. 10.1(a) (Mandatory 7-Day Window):</strong>
-                <p className="text-muted-foreground leading-relaxed pl-2.5 border-l-2 border-slate-400">
+                <strong className="text-foreground font-sans">1. MHA Cyber SOP Cl. 10.1(a) (Mandatory 7-Day Window):</strong>
+                <p className="text-muted-foreground leading-relaxed pl-2.5 border-l-2 border-border/80">
                   Bank branch must record grievance within 7 calendar days and restrict debit restrictions to contested amount.
                 </p>
               </div>
 
               <div className="space-y-0.5">
-                <strong className="text-slate-900 dark:text-slate-100">2. Section 106 BNSS (Proportional Lien Rule):</strong>
-                <p className="text-muted-foreground leading-relaxed pl-2.5 border-l-2 border-slate-400">
+                <strong className="text-foreground font-sans">2. Section 106 BNSS (Proportional Lien Rule):</strong>
+                <p className="text-muted-foreground leading-relaxed pl-2.5 border-l-2 border-border/80">
                   Police seizure requisitions cannot freeze innocent surplus funds.
                 </p>
               </div>
