@@ -17,18 +17,18 @@ export function CaseTimeline({ embedded = false }: CaseTimelineProps) {
     <div className="space-y-3">
       <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 text-xs">
         <span className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-          <History className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+          <History className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
           Tamper-Evident Audit Trail
         </span>
-        <span className="text-[11px] text-muted-foreground font-mono">
-          {caseData.history.length} Event Logged
+        <span className="text-[11px] text-muted-foreground font-mono bg-secondary/80 px-2 py-0.5 rounded border border-border/60">
+          {caseData.history.length} Events Logged
         </span>
       </div>
 
-      <div className="relative border-l border-slate-200 dark:border-slate-800 ml-2 space-y-4 max-h-[380px] overflow-y-auto pl-1 pr-1 py-1">
+      <div className="relative border-l border-emerald-500/30 dark:border-emerald-500/20 ml-2 space-y-4 max-h-[380px] overflow-y-auto pl-1 pr-1 py-1">
         {caseData.history.map((item, idx) => (
           <div key={idx} className="relative pl-5">
-            <span className="absolute -left-[5px] top-1.5 h-2 w-2 rounded-full bg-slate-900 dark:bg-white" />
+            <span className="absolute -left-[5px] top-1.5 h-2 w-2 rounded-full bg-emerald-600 dark:bg-emerald-400 ring-2 ring-emerald-500/20" />
             <div>
               <span className="text-[10px] font-mono text-muted-foreground block mb-0.5">
                 {formatDate(item.on)}

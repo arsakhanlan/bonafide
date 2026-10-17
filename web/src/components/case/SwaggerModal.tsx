@@ -169,7 +169,7 @@ export function SwaggerModal({ isOpen, onClose }: SwaggerModalProps) {
   const getMethodBadge = (m: string) => {
     switch (m) {
       case 'GET':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border-blue-300';
+        return 'bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300 border-teal-300';
       case 'POST':
         return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-300';
       case 'DELETE':

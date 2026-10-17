@@ -22,7 +22,7 @@ export function Header() {
       <div className="container px-3 sm:px-6 flex h-14 sm:h-16 items-center justify-between gap-2 sm:gap-4">
         {/* Brand mark */}
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-          <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs shrink-0">
+          <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-md shadow-emerald-500/20 shrink-0 animate-float">
             <Shield className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
           </div>
           <div className="min-w-0">
@@ -30,7 +30,7 @@ export function Header() {
               <span className="font-extrabold tracking-tight text-sm sm:text-base text-foreground">
                 Bonafide
               </span>
-              <Badge variant="outline" className="hidden sm:inline-flex text-[10px] font-mono py-0 h-4.5 border-border text-muted-foreground">
+              <Badge variant="outline" className="hidden sm:inline-flex text-[10px] font-mono py-0 h-4.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 font-semibold">
                 BNSS §106
               </Badge>
             </div>
@@ -47,9 +47,9 @@ export function Header() {
             size="sm"
             variant="outline"
             onClick={() => setModal('GUIDED_TOUR')}
-            className="h-8 px-2.5 sm:px-3 gap-1.5 font-semibold text-xs border-border bg-card text-foreground hover:bg-secondary shadow-xs transition-all"
+            className="h-8 px-2.5 sm:px-3 gap-1.5 font-semibold text-xs border-border bg-card text-foreground hover:bg-secondary shadow-xs transition-all hover:border-emerald-500/40"
           >
-            <Play className="h-3 w-3 fill-current text-blue-600 dark:text-blue-400" />
+            <Play className="h-3 w-3 fill-current text-emerald-600 dark:text-emerald-400" />
             <span className="hidden sm:inline">2-Min Demo Tour</span>
             <span className="sm:hidden">Tour</span>
           </Button>

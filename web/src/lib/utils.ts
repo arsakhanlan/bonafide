@@ -61,15 +61,15 @@ export function getStageMetadata(stage: Stage) {
       return {
         label: 'Legal Representation Ready',
         description: 'Statutory letter drafted and grounded in law. Review and approve.',
-        color: 'bg-blue-50 text-blue-900 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900/60',
-        dot: 'bg-blue-600',
+        color: 'bg-emerald-50 text-emerald-900 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900/60',
+        dot: 'bg-emerald-600',
       };
     case 'WAITING':
       return {
         label: 'Statutory Clock Running',
         description: 'Formal representation sent. Waiting for bank compliance.',
-        color: 'bg-blue-50 text-blue-900 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900/60',
-        dot: 'bg-blue-600 animate-pulse',
+        color: 'bg-emerald-50 text-emerald-900 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900/60',
+        dot: 'bg-emerald-600 animate-pulse',
       };
     case 'PARTLY_RELEASED':
       return {

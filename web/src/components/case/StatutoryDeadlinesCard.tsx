@@ -64,7 +64,7 @@ export function StatutoryDeadlinesCard() {
       <CardHeader className="py-3.5 px-4 sm:px-6 border-b border-border/80">
         <div className="flex flex-wrap items-center justify-between gap-2.5">
           <div className="flex items-center gap-2">
-            <Timer className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <Timer className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             <CardTitle className="text-sm font-bold tracking-tight text-foreground">
               Statutory Compliance Clocks
             </CardTitle>
@@ -76,7 +76,7 @@ export function StatutoryDeadlinesCard() {
                 STATUTORY DEFAULT (DAY 8+)
               </Badge>
             ) : (
-              <Badge variant="outline" className="font-mono text-xs border-border text-muted-foreground">
+              <Badge variant="outline" className="font-mono text-xs border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
                 CLOCK RUNNING: {daysRemaining} DAYS LEFT
               </Badge>
             )}
@@ -157,16 +157,16 @@ export function StatutoryDeadlinesCard() {
                         isExpired
                           ? 'bg-rose-500'
                           : isPassed
-                          ? 'bg-primary'
+                          ? 'bg-emerald-600'
                           : isCurrent
-                          ? 'bg-blue-600 animate-pulse'
+                          ? 'bg-emerald-500 animate-pulse shadow-sm shadow-emerald-500/40'
                           : 'bg-muted'
                       }`}
                     />
                     <span
                       className={`text-[10px] font-mono ${
                         isCurrent
-                          ? 'font-bold text-blue-600 dark:text-blue-400'
+                          ? 'font-bold text-emerald-700 dark:text-emerald-400'
                           : isPassed
                           ? 'text-foreground'
                           : 'text-muted-foreground/60'
@@ -215,7 +215,7 @@ export function StatutoryDeadlinesCard() {
         <div className="space-y-2.5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
-              <Scale className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+              <Scale className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               Statutory Defense Pipeline
             </span>
             <span className="text-[11px] text-muted-foreground font-mono">
@@ -231,11 +231,11 @@ export function StatutoryDeadlinesCard() {
               return (
                 <div
                   key={phase.step}
-                  className={`p-3.5 rounded-xl border text-xs space-y-1.5 ${
+                  className={`p-3.5 rounded-xl border text-xs space-y-1.5 transition-all ${
                     isPhaseExpired
                       ? 'border-rose-500/30 bg-rose-500/5'
                       : isActive
-                      ? 'border-blue-600/40 bg-blue-50/40 text-foreground dark:border-blue-500/40 dark:bg-blue-950/20'
+                      ? 'border-emerald-500/50 bg-emerald-500/10 text-foreground dark:border-emerald-500/40 dark:bg-emerald-950/30 glow-emerald'
                       : 'border-border bg-card'
                   }`}
                 >
@@ -269,7 +269,7 @@ export function StatutoryDeadlinesCard() {
             className="w-full flex items-center justify-between p-3 text-xs font-semibold text-foreground bg-secondary/50 hover:bg-secondary transition-colors"
           >
             <div className="flex items-center gap-2">
-              <Scale className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+              <Scale className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>Statutory Rulebook & Legal Remedies</span>
             </div>
             {showLegalDetails ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}

@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { extractPlaceholders } from '@/lib/utils';
 import { printA4RepresentationLetter } from '@/lib/printA4';
+import { triggerConfetti } from '@/lib/confetti';
 import {
   FileText,
   Printer,
@@ -115,6 +116,7 @@ export function LetterViewerModal() {
       handleAutoFillPlaceholders();
     }
     await approveLetter(letter.id, bodyText);
+    triggerConfetti();
     setViewMode('DOCUMENT');
   };
 
@@ -222,9 +224,9 @@ export function LetterViewerModal() {
                 variant="outline"
                 className={`text-[10px] uppercase font-mono py-0 h-6 ${
                   letter.status === 'APPROVED'
-                    ? 'border-primary/40 bg-primary/10 text-foreground font-semibold'
+                    ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-semibold'
                     : letter.status === 'SENT'
-                    ? 'border-blue-500/40 text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40'
+                    ? 'border-emerald-500/40 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40'
                     : 'border-border text-muted-foreground'
                 }`}
               >
@@ -237,7 +239,7 @@ export function LetterViewerModal() {
           {letter.citations && letter.citations.length > 0 && (
             <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border/70 text-[11px] text-muted-foreground">
               <span className="font-semibold text-foreground flex items-center gap-1">
-                <Scale className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                <Scale className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                 Grounded Citations:
               </span>
               {letter.citations.map((cite, i) => (
@@ -340,7 +342,7 @@ export function LetterViewerModal() {
                       Ref: <strong>BONAFIDE-{caseData?.id?.toUpperCase() || 'REP'}-4092</strong>
                     </div>
                     <div>Date: {currentSimulatedDate || '17th October 2026'}</div>
-                    <div className="text-[9.5px] text-blue-700 dark:text-blue-400 font-semibold uppercase">
+                    <div className="text-[9.5px] text-emerald-700 dark:text-emerald-400 font-semibold uppercase">
                       Official Service Copy
                     </div>
                   </div>
@@ -397,11 +399,11 @@ export function LetterViewerModal() {
                         key={i}
                         className={`my-3 p-3 rounded-lg border text-xs italic font-serif leading-relaxed border-l-4 ${
                           paperTone === 'WHITE'
-                            ? 'border-slate-300 bg-slate-50/80 text-slate-900 border-l-blue-600'
-                            : 'border-slate-300 bg-slate-50/80 text-slate-900 border-l-blue-600 dark:border-slate-700 dark:bg-slate-950/80 dark:text-slate-100 dark:border-l-blue-500'
+                            ? 'border-slate-300 bg-slate-50/80 text-slate-900 border-l-emerald-600'
+                            : 'border-slate-300 bg-slate-50/80 text-slate-900 border-l-emerald-600 dark:border-slate-700 dark:bg-slate-950/80 dark:text-slate-100 dark:border-l-emerald-500'
                         }`}
                       >
-                        <span className="font-bold not-italic font-mono text-[9.5px] uppercase text-blue-900 dark:text-blue-300 block mb-1">
+                        <span className="font-bold not-italic font-mono text-[9.5px] uppercase text-emerald-800 dark:text-emerald-300 block mb-1">
                           Statutory Rule of Proportionality (BNSS §106 & MHA SOP Cl. 4.2):
                         </span>
                         {para}
@@ -494,7 +496,7 @@ export function LetterViewerModal() {
                         : 'border-slate-900 dark:border-slate-200'
                     }`}
                   >
-                    <ShieldCheck className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                     Bonafide AI Verified
                   </div>
                   <div>BNSS §106 Compliance Verified</div>
@@ -545,7 +547,7 @@ export function LetterViewerModal() {
               onClick={handlePrint}
               className="text-xs gap-1.5 h-9 justify-center bg-card text-foreground border-border hover:bg-secondary shadow-xs font-semibold active:scale-[0.98]"
             >
-              <Printer className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+              <Printer className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               <span className="hidden sm:inline">Print Official Letter (A4)</span>
               <span className="sm:hidden">Print (A4)</span>
             </Button>

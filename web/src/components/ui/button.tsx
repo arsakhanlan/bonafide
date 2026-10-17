@@ -9,19 +9,21 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-slate-900 text-white shadow-sm hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 font-semibold',
+          'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 font-semibold active:scale-[0.98]',
         primary:
-          'bg-blue-600 text-white shadow-sm hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 font-semibold',
+          'bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-slate-950 font-semibold active:scale-[0.98]',
         destructive:
-          'bg-rose-600 text-white shadow-sm hover:bg-rose-700 dark:bg-rose-700 dark:hover:bg-rose-800 font-semibold',
+          'bg-rose-600 text-white shadow-sm hover:bg-rose-700 dark:bg-rose-700 dark:hover:bg-rose-800 font-semibold active:scale-[0.98]',
         outline:
-          'border border-border bg-background shadow-xs hover:bg-secondary hover:text-foreground',
+          'border border-border bg-card shadow-xs hover:bg-secondary hover:text-foreground active:scale-[0.98]',
         secondary:
-          'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
-        ghost: 'hover:bg-secondary hover:text-foreground',
+          'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 active:scale-[0.98]',
+        ghost: 'hover:bg-secondary hover:text-foreground active:scale-[0.98]',
         link: 'text-primary underline-offset-4 hover:underline',
         success:
-          'bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 font-semibold',
+          'bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-slate-950 font-semibold active:scale-[0.98]',
+        sovereign:
+          'bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-700 text-white shadow-md hover:shadow-emerald-500/20 dark:from-emerald-400 dark:via-emerald-500 dark:to-teal-400 dark:text-slate-950 font-bold active:scale-[0.98]',
       },
       size: {
         default: 'h-10 px-4 py-2',

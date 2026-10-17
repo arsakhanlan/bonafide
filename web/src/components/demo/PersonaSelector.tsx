@@ -45,7 +45,7 @@ export function PersonaSelector() {
     <div className="space-y-1.5">
       <div className="sm:hidden flex items-center justify-between text-[11px] text-muted-foreground px-1 font-medium">
         <span>Evaluator Personas</span>
-        <span className="text-[10px] text-blue-600 dark:text-blue-400">Swipe to test scenarios →</span>
+        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Swipe to test scenarios →</span>
       </div>
       <div className="flex overflow-x-auto sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 pb-1.5 sm:pb-0 scrollbar-none snap-x snap-mandatory -mx-3 px-3 sm:mx-0 sm:px-0">
         {personas.map(p => {
@@ -56,10 +56,10 @@ export function PersonaSelector() {
               key={p.id}
               disabled={isProcessing}
               onClick={() => selectPersona(p.id)}
-              className={`group text-left p-3.5 rounded-xl border transition-all text-xs relative flex flex-col justify-between card-hover-micro min-w-[250px] max-w-[280px] sm:min-w-0 sm:max-w-none flex-1 snap-start shrink-0 sm:shrink ${
+              className={`group text-left p-3.5 rounded-2xl border transition-all text-xs relative flex flex-col justify-between card-hover-micro min-w-[250px] max-w-[280px] sm:min-w-0 sm:max-w-none flex-1 snap-start shrink-0 sm:shrink ${
                 isSelected
-                  ? 'border-blue-600 bg-blue-50/60 text-foreground ring-2 ring-blue-600/20 dark:border-blue-500 dark:bg-blue-950/30 dark:ring-blue-500/20 shadow-sm'
-                  : 'border-border bg-card hover:border-border/80 shadow-subtle text-foreground'
+                  ? 'border-emerald-600 bg-emerald-50/70 text-foreground ring-2 ring-emerald-600/25 dark:border-emerald-500 dark:bg-emerald-950/40 dark:ring-emerald-500/25 shadow-md shadow-emerald-500/10'
+                  : 'border-border bg-card/90 hover:border-emerald-500/40 hover:bg-card shadow-subtle text-foreground'
               }`}
             >
             <div>
@@ -68,18 +68,18 @@ export function PersonaSelector() {
                   <div
                     className={`p-1.5 rounded-lg transition-colors ${
                       isSelected
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-secondary text-muted-foreground'
+                        ? 'bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-xs'
+                        : 'bg-secondary text-muted-foreground group-hover:text-emerald-700 dark:group-hover:text-emerald-300'
                     }`}
                   >
                     <Icon className="h-4 w-4 stroke-[1.75]" />
                   </div>
-                  <span className="font-semibold text-xs leading-tight">
+                  <span className="font-bold text-xs leading-tight">
                     {p.name}
                   </span>
                 </div>
                 {isSelected && (
-                  <span className="h-4 w-4 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0">
+                  <span className="h-4 w-4 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
                     <Check className="h-3 w-3 stroke-[3]" />
                   </span>
                 )}
@@ -90,7 +90,7 @@ export function PersonaSelector() {
                   variant="outline"
                   className={`text-[10px] py-0 h-4 font-normal ${
                     isSelected
-                      ? 'border-blue-500/30 bg-blue-100/60 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+                      ? 'border-emerald-500/30 bg-emerald-100/60 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 font-medium'
                       : 'border-border text-muted-foreground'
                   }`}
                 >
@@ -101,7 +101,7 @@ export function PersonaSelector() {
               <p
                 className={`text-[11px] leading-relaxed line-clamp-2 ${
                   isSelected
-                    ? 'text-slate-700 dark:text-slate-300'
+                    ? 'text-foreground/90 font-medium'
                     : 'text-muted-foreground'
                 }`}
               >
