@@ -27,7 +27,7 @@ export function NextStepHero() {
           icon: FileText,
           title: 'Action Required: Review & Approve Representation Letter',
           description: next.text,
-          buttonText: 'Review Representation Letter',
+          buttonText: 'Review & Print Representation',
           onClick: () => setModal('REVIEW_LETTER', letterId),
         };
 

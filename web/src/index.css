@@ -105,14 +105,72 @@
 
 /* Print styles for representation letters */
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 15mm 20mm;
+  }
+
+  html,
   body {
     background: #ffffff !important;
     background-image: none !important;
     color: #000000 !important;
+    font-size: 11pt !important;
+    line-height: 1.55 !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: 100% !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
-  .no-print {
+
+  /* Hide app chrome, modals overlay, footers, headers, buttons */
+  header,
+  footer,
+  main,
+  .no-print,
+  [data-radix-dialog-overlay],
+  button {
     display: none !important;
   }
+
+  /* Reset Radix Dialog for natural print flow */
+  [data-radix-portal] {
+    position: static !important;
+  }
+
+  [role="dialog"] {
+    position: static !important;
+    transform: none !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    width: 100% !important;
+    height: auto !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    inset: auto !important;
+  }
+
+  .print-clean-paper {
+    border: none !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .print-clean-paper * {
+    color: #000000 !important;
+    border-color: #333333 !important;
+  }
+
   .print-only {
     display: block !important;
   }
