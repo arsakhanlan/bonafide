@@ -95,7 +95,8 @@ class FirstRunWorkflowTest {
         AgentFactory factory = new AgentFactory(new Prompts(), properties, ruleFinderTool, checker);
         LetterService letterService = new LetterService(factory, runner, checker, catalog, rules, letters, trace);
         workflow = new FirstRunWorkflow(
-                papers, factory, runner, new MoneyTracer(new RuleMapLoader()), cases, documents, trace, clock, letterService);
+                papers, factory, runner, new MoneyTracer(new RuleMapLoader()), cases, documents, trace, clock,
+                letterService, letters);
         cases.save(Case.newCase("c1", "u1", "en", clock.instant(), null));
     }
 

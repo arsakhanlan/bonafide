@@ -43,7 +43,8 @@ public record Case(
                 Map.of("action", NextStepAction.UPLOAD_PAPERS.name(),
                         "text", "Add your papers to get started"),
                 null,
-                List.of(Map.of("on", LocalDate.now().toString(), "text", "You started your case")),
+                List.of(Map.of("on", LocalDate.ofInstant(now, java.time.ZoneId.of("Asia/Kolkata")).toString(),
+                        "text", "You started your case")),
                 demo, null, false);
     }
 

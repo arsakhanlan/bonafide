@@ -1,5 +1,6 @@
 package app.bonafide.cases;
 
+import app.bonafide.documents.FileStore;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Map;
@@ -10,10 +11,12 @@ public class CaseService {
 
     private final CaseRepository cases;
     private final Clock clock;
+    private final FileStore files;
 
-    public CaseService(CaseRepository cases, Clock clock) {
+    public CaseService(CaseRepository cases, Clock clock, FileStore files) {
         this.cases = cases;
         this.clock = clock;
+        this.files = files;
     }
 
     public Case create(String uid, String language, Map<String, Object> demo) {
@@ -31,6 +34,7 @@ public class CaseService {
 
     public void delete(String uid, String caseId) {
         requireOwned(uid, caseId);
+        files.deletePrefix("uploads/" + uid + "/" + caseId + "/");
         cases.deleteAll(caseId);
     }
 

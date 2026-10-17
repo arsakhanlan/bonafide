@@ -63,8 +63,10 @@ public class FirestoreCaseRepository implements CaseRepository {
 
     @Override
     public void update(String caseId, Map<String, Object> fields) {
+        Map<String, Object> withStamp = new HashMap<>(fields);
+        withStamp.put("updatedAt", com.google.cloud.firestore.FieldValue.serverTimestamp());
         try {
-            firestore.collection("cases").document(caseId).update(fields).get();
+            firestore.collection("cases").document(caseId).update(withStamp).get();
         } catch (Exception e) {
             throw new IllegalStateException("Updating case " + caseId + " failed", e);
         }
@@ -73,8 +75,9 @@ public class FirestoreCaseRepository implements CaseRepository {
     @Override
     public void appendHistory(String caseId, Map<String, Object> line) {
         try {
-            firestore.collection("cases").document(caseId)
-                    .update("history", com.google.cloud.firestore.FieldValue.arrayUnion(line)).get();
+            firestore.collection("cases").document(caseId).update(
+                    "history", com.google.cloud.firestore.FieldValue.arrayUnion(line),
+                    "updatedAt", com.google.cloud.firestore.FieldValue.serverTimestamp()).get();
         } catch (Exception e) {
             throw new IllegalStateException("Adding history on " + caseId + " failed", e);
         }

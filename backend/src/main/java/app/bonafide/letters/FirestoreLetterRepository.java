@@ -23,7 +23,9 @@ public class FirestoreLetterRepository implements LetterRepository {
         try {
             for (var snapshot : firestore.collection("cases").document(caseId)
                     .collection("letters").get().get().getDocuments()) {
-                letters.add(snapshot.getData());
+                Map<String, Object> letter = new java.util.HashMap<>(snapshot.getData());
+                letter.put("id", snapshot.getId());
+                letters.add(letter);
             }
         } catch (Exception e) {
             throw new IllegalStateException("Reading letters on " + caseId + " failed", e);

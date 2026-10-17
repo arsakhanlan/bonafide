@@ -139,7 +139,11 @@ public class TestFakes {
         public List<Map<String, Object>> findByCase(String caseId) {
             return letters.entrySet().stream()
                     .filter(e -> e.getKey().startsWith(caseId + "/"))
-                    .map(Map.Entry::getValue)
+                    .map(e -> {
+                        Map<String, Object> letter = new java.util.HashMap<>(e.getValue());
+                        letter.put("id", e.getKey().substring(e.getKey().indexOf('/') + 1));
+                        return letter;
+                    })
                     .toList();
         }
 

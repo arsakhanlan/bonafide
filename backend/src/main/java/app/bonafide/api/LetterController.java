@@ -69,6 +69,9 @@ public class LetterController {
             }
             fields.put("body", request.body());
             fields.put("editedByPerson", true);
+        } else if (letter.get("body") != null && String.valueOf(letter.get("body")).contains("{{")) {
+            // Approving without edits still requires the gaps to be filled.
+            throw new PlaceholdersLeft();
         }
         letters.update(caseId, letterId, fields);
 

@@ -11,6 +11,7 @@ import app.bonafide.documents.Masking;
 import app.bonafide.documents.PaperService;
 import app.bonafide.events.Event;
 import app.bonafide.letters.LetterKind;
+import app.bonafide.letters.LetterRepository;
 import app.bonafide.letters.LetterService;
 import app.bonafide.money.DisputedPayment;
 import app.bonafide.money.FreezeType;
@@ -47,6 +48,7 @@ public class FirstRunWorkflow {
     private final TraceWriter trace;
     private final Clock clock;
     private final LetterService letters;
+    private final LetterRepository letterRepository;
 
     public FirstRunWorkflow(
             PaperService papers,
@@ -57,7 +59,8 @@ public class FirstRunWorkflow {
             DocumentRepository documents,
             TraceWriter trace,
             Clock clock,
-            LetterService letters) {
+            LetterService letters,
+            LetterRepository letterRepository) {
         this.papers = papers;
         this.factory = factory;
         this.runner = runner;
@@ -67,6 +70,7 @@ public class FirstRunWorkflow {
         this.trace = trace;
         this.clock = clock;
         this.letters = letters;
+        this.letterRepository = letterRepository;
     }
 
     public void run(String caseId, Event event) {
@@ -194,9 +198,11 @@ public class FirstRunWorkflow {
                 + IndianRupees.format(money.release()) + " should be free");
 
         List<Map<String, Object>> evidence = evidenceOf(documents.findByCase(caseId), sorter);
-        LetterService.DraftResult letter = letters.draft(caseId, LetterKind.L1_BRANCH,
+        // A re-run (retry or another UPLOAD) must not duplicate the first letter.
+        String existing = firstNonReminderL1(caseId);
+        String letterId = existing != null ? existing : letters.draft(caseId, LetterKind.L1_BRANCH,
                 new LetterService.CaseData(caseNow.facts(), money.disputed(), money.frozen(), money.release(),
-                        evidence, caseNow.personNote(), false));
+                        evidence, caseNow.personNote(), false)).letterId();
 
         List<Map<String, Object>> plan = new ArrayList<>();
         plan.add(Map.of("text", "Hand letter 1 to your branch", "who", "YOU", "dueOn", "", "status", "NOW"));
@@ -210,9 +216,19 @@ public class FirstRunWorkflow {
                 "plan", plan,
                 "stage", Stage.LETTER_READY.name(),
                 "nextStep", Map.of("action", "REVIEW_LETTER", "text", "Check and approve your letter to the branch.",
-                        "letterId", letter.letterId())));
+                        "letterId", letterId)));
         cases.appendHistory(caseId, Map.of("on", today.toString(), "text", "Your letter is ready to check"));
         trace.start(caseId, "CASE_BOSS", "Your letter is ready to check").done("Your letter is ready to check");
+    }
+
+    /** The id of the first L1 that is not a reminder, so re-runs reuse it. */
+    private String firstNonReminderL1(String caseId) {
+        return letterRepository.findByCase(caseId).stream()
+                .filter(l -> "L1_BRANCH".equals(l.get("kind")))
+                .filter(l -> !Boolean.TRUE.equals(l.get("reminder")))
+                .findFirst()
+                .map(l -> (String) l.get("id"))
+                .orElse(null);
     }
 
     /** The five things officers check (BUILD_SPEC §13), from the documents the person sent. */

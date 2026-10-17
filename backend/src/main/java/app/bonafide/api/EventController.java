@@ -39,12 +39,26 @@ public class EventController {
         this.clock = clock;
     }
 
+    private static final java.util.Set<String> ALLOWED_MIMES =
+            java.util.Set.of("image/jpeg", "image/png", "image/webp", "application/pdf", "text/plain");
+
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
     public Map<String, String> send(
             @RequestAttribute(CurrentUser.REQUEST_ATTRIBUTE) CurrentUser user,
             @PathVariable String caseId,
             @Valid @RequestBody SendEventRequest request) {
+        if (request.files() != null) {
+            String prefix = "uploads/" + user.uid() + "/" + caseId + "/";
+            for (SendEventRequest.FileRef file : request.files()) {
+                if (!file.path().startsWith(prefix)) {
+                    throw new IllegalArgumentException("Files must be under " + prefix);
+                }
+                if (!ALLOWED_MIMES.contains(file.mime())) {
+                    throw new IllegalArgumentException("File type not allowed: " + file.mime());
+                }
+            }
+        }
         Event event = Event.newPending(caseId, request.type(), payload(request), clock.instant());
         return switch (events.createPendingIfFree(caseId, user.uid(), event)) {
             case CREATED -> {
