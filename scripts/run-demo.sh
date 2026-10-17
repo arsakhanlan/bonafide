@@ -15,3 +15,4 @@ echo "=========================================================="
 
 export VITE_MOCK=true
 exec "$NODE_BIN" ./node_modules/vite/bin/vite.js --host 0.0.0.0 --port 3000
+
