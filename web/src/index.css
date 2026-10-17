@@ -32,7 +32,7 @@
     --input: 150 14% 88%;
     --ring: 158 84% 30%;
 
-    --radius: 0.875rem;
+    --radius: 1.125rem;
   }
 
   .dark {
@@ -323,68 +323,89 @@
 
 /* Modal Popup Open & Close Spring Keyframes */
 @keyframes popupZoomIn {
-  from {
+  0% {
     opacity: 0;
-    transform: translate(-50%, -48%) scale(0.96);
+    transform: translate(-50%, -46%) scale(0.94);
   }
-  to {
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -50.5%) scale(1.008);
+  }
+  100% {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
   }
 }
 
 @keyframes popupZoomOut {
-  from {
+  0% {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
   }
-  to {
+  100% {
     opacity: 0;
-    transform: translate(-50%, -48%) scale(0.96);
+    transform: translate(-50%, -46%) scale(0.94);
   }
 }
 
 .animate-popup-in {
-  animation: popupZoomIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: popupZoomIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-popup-out {
-  animation: popupZoomOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: popupZoomOut 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Accordion Smooth Open and Close Transitions */
+/* Accordion & Dropdown Smooth Expand & Collapse Transitions */
 @keyframes accordionExpand {
-  from {
+  0% {
     opacity: 0;
     max-height: 0;
-    transform: translateY(-4px);
+    transform: translateY(-8px) scale(0.98);
   }
-  to {
+  100% {
     opacity: 1;
-    max-height: 800px;
-    transform: translateY(0);
+    max-height: 1200px;
+    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes accordionCollapse {
-  from {
+  0% {
     opacity: 1;
-    max-height: 800px;
-    transform: translateY(0);
+    max-height: 1200px;
+    transform: translateY(0) scale(1);
   }
-  to {
+  100% {
     opacity: 0;
     max-height: 0;
-    transform: translateY(-4px);
+    transform: translateY(-8px) scale(0.98);
+  }
+}
+
+@keyframes dropdownOpen {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
 .accordion-animate-open {
-  animation: accordionExpand 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: accordionExpand 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
 }
 
 .accordion-animate-close {
-  animation: accordionCollapse 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: accordionCollapse 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+}
+
+.animate-dropdown-in {
+  animation: dropdownOpen 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Upload file list Add & Delete animations */

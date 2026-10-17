@@ -19,7 +19,7 @@ export function NewCaseModal() {
   const [language, setLanguage] = useState<'en' | 'hi'>('en');
   const [showChecklist, setShowChecklist] = useState(false);
 
-  if (activeModal !== 'NEW_CASE') return null;
+  const isOpen = activeModal === 'NEW_CASE';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,8 +27,8 @@ export function NewCaseModal() {
   };
 
   return (
-    <Dialog open={activeModal === 'NEW_CASE'} onOpenChange={() => setModal('NONE')}>
-      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-md rounded-2xl">
+    <Dialog open={isOpen} onOpenChange={() => setModal('NONE')}>
+      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-md rounded-3xl">
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
             <div className="flex items-center gap-2">

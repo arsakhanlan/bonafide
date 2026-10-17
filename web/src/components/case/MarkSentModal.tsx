@@ -29,10 +29,11 @@ export function MarkSentModal() {
   const [how, setHow] = useState<'BRANCH' | 'EMAIL' | 'WHATSAPP' | 'POST'>('BRANCH');
   const [sentOn, setSentOn] = useState(currentSimulatedDate);
 
-  if (activeModal !== 'MARK_SENT' || !letter) return null;
+  const isOpen = activeModal === 'MARK_SENT' && Boolean(letter);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!letter) return;
     await markLetterSent(letter.id, sentOn, how);
   };
 
@@ -64,8 +65,8 @@ export function MarkSentModal() {
   ];
 
   return (
-    <Dialog open={activeModal === 'MARK_SENT'} onOpenChange={() => setModal('NONE')}>
-      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-lg rounded-2xl">
+    <Dialog open={isOpen} onOpenChange={() => setModal('NONE')}>
+      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-lg rounded-3xl">
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
             <div className="flex items-center gap-2">
