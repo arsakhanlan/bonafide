@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCase } from '@/context/CaseContext';
-import { Check, ShieldCheck } from 'lucide-react';
+import { Check, ShieldCheck, Clock } from 'lucide-react';
 
 export function CitizenJourneyStepper() {
   const { caseData, letters, setModal } = useCase();
@@ -21,8 +21,8 @@ export function CitizenJourneyStepper() {
     },
     {
       number: 2,
-      title: 'AI Statutory Grounding',
-      desc: 'Section 106 & MHA SOP checked',
+      title: 'At Statutory Grounding',
+      desc: 'BNSS §106 & SOP checked',
       status: 'COMPLETED' as const,
       onClick: undefined,
     },
@@ -49,88 +49,103 @@ export function CitizenJourneyStepper() {
 
   return (
     <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-card transition-all">
+      {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <span className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
           <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 stroke-[1.75]" />
-          Statutory Unfreeze Roadmap
+          STATUTORY UNFREEZE ROADMAP
         </span>
-        <span className="text-xs font-mono text-muted-foreground bg-secondary/80 px-2 py-0.5 rounded border border-border/60">
-          Step {isSent ? '4 of 4' : isApproved ? '3 of 4' : '3 of 4'}
-        </span>
+
+        {/* Small Timer pill in top right corner matching reference */}
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary/80 text-muted-foreground border border-border/60 text-xs font-mono">
+          <Clock className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+          <span>Timer 7:56</span>
+        </div>
       </div>
 
-      {/* Horizontal Connected Stepper Roadmap */}
-      <div className="relative">
-        {/* Connecting Background Line across steps (visible on sm+) */}
-        <div className="hidden sm:block absolute top-[19px] left-[6%] right-[6%] h-[2px] bg-border/80 z-0">
-          <div
-            className="h-full bg-emerald-500 transition-all duration-500"
-            style={{
-              width: isResolved ? '100%' : isSent ? '80%' : isApproved ? '66%' : '50%',
-            }}
-          />
-        </div>
+      {/* Clean Stepper: Numbers on a line with descriptions underneath, matching reference image */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-2">
+        {steps.map((s, idx) => {
+          const isDone = s.status === 'COMPLETED';
+          const isCurrent = s.status === 'ACTIVE';
+          const isUpcoming = s.status === 'UPCOMING';
 
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 relative z-10">
-          {steps.map(s => {
-            const isDone = s.status === 'COMPLETED';
-            const isCurrent = s.status === 'ACTIVE';
+          return (
+            <div
+              key={s.number}
+              onClick={s.onClick}
+              className={`flex flex-col relative ${s.onClick ? 'cursor-pointer' : ''}`}
+            >
+              {/* Stepper Node row with connecting line segments */}
+              <div className="flex items-center w-full relative mb-2.5">
+                {/* Connecting track line to previous node */}
+                <div
+                  className={`h-[2.5px] flex-1 ${
+                    idx === 0
+                      ? 'invisible'
+                      : isDone || isCurrent
+                      ? 'bg-emerald-500 shadow-sm shadow-emerald-500/30'
+                      : 'bg-border/60'
+                  }`}
+                />
 
-            return (
-              <button
-                key={s.number}
-                type="button"
-                disabled={!s.onClick}
-                onClick={s.onClick}
-                className={`p-3 rounded-xl border text-left transition-all relative flex flex-col justify-between card-hover-micro active:scale-[0.99] ${
-                  isCurrent
-                    ? 'border-emerald-600 bg-emerald-500/10 dark:border-emerald-500 dark:bg-emerald-950/40 ring-2 ring-emerald-500/25 shadow-md shadow-emerald-500/10'
-                    : isDone
-                    ? 'border-border bg-card hover:bg-secondary/40'
-                    : 'border-border/60 bg-muted/20 opacity-70'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span
-                      className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-xs ${
-                        isDone
-                          ? 'bg-foreground text-background ring-4 ring-card'
-                          : isCurrent
-                          ? 'bg-emerald-600 text-white ring-4 ring-emerald-500/30 animate-pulse'
-                          : 'bg-secondary text-muted-foreground ring-4 ring-card'
-                      }`}
-                    >
-                      {isDone ? <Check className="h-4 w-4 stroke-[3]" /> : s.number}
-                    </span>
-
-                    <span
-                      className={`text-[10px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded ${
-                        isDone
-                          ? 'text-muted-foreground bg-secondary/50'
-                          : isCurrent
-                          ? 'text-emerald-700 dark:text-emerald-300 bg-emerald-500/20'
-                          : 'text-muted-foreground/60'
-                      }`}
-                    >
-                      {isDone ? 'Complete' : isCurrent ? 'Active' : 'Pending'}
-                    </span>
+                {/* Node Circle */}
+                <div className="relative z-10 shrink-0 mx-2">
+                  <div
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                      isDone
+                        ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/30'
+                        : isCurrent
+                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/50 ring-4 ring-emerald-500/25 ring-offset-2 ring-offset-card'
+                        : 'bg-secondary border border-border/80 text-muted-foreground'
+                    }`}
+                  >
+                    {isDone ? (
+                      <Check className="h-4 w-4 stroke-[3]" />
+                    ) : (
+                      <span>{s.number}</span>
+                    )}
                   </div>
-
-                  <div className="font-bold text-xs text-foreground mt-1">
-                    {s.title}
-                  </div>
-
-                  <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug line-clamp-2">
-                    {s.desc}
-                  </p>
                 </div>
-              </button>
-            );
-          })}
-        </div>
+
+                {/* Connecting track line to next node */}
+                <div
+                  className={`h-[2.5px] flex-1 ${
+                    idx === steps.length - 1
+                      ? 'invisible'
+                      : isDone && steps[idx + 1]?.status === 'COMPLETED'
+                      ? 'bg-emerald-500 shadow-sm shadow-emerald-500/30'
+                      : isDone && steps[idx + 1]?.status === 'ACTIVE'
+                      ? 'bg-gradient-to-r from-emerald-500 to-emerald-400'
+                      : 'bg-border/60'
+                  }`}
+                />
+              </div>
+
+              {/* Labels below node */}
+              <div className="text-center sm:text-left px-1">
+                <div className="flex items-center justify-center sm:justify-start gap-1.5">
+                  <h4
+                    className={`font-bold text-xs sm:text-[13px] leading-tight ${
+                      isCurrent
+                        ? 'text-emerald-700 dark:text-emerald-300 font-extrabold'
+                        : isDone
+                        ? 'text-foreground'
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    {s.title}
+                  </h4>
+                </div>
+
+                <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug line-clamp-2">
+                  {s.desc}
+                </p>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
-

@@ -1,16 +1,8 @@
 import React from 'react';
 import { useCase } from '@/context/CaseContext';
 import { Button } from '@/components/ui/button';
-import {
-  FileText,
-  Send,
-  HelpCircle,
-  Clock,
-  PhoneCall,
-  Upload,
-  ArrowRight,
-  ShieldCheck,
-} from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowRight } from 'lucide-react';
 
 export function NextStepHero() {
   const { caseData, setModal, letters } = useCase();
@@ -24,37 +16,33 @@ export function NextStepHero() {
     switch (next.action) {
       case 'REVIEW_LETTER':
         return {
-          icon: FileText,
           title: 'Action Required: Review & Approve Representation Letter',
-          description: next.text,
-          buttonText: 'Review & Print Representation',
+          description: next.text || 'Review and approve your Section 106 representation letter to submit to bank branch.',
+          buttonText: 'Review & Print',
           onClick: () => setModal('REVIEW_LETTER', letterId),
         };
 
       case 'SEND_LETTER':
         return {
-          icon: Send,
           title: 'Letter Approved: Deliver to Bank Branch',
-          description: 'Print it, email it, or hand it in at your branch. Then click below to start the statutory 7-day clock.',
-          buttonText: 'Mark Sent & Start 7-Day Clock',
+          description: 'Print it or deliver it at your branch, then start the statutory 7-day countdown.',
+          buttonText: 'Mark Sent & Start Clock',
           onClick: () => setModal('MARK_SENT', letterId),
         };
 
       case 'ANSWER_QUESTIONS':
         return {
-          icon: HelpCircle,
           title: 'Clarification Needed for Legal Grounding',
           description: next.text,
-          buttonText: 'Answer 2 Quick Questions',
+          buttonText: 'Answer 2 Questions',
           onClick: () => setModal('ANSWER_QUESTIONS'),
         };
 
       case 'WAIT':
         return {
-          icon: Clock,
           title: 'Bank Statutory Clock is Running',
           description: next.text + (next.dueOn ? ` Expected resolution by: ${next.dueOn}` : ''),
-          buttonText: 'View Statutory Countdown',
+          buttonText: 'View Clock',
           onClick: () => {
             const el = document.getElementById('statutory-deadlines-section');
             el?.scrollIntoView({ behavior: 'smooth' });
@@ -63,68 +51,47 @@ export function NextStepHero() {
 
       case 'SEE_LEGAL_AID':
         return {
-          icon: PhoneCall,
           title: 'Safety Protection: Free Legal Aid Referral',
           description: next.text,
-          buttonText: 'View Legal Aid Instructions & Helpline',
+          buttonText: 'View Legal Aid',
           onClick: () => {
             const el = document.getElementById('referral-section');
             el?.scrollIntoView({ behavior: 'smooth' });
           },
         };
 
-      case 'UPLOAD_PAPERS':
-        return {
-          icon: Upload,
-          title: 'Add Bank Notice & Statement',
-          description: next.text,
-          buttonText: 'Upload Documents Now',
-          onClick: () => setModal('UPLOAD_PAPERS'),
-        };
-
       default:
         return {
-          icon: ShieldCheck,
           title: 'Case Under Active Monitoring',
           description: next.text,
-          buttonText: 'View Audit Log',
+          buttonText: 'Review Details',
           onClick: () => {},
         };
     }
   };
 
   const action = renderActionDetails();
-  const ActionIcon = action.icon;
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 shadow-sm transition-all relative overflow-hidden">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6 relative">
-        <div className="space-y-2 max-w-2xl">
-          <div className="inline-flex items-center gap-2 rounded-lg bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold tracking-wide border border-emerald-500/25 text-emerald-800 dark:text-emerald-300">
-            <ActionIcon className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span className="uppercase tracking-wider text-[11px] font-mono">
-              Immediate Statutory Action
-            </span>
-          </div>
-
-          <h3 className="text-lg sm:text-2xl font-extrabold tracking-tight text-foreground leading-snug">
+    <Card className="border-border bg-card shadow-card rounded-2xl overflow-hidden">
+      <CardContent className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-1 min-w-0 max-w-xl">
+          <h3 className="text-sm sm:text-base font-bold text-foreground tracking-tight">
             {action.title}
           </h3>
-
-          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-normal">
+          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
             {action.description}
           </p>
         </div>
 
-        <div className="shrink-0 flex flex-col sm:flex-row md:flex-col gap-2.5 w-full md:w-auto pt-1 md:pt-0">
+        <div className="shrink-0 flex items-center gap-2 self-start md:self-center">
           <Button
-            size="lg"
+            size="default"
             variant="default"
             onClick={action.onClick}
-            className="group w-full sm:w-auto h-11 px-5 rounded-xl text-sm font-bold justify-center bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs active:scale-[0.98] transition-all"
+            className="h-10 px-5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs active:scale-[0.98] transition-all"
           >
             <span>{action.buttonText}</span>
-            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Button>
 
           {caseData.stage === 'WAITING' && (
@@ -132,13 +99,13 @@ export function NextStepHero() {
               size="sm"
               variant="outline"
               onClick={() => setModal('RECORD_REPLY')}
-              className="w-full sm:w-auto h-9 text-xs justify-center border-border bg-secondary/50 text-foreground hover:bg-secondary"
+              className="h-9 text-xs border-border bg-secondary/50 text-foreground hover:bg-secondary"
             >
-              Received Bank Response? Record It
+              Record Reply
             </Button>
           )}
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
