@@ -5,5 +5,11 @@ spring:
 server:
   port: ${PORT:8080}
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /docs
+
 bonafide:
   demo-mode: true

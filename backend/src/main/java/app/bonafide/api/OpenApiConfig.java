@@ -17,7 +17,8 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Bonafide API")
-                        .description("Self-help case agent for wrongly frozen bank accounts. "
+                        .description("Long-running AI case agent helping innocent people in India get wrongly "
+                                + "frozen bank accounts released under BNSS 106 and the MHA Cyber SOP. "
                                 + "Every call needs a Firebase ID token; agent work happens in the background "
                                 + "and the app reads the results from Firestore.")
                         .version("0.1.0"))
