@@ -3,7 +3,7 @@ import { useCase } from '@/context/CaseContext';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { FileText, Send, Eye, Scale } from 'lucide-react';
+import { FileText, Send, Eye, Scale, Printer } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 
 export function LettersList() {
@@ -68,8 +68,8 @@ export function LettersList() {
                     onClick={() => setModal('REVIEW_LETTER', letter.id)}
                     className="h-8 text-xs gap-1.5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800"
                   >
-                    <Eye className="h-3.5 w-3.5 text-slate-500" />
-                    <span>View Letter</span>
+                    <Printer className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                    <span>Review & Print</span>
                   </Button>
 
                   {isApproved && (
