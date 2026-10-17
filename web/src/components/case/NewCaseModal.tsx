@@ -106,7 +106,7 @@ export function NewCaseModal() {
               </button>
 
               {showChecklist && (
-                <div className="px-3 pb-3 pt-1 border-t border-slate-200 dark:border-slate-800 space-y-2 text-[11px] text-muted-foreground animate-in fade-in-0 duration-200">
+                <div className="px-3 pb-3 pt-1 border-t border-slate-200 dark:border-slate-800 space-y-2 text-[11px] text-muted-foreground accordion-animate-open">
                   <div className="flex items-start gap-2">
                     <span className="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">1</span>
                     <span>Upload your bank lien SMS, freeze memo, or bank statement.</span>
