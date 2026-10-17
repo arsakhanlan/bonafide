@@ -18,10 +18,11 @@ import { MarkSentModal } from '@/components/case/MarkSentModal';
 import { RecordReplyModal } from '@/components/case/RecordReplyModal';
 import { UploadModal } from '@/components/case/UploadModal';
 import { NewCaseModal } from '@/components/case/NewCaseModal';
+import { SwaggerModal } from '@/components/case/SwaggerModal';
 import { useCase } from '@/context/CaseContext';
 
 export function App() {
-  const { caseData } = useCase();
+  const { caseData, activeModal, setModal } = useCase();
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50/50 dark:bg-slate-950 text-foreground transition-colors">
@@ -70,6 +71,7 @@ export function App() {
       <RecordReplyModal />
       <UploadModal />
       <NewCaseModal />
+      <SwaggerModal isOpen={activeModal === 'SWAGGER'} onClose={() => setModal('NONE')} />
     </div>
   );
 }

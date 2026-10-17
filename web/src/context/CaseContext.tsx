@@ -14,7 +14,8 @@ type ModalType =
   | 'ANSWER_QUESTIONS'
   | 'MARK_SENT'
   | 'RECORD_REPLY'
-  | 'NEW_CASE';
+  | 'NEW_CASE'
+  | 'SWAGGER';
 
 interface CaseContextType {
   caseData: CaseData | null;
