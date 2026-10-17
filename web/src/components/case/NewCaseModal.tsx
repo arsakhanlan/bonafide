@@ -10,13 +10,14 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Shield, CheckCircle2 } from 'lucide-react';
+import { Plus, Shield, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
 
 export function NewCaseModal() {
   const { activeModal, setModal, createNewCase, isProcessing } = useCase();
 
   const [title, setTitle] = useState('');
   const [language, setLanguage] = useState<'en' | 'hi'>('en');
+  const [showChecklist, setShowChecklist] = useState(false);
 
   if (activeModal !== 'NEW_CASE') return null;
 
@@ -83,6 +84,43 @@ export function NewCaseModal() {
                   हिंदी (Hindi)
                 </button>
               </div>
+            </div>
+
+            {/* Accordion: Case Initiation Guidance & Statutory Checklist */}
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/30 overflow-hidden text-xs">
+              <button
+                type="button"
+                onClick={() => setShowChecklist(!showChecklist)}
+                className="w-full flex items-center justify-between p-3 text-left font-medium text-slate-800 dark:text-slate-200 hover:bg-slate-100/70 dark:hover:bg-slate-800/40 transition-colors"
+                aria-expanded={showChecklist}
+              >
+                <div className="flex items-center gap-2">
+                  <Shield className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span className="font-semibold text-xs">What happens next? (Statutory Process)</span>
+                </div>
+                {showChecklist ? (
+                  <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
+                ) : (
+                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                )}
+              </button>
+
+              {showChecklist && (
+                <div className="px-3 pb-3 pt-1 border-t border-slate-200 dark:border-slate-800 space-y-2 text-[11px] text-muted-foreground animate-in fade-in-0 duration-200">
+                  <div className="flex items-start gap-2">
+                    <span className="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">1</span>
+                    <span>Upload your bank lien SMS, freeze memo, or bank statement.</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">2</span>
+                    <span>AI Reader automatically isolates the disputed transaction vs. your innocent surplus balance.</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">3</span>
+                    <span>Generates a ready-to-sign statutory unfreeze letter quoting BNSS §106 and MHA SOP.</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

@@ -32,6 +32,7 @@ interface GuidedTourModalProps {
 
 export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
   const [currentStep, setCurrentStep] = useState(0);
+  const [slideDirection, setSlideDirection] = useState<'forward' | 'backward'>('forward');
   const { selectPersona, setModal } = useCase();
 
   const tourSteps = [
@@ -92,6 +93,7 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
 
   const handleNext = () => {
     if (currentStep < tourSteps.length - 1) {
+      setSlideDirection('forward');
       setCurrentStep(currentStep + 1);
     } else {
       selectPersona('RAVI');
@@ -101,6 +103,7 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
 
   const handlePrev = () => {
     if (currentStep > 0) {
+      setSlideDirection('backward');
       setCurrentStep(currentStep - 1);
     }
   };
@@ -108,19 +111,30 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-xl p-0 overflow-hidden rounded-2xl border-slate-200 dark:border-slate-800 shadow-2xl">
+        {/* Subtle Indian Sovereign Tricolor Top Ribbon Accent */}
+        <div className="h-1 w-full bg-sovereign-tricolor opacity-90" />
+
         {/* Step Progress Top Bar */}
-        <div className="bg-gradient-to-br from-[#07170f] to-[#040c07] text-white p-4 sm:p-6 pb-4 sm:pb-5 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-[#07170f] via-[#05140c] to-[#040c07] text-white p-4 sm:p-6 pb-4 sm:pb-5 relative overflow-hidden">
           <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/20 blur-2xl" />
+          <div className="pointer-events-none absolute -left-10 -bottom-10 h-32 w-32 rounded-full bg-amber-500/10 blur-2xl" />
 
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-white/10 text-white shrink-0">
+              <div className="p-2 rounded-xl bg-white/10 text-white shrink-0 shadow-sm border border-white/10">
                 <StepIcon className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-emerald-400" />
               </div>
               <div>
-                <Badge variant="outline" className="text-[10px] font-mono uppercase tracking-wider py-0 h-4 border-emerald-500/40 bg-emerald-950/40 text-emerald-200">
-                  {step.badge}
-                </Badge>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <Badge variant="outline" className="text-[10px] font-mono uppercase tracking-wider py-0 h-4 border-emerald-500/40 bg-emerald-950/40 text-emerald-200">
+                    {step.badge}
+                  </Badge>
+                  {/* Subtle India Sovereign Emblem Pill */}
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0 rounded text-[9px] font-mono font-semibold bg-white/10 text-stone-300 border border-white/10">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    <span>India BNSS §106</span>
+                  </span>
+                </div>
                 <div className="text-[11px] sm:text-xs text-stone-400 font-mono mt-0.5">
                   Step {currentStep + 1} of {tourSteps.length}
                 </div>
@@ -135,29 +149,42 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
             </button>
           </div>
 
-          <h3 className="text-base sm:text-xl font-bold text-white tracking-tight leading-snug">
-            {step.headline}
-          </h3>
+          <div key={`headline-${currentStep}`} className={slideDirection === 'forward' ? 'tour-slide-forward' : 'tour-slide-backward'}>
+            <h3 className="text-base sm:text-xl font-bold text-white tracking-tight leading-snug">
+              {step.headline}
+            </h3>
+          </div>
 
           {/* Stepper Dots */}
           <div className="flex items-center gap-1.5 mt-3 sm:mt-4">
             {tourSteps.map((_, i) => (
-              <div
+              <button
                 key={i}
-                className={`h-1.5 rounded-full transition-all ${
+                type="button"
+                onClick={() => {
+                  setSlideDirection(i > currentStep ? 'forward' : 'backward');
+                  setCurrentStep(i);
+                }}
+                className={`h-1.5 rounded-full transition-all focus:outline-none ${
                   i === currentStep
                     ? 'w-8 bg-emerald-500 shadow-sm shadow-emerald-500/50'
                     : i < currentStep
-                    ? 'w-3 bg-emerald-700'
-                    : 'w-3 bg-stone-700'
+                    ? 'w-3 bg-emerald-700 hover:bg-emerald-600'
+                    : 'w-3 bg-stone-700 hover:bg-stone-600'
                 }`}
+                aria-label={`Go to step ${i + 1}`}
               />
             ))}
           </div>
         </div>
 
-        {/* Story Body */}
-        <div className="p-4 sm:p-6 space-y-3 sm:space-y-4 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+        {/* Story Body with animated transition */}
+        <div
+          key={`content-${currentStep}`}
+          className={`p-4 sm:p-6 space-y-3 sm:space-y-4 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed ${
+            slideDirection === 'forward' ? 'tour-slide-forward' : 'tour-slide-backward'
+          }`}
+        >
           <p>{step.content}</p>
 
           {currentStep === 4 && (
@@ -204,19 +231,19 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
             variant="ghost"
             disabled={currentStep === 0}
             onClick={handlePrev}
-            className="text-xs gap-1"
+            className="text-xs gap-1 group active:scale-[0.98] transition-all"
           >
-            <ArrowLeft className="h-3.5 w-3.5" />
+            <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
             Previous
           </Button>
 
           <Button
             size="sm"
             onClick={handleNext}
-            className="text-xs font-semibold gap-1.5 px-4 bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 shadow-sm"
+            className="text-xs font-semibold gap-1.5 px-4 bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 shadow-sm group active:scale-[0.98] transition-all"
           >
             <span>{step.actionText}</span>
-            <ArrowRight className="h-3.5 w-3.5" />
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
           </Button>
         </DialogFooter>
       </DialogContent>
