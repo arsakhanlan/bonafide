@@ -51,10 +51,10 @@ export function CitizenJourneyStepper() {
     <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-subtle transition-all">
       <div className="flex items-center justify-between mb-3">
         <span className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
-          <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-blue-400 stroke-[1.75]" />
+          <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 stroke-[1.75]" />
           Statutory Unfreeze Roadmap:
         </span>
-        <span className="text-xs font-mono text-muted-foreground">
+        <span className="text-xs font-mono text-muted-foreground bg-secondary/80 px-2 py-0.5 rounded border border-border/60">
           Step {isSent ? '4 of 4' : isApproved ? '3 of 4' : '3 of 4'}
         </span>
       </div>
@@ -72,7 +72,7 @@ export function CitizenJourneyStepper() {
               onClick={s.onClick}
               className={`p-3 sm:p-3.5 rounded-xl border text-left transition-all relative flex flex-col justify-between card-hover-micro active:scale-[0.99] ${
                 isCurrent
-                  ? 'border-blue-600 bg-blue-50/60 dark:border-blue-500 dark:bg-blue-950/30 ring-2 ring-blue-600/20 shadow-sm'
+                  ? 'border-emerald-600 bg-emerald-500/10 dark:border-emerald-500 dark:bg-emerald-950/30 ring-2 ring-emerald-500/20 shadow-sm glow-emerald'
                   : isDone
                   ? 'border-border bg-secondary/30'
                   : 'border-border/60 bg-muted/20 opacity-70'
@@ -81,11 +81,11 @@ export function CitizenJourneyStepper() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span
-                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                       isDone
                         ? 'bg-foreground text-background'
                         : isCurrent
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-emerald-600 text-white shadow-xs'
                         : 'bg-secondary text-muted-foreground'
                     }`}
                   >
@@ -97,7 +97,7 @@ export function CitizenJourneyStepper() {
                       isDone
                         ? 'text-muted-foreground'
                         : isCurrent
-                        ? 'text-blue-700 dark:text-blue-400'
+                        ? 'text-emerald-700 dark:text-emerald-400'
                         : 'text-muted-foreground/60'
                     }`}
                   >

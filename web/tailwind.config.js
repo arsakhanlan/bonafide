@@ -48,16 +48,16 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        // Sovereign BFSI & statutory status accents
+        // Sovereign Indian Statutory tokens (Non-blue: Veridian Emerald, Aurum Gold & Ruby)
         legal: {
-          lapis: '#1d4ed8',
-          lapisBg: '#eff4fe',
-          emerald: '#047857',
+          emerald: '#059669',
           emeraldBg: '#ecfdf5',
-          amber: '#b45309',
-          amberBg: '#fffbeb',
+          aurum: '#d97706',
+          aurumBg: '#fffbeb',
           crimson: '#be123c',
           crimsonBg: '#fff1f2',
+          jade: '#10b981',
+          gold: '#f59e0b',
         },
       },
       borderRadius: {
@@ -98,14 +98,34 @@ export default {
           to: { height: '0' },
         },
         pulseGlow: {
-          '0%, 100%': { opacity: 1, transform: 'scale(1)' },
-          '50%': { opacity: 0.6, transform: 'scale(0.97)' },
+          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '0.6', transform: 'scale(0.97)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+        laser: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(200%)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-3px)' },
+        },
+        aurora: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
         },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+        'pulse-glow': 'pulseGlow 2.5s ease-in-out infinite',
+        'shimmer': 'shimmer 2.5s infinite linear',
+        'laser': 'laser 2.2s infinite ease-in-out',
+        'float': 'float 3.5s ease-in-out infinite',
+        'aurora': 'aurora 10s ease infinite',
       },
     },
   },

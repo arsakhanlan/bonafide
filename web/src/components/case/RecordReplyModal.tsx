@@ -46,7 +46,7 @@ export function RecordReplyModal() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
             <div className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5 text-indigo-600 shrink-0" />
+              <MessageSquare className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
                 Record Bank or Police Response
               </DialogTitle>
@@ -70,7 +70,7 @@ export function RecordReplyModal() {
                     className="w-full text-left p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs active:scale-[0.99]"
                   >
                     <div className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-                      <Sparkles className="h-3 w-3 text-indigo-500 shrink-0" />
+                      <Sparkles className="h-3 w-3 text-amber-500 shrink-0" />
                       {p.title}
                     </div>
                     <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">

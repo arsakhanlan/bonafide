@@ -43,7 +43,7 @@ export function UploadModal() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
             <div className="flex items-center gap-2">
-              <Upload className="h-5 w-5 text-indigo-600 shrink-0" />
+              <Upload className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
                 Upload Freeze Papers & Proofs
               </DialogTitle>

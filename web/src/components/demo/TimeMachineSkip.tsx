@@ -1,28 +1,29 @@
 import React from 'react';
 import { useCase } from '@/context/CaseContext';
 import { Button } from '@/components/ui/button';
-import { FastForward, Clock, CalendarDays, Loader2 } from 'lucide-react';
+import { FastForward, Clock, CalendarDays, Loader2, Sparkles } from 'lucide-react';
 
 export function TimeMachineSkip() {
   const { skipTime, isProcessing, simulatedDays, currentSimulatedDate } = useCase();
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-3.5 sm:p-4 shadow-subtle transition-all flex flex-col md:flex-row md:items-center justify-between gap-3">
+    <div className="rounded-2xl border border-border bg-card p-3.5 sm:p-4 shadow-subtle transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 relative overflow-hidden">
       <div className="flex items-start sm:items-center gap-3 min-w-0">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-xs">
           <FastForward className="h-4 w-4" />
         </div>
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-0.5">
-            <span className="text-xs font-bold uppercase tracking-wider text-foreground">
+            <span className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1">
+              <Sparkles className="h-3 w-3 text-amber-500" />
               Evaluator Time Machine
             </span>
-            <span className="rounded bg-secondary px-1.5 py-0.5 text-[10px] font-mono font-medium text-foreground">
+            <span className="rounded bg-secondary px-1.5 py-0.5 text-[10px] font-mono font-medium text-foreground border border-border/60">
               Date: {currentSimulatedDate}
             </span>
             {simulatedDays > 0 && (
-              <span className="text-[10px] font-mono font-bold text-blue-600 dark:text-blue-400">
-                (+{simulatedDays}d)
+              <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
+                (+{simulatedDays}d elapsed)
               </span>
             )}
           </div>
@@ -61,7 +62,7 @@ export function TimeMachineSkip() {
           variant="default"
           disabled={isProcessing}
           onClick={() => skipTime(8)}
-          className="h-9 px-2 sm:px-3 text-xs justify-center font-medium bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs active:scale-[0.98] transition-all"
+          className="h-9 px-2 sm:px-3 text-xs justify-center font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-xs active:scale-[0.98] transition-all"
         >
           {isProcessing ? <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0 sm:mr-1" /> : <FastForward className="h-3.5 w-3.5 shrink-0 sm:mr-1" />}
           <span className="hidden lg:inline">+8 Days (Overdue Reminder)</span>

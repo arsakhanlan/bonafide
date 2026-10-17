@@ -31,7 +31,7 @@ export function App() {
   const [activeIntelTab, setActiveIntelTab] = useState<string>('trace');
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors selection:bg-emerald-600 selection:text-white">
       <Header />
 
       <main className="flex-1 container px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 max-w-6xl">
@@ -76,7 +76,7 @@ export function App() {
                           value="trace"
                           className="text-[11px] sm:text-xs font-semibold px-1 sm:px-2.5 py-1 justify-center rounded-md data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs transition-all flex items-center gap-1 sm:gap-1.5"
                         >
-                          <Cpu className="h-3.5 w-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
+                          <Cpu className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
                           <span className="truncate">Agent Mesh</span>
                         </TabsTrigger>
 

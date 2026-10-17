@@ -71,7 +71,7 @@ export function ReferralCard() {
           </div>
 
           <div className="p-4 rounded-xl bg-card border border-border space-y-1">
-            <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 text-xs font-semibold uppercase tracking-wider font-mono">
+            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-xs font-semibold uppercase tracking-wider font-mono">
               <Globe className="h-4 w-4" />
               Online Portal
             </div>

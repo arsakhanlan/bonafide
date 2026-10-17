@@ -6,7 +6,7 @@ export function Footer() {
     <footer className="mt-auto border-t border-border bg-card/50 py-5 sm:py-6 text-xs text-muted-foreground safe-area-bottom">
       <div className="container px-3 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
         <div className="flex items-center gap-2 text-center md:text-left">
-          <Scale className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
+          <Scale className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <p>
             <strong className="font-semibold text-foreground">
               Statutory Self-Help Defense:

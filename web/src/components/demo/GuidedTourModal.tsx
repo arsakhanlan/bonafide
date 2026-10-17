@@ -109,19 +109,19 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-xl p-0 overflow-hidden rounded-2xl border-slate-200 dark:border-slate-800 shadow-2xl">
         {/* Step Progress Top Bar */}
-        <div className="bg-slate-900 text-white p-4 sm:p-6 pb-4 sm:pb-5 relative overflow-hidden">
-          <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-500/20 blur-2xl" />
+        <div className="bg-gradient-to-br from-[#07170f] to-[#040c07] text-white p-4 sm:p-6 pb-4 sm:pb-5 relative overflow-hidden">
+          <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/20 blur-2xl" />
 
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div className="flex items-center gap-2">
               <div className="p-2 rounded-xl bg-white/10 text-white shrink-0">
-                <StepIcon className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-blue-400" />
+                <StepIcon className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-emerald-400" />
               </div>
               <div>
-                <Badge variant="outline" className="text-[10px] font-mono uppercase tracking-wider py-0 h-4 border-slate-700 bg-slate-800 text-slate-200">
+                <Badge variant="outline" className="text-[10px] font-mono uppercase tracking-wider py-0 h-4 border-emerald-500/40 bg-emerald-950/40 text-emerald-200">
                   {step.badge}
                 </Badge>
-                <div className="text-[11px] sm:text-xs text-slate-400 font-mono mt-0.5">
+                <div className="text-[11px] sm:text-xs text-stone-400 font-mono mt-0.5">
                   Step {currentStep + 1} of {tourSteps.length}
                 </div>
               </div>
@@ -129,7 +129,7 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
 
             <button
               onClick={onClose}
-              className="rounded-lg p-1.5 text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+              className="rounded-lg p-1.5 text-stone-400 hover:text-white hover:bg-white/10 transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
@@ -146,10 +146,10 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
                 key={i}
                 className={`h-1.5 rounded-full transition-all ${
                   i === currentStep
-                    ? 'w-8 bg-blue-500'
+                    ? 'w-8 bg-emerald-500 shadow-sm shadow-emerald-500/50'
                     : i < currentStep
-                    ? 'w-3 bg-blue-700'
-                    : 'w-3 bg-slate-700'
+                    ? 'w-3 bg-emerald-700'
+                    : 'w-3 bg-stone-700'
                 }`}
               />
             ))}

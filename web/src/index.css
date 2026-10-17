@@ -4,65 +4,65 @@
 
 @layer base {
   :root {
-    --background: 220 25% 97.5%;
-    --foreground: 222 47% 11%;
+    --background: 45 20% 98%;
+    --foreground: 155 35% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 155 35% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 155 35% 10%;
 
-    --primary: 224 76% 48%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 158 84% 30%;
+    --primary-foreground: 45 20% 98%;
 
-    --secondary: 220 16% 94%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 150 15% 94%;
+    --secondary-foreground: 155 35% 12%;
 
-    --muted: 220 16% 94%;
-    --muted-foreground: 215 16% 46%;
+    --muted: 150 15% 94%;
+    --muted-foreground: 150 12% 44%;
 
-    --accent: 224 76% 96%;
-    --accent-foreground: 224 76% 48%;
+    --accent: 158 80% 95%;
+    --accent-foreground: 158 84% 28%;
 
     --destructive: 347 77% 50%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 14% 90%;
-    --input: 220 14% 90%;
-    --ring: 224 76% 48%;
+    --border: 150 14% 88%;
+    --input: 150 14% 88%;
+    --ring: 158 84% 30%;
 
-    --radius: 0.75rem;
+    --radius: 0.875rem;
   }
 
   .dark {
-    --background: 222 44% 7%;
-    --foreground: 210 40% 98%;
+    --background: 155 38% 5%;
+    --foreground: 145 20% 96%;
 
-    --card: 222 36% 11%;
-    --card-foreground: 210 40% 98%;
+    --card: 155 28% 9%;
+    --card-foreground: 145 20% 96%;
 
-    --popover: 222 36% 11%;
-    --popover-foreground: 215 20% 65%;
+    --popover: 155 28% 9%;
+    --popover-foreground: 145 20% 96%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 11%;
+    --primary: 156 75% 48%;
+    --primary-foreground: 155 45% 6%;
 
-    --secondary: 222 24% 17%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 155 20% 15%;
+    --secondary-foreground: 145 20% 96%;
 
-    --muted: 222 24% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 155 20% 15%;
+    --muted-foreground: 150 15% 65%;
 
-    --accent: 224 60% 18%;
-    --accent-foreground: 217 91% 65%;
+    --accent: 155 40% 14%;
+    --accent-foreground: 156 75% 55%;
 
     --destructive: 347 77% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 145 20% 96%;
 
-    --border: 222 24% 18%;
-    --input: 222 24% 18%;
-    --ring: 217 91% 60%;
+    --border: 155 20% 16%;
+    --input: 155 20% 16%;
+    --ring: 156 75% 48%;
   }
 
   * {
@@ -77,6 +77,20 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     overscroll-behavior-y: none;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.06) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.05) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.04) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  .dark body {
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.14) 0px, transparent 55%),
+      radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.07) 0px, transparent 50%),
+      radial-gradient(at 50% 50%, rgba(5, 150, 105, 0.05) 0px, transparent 65%),
+      radial-gradient(at 80% 100%, rgba(16, 185, 129, 0.09) 0px, transparent 55%);
+    background-attachment: fixed;
   }
 
   button, a, input, select, textarea {
@@ -178,15 +192,36 @@
 
 /* Sophisticated Elevation Shadows */
 .shadow-subtle {
-  box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 1px -1px rgb(15 23 42 / 0.02);
+  box-shadow: 0 1px 2px 0 rgba(7, 14, 10, 0.04), 0 1px 1px -1px rgba(7, 14, 10, 0.02);
 }
 
 .shadow-card {
-  box-shadow: 0 1px 3px 0 rgb(15 23 42 / 0.05), 0 2px 4px -2px rgb(15 23 42 / 0.04);
+  box-shadow: 0 2px 8px -2px rgba(7, 14, 10, 0.06), 0 1px 3px -1px rgba(7, 14, 10, 0.04);
 }
 
 .shadow-lifted {
-  box-shadow: 0 4px 12px -2px rgb(15 23 42 / 0.07), 0 2px 6px -2px rgb(15 23 42 / 0.04);
+  box-shadow: 0 10px 25px -4px rgba(7, 14, 10, 0.1), 0 4px 10px -3px rgba(7, 14, 10, 0.05);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 25px -4px rgba(16, 185, 129, 0.35);
+}
+
+.glow-aurum {
+  box-shadow: 0 0 25px -4px rgba(245, 158, 11, 0.3);
+}
+
+/* Moving laser highlight line */
+.laser-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(16, 185, 129, 0.4) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite linear;
+}
+
+/* Sovereign watermark guilloche pattern */
+.bg-guilloche {
+  background-image: radial-gradient(rgba(16, 185, 129, 0.12) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
 /* Tab Transition Animations */
@@ -202,16 +237,16 @@
 }
 
 .tab-animated-content {
-  animation: tabFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: tabFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Micro-interaction card hover */
 .card-hover-micro {
-  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.15s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
 }
 .card-hover-micro:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px -3px rgb(15 23 42 / 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px -4px rgba(16, 185, 129, 0.12);
 }
 
 /* Hide scrollbar for clean mobile snap rails */

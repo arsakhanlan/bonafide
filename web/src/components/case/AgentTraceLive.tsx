@@ -15,7 +15,7 @@ export function AgentTraceLive({ embedded = false }: AgentTraceLiveProps) {
       case 'CASE_BOSS':
         return {
           label: 'Orchestrator',
-          color: 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border-blue-200 dark:border-blue-900',
+          color: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
         };
       case 'READER':
         return {
@@ -49,11 +49,11 @@ export function AgentTraceLive({ embedded = false }: AgentTraceLiveProps) {
     <div className="space-y-2">
       <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-800 text-xs">
         <span className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-          <Cpu className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+          <Cpu className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
           Autonomous Reasoning Mesh
         </span>
         <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-mono">
-          <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           <span>Active ADK Trace</span>
         </div>
       </div>
@@ -116,7 +116,7 @@ export function AgentTraceLive({ embedded = false }: AgentTraceLiveProps) {
             </CardTitle>
           </div>
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
-            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>Autonomous ADK Mesh</span>
           </div>
         </div>
