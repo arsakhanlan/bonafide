@@ -15,7 +15,8 @@ type ModalType =
   | 'MARK_SENT'
   | 'RECORD_REPLY'
   | 'NEW_CASE'
-  | 'SWAGGER';
+  | 'SWAGGER'
+  | 'GUIDED_TOUR';
 
 interface CaseContextType {
   caseData: CaseData | null;

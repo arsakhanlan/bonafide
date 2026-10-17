@@ -78,6 +78,17 @@ export function Header() {
             )}
           </div>
 
+          {/* Guided Tour Walkthrough Button */}
+          <Button
+            size="sm"
+            variant="default"
+            onClick={() => setModal('GUIDED_TOUR')}
+            className="gap-1.5 font-semibold text-xs bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-600 text-white shadow-sm hover:opacity-95"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+            <span>2-Min Guided Tour</span>
+          </Button>
+
           {/* Swagger / API Docs button */}
           <Button
             size="sm"
