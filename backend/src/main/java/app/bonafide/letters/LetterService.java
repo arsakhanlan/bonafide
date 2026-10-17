@@ -109,6 +109,16 @@ public class LetterService {
             cleaned = removeFailingCitations(draft, context);
             result = checker.evaluate(cleaned, context);
         }
+
+        // The safety net: when the AI draft still fails, a plain letter with verbatim quotes is used.
+        if (!result.passed()) {
+            Draft safe = SafeLetter.build(kind, context);
+            DraftChecker.CheckResult safeResult = checker.evaluate(safe, context);
+            if (safeResult.passed()) {
+                cleaned = safe;
+                result = safeResult;
+            }
+        }
         writing.done("Drafted. Checking every quote…");
 
         String letterId = "l_" + java.util.UUID.randomUUID().toString().substring(0, 7);

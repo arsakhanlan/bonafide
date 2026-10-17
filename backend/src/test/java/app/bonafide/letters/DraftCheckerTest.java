@@ -124,6 +124,15 @@ class DraftCheckerTest {
     }
 
     @Test
+    void theSafeLetterPassesItsOwnChecks() {
+        Draft safe = SafeLetter.build(LetterKind.L1_BRANCH, context);
+        DraftChecker.CheckResult result = checker.evaluate(safe, context);
+        assertThat(result.problems()).as("problems: %s", result.problems()).isEmpty();
+        assertThat(result.passed()).isTrue();
+        assertThat(safe.citations()).isNotEmpty();
+    }
+
+    @Test
     void citationLinksAreFilteredToOfficialDomains() {
         assertThat(LetterService.allowedLink("https://the420.in/wp-content/uploads/sop.pdf")).isEmpty();
         assertThat(LetterService.allowedLink("https://mha.gov.in/sop")).isEqualTo("https://mha.gov.in/sop");
