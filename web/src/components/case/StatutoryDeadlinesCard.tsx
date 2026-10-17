@@ -20,7 +20,7 @@ import { formatDate } from '@/lib/utils';
 
 export function StatutoryDeadlinesCard() {
   const { deadlines, caseData, skipTime, isProcessing, setModal } = useCase();
-  const [showLegalDetails, setShowLegalDetails] = useState(false);
+  const [showLegalDetails, setShowLegalDetails] = useState(true);
 
   const primaryDeadline = deadlines.find(d => d.clock === 'BANK_FILE_GRIEVANCE') || deadlines[0];
   const isExpired = primaryDeadline?.status === 'EXPIRED';

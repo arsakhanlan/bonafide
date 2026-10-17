@@ -240,6 +240,21 @@
   animation: tabFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Back and forth oscillating animation */
+@keyframes backAndForth {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(3.5px);
+  }
+}
+
+.animate-back-and-forth {
+  display: inline-block;
+  animation: backAndForth 1.4s ease-in-out infinite;
+}
+
 /* Micro-interaction card hover */
 .card-hover-micro {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;

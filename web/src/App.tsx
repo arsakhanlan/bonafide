@@ -23,7 +23,7 @@ import { NewCaseModal } from '@/components/case/NewCaseModal';
 import { SwaggerModal } from '@/components/case/SwaggerModal';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useCase } from '@/context/CaseContext';
-import { FileCheck, Cpu, History } from 'lucide-react';
+import { FileCheck, Cpu, History, ShieldCheck } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 export function App() {
@@ -111,6 +111,28 @@ export function App() {
                     </div>
                   </Tabs>
                 </Card>
+
+                {/* Persistent Statutory Assurance Message in the Bottom */}
+                <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                  <div className="flex items-start sm:items-center gap-2.5">
+                    <div className="p-1.5 rounded-lg bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 shrink-0 mt-0.5 sm:mt-0">
+                      <ShieldCheck className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-foreground block">
+                        BNSS §106 Strict Statutory Proportionality Protection Active
+                      </span>
+                      <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
+                        Your account is shielded by mandatory Ministry of Home Affairs SOP standards. Bank lien is legally confined to the contested inquiry amount.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
+                    <span className="px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 font-mono text-[10px] font-semibold border border-emerald-500/25">
+                      Statutory Guarantee
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
