@@ -17,3 +17,7 @@ docs/
 handover/
 firebase-debug.log
 Bonafide-deck.pdf
+# Internal files: local-only, never pushed
+CLAUDE.md
+.claude/
+eval/results.md
