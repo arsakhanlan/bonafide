@@ -105,6 +105,36 @@ KINDS=$(curl -s "https://firestore.googleapis.com/v1/projects/$P/databases/(defa
   -H "Authorization: Bearer $TOKEN" | jq -r '[.documents[].fields.kind.stringValue] | join(",")')
 check "an L2_OFFICER letter appears (kinds: $KINDS)" "$(echo "$KINDS" | grep -q L2_OFFICER; echo $?)"
 
+echo "== 9.5 MEERA: questions -> answers -> letter =="
+MEERA=$(curl -s -X POST "$BASE_URL/api/demo/cases" -H "Authorization: Bearer $TOKEN" \
+  -H 'Content-Type: application/json' -d '{"persona":"MEERA"}' | jq -r '.caseId')
+MEERA_STAGE=""
+for i in $(seq 1 60); do
+  MEERA_STAGE=$(curl -s "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$MEERA" \
+    -H "Authorization: Bearer $TOKEN" | jq -r '.fields.stage.stringValue // empty')
+  [ "$MEERA_STAGE" = "NEEDS_ANSWERS" ] && break
+  [ "$MEERA_STAGE" = "LETTER_READY" ] && break
+  [ -n "$MEERA_STAGE" ] && [ "$MEERA_STAGE" != "NEW" ] && break
+  sleep 5
+done
+if [ "$MEERA_STAGE" = "NEEDS_ANSWERS" ]; then
+  ANSWERS=$(curl -s "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$MEERA" \
+    -H "Authorization: Bearer $TOKEN" | jq -c '[.fields.questions.arrayValue.values[]?.mapValue.fields | {questionId: .id.stringValue, answer: (.choices.arrayValue.values[0].stringValue // "Yes")}]')
+  CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE_URL/api/cases/$MEERA/events" \
+    -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+    -d "$(jq -n --argjson a "$ANSWERS" '{type: "ANSWERS", answers: $a}')")
+  check "Meera answers accepted 202" "$([ "$CODE" = "202" ]; echo $?)"
+  for i in $(seq 1 90); do
+    MEERA_STAGE=$(curl -s "https://firestore.googleapis.com/v1/projects/$P/databases/(default)/documents/cases/$MEERA" \
+      -H "Authorization: Bearer $TOKEN" | jq -r '.fields.stage.stringValue // empty')
+    [ "$MEERA_STAGE" = "LETTER_READY" ] && break
+    [ "$MEERA_STAGE" = "FAILED" ] && break
+    sleep 5
+  done
+fi
+check "Meera reaches LETTER_READY (got $MEERA_STAGE)" "$([ "$MEERA_STAGE" = "LETTER_READY" ]; echo $?)"
+curl -s -o /dev/null -X DELETE "$BASE_URL/api/cases/$MEERA" -H "Authorization: Bearer $TOKEN"
+
 echo "== 10. SUNIL -> REFERRED, 0 letters =="
 SUNIL=$(curl -s -X POST "$BASE_URL/api/demo/cases" -H "Authorization: Bearer $TOKEN" \
   -H 'Content-Type: application/json' -d '{"persona":"SUNIL"}' | jq -r '.caseId')
