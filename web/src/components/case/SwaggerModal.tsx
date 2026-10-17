@@ -184,7 +184,7 @@ export function SwaggerModal({ isOpen, onClose }: SwaggerModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-4xl max-h-[92vh] flex flex-col p-0 overflow-hidden rounded-2xl">
+      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-4xl max-h-[92vh] flex flex-col p-0 overflow-hidden rounded-3xl">
         <DialogHeader className="p-4 sm:p-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
           <div className="flex flex-wrap items-center justify-between gap-3 pr-6">
             <div className="flex items-center gap-2.5 min-w-0">

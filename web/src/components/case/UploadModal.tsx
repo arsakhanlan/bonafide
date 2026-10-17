@@ -28,7 +28,7 @@ export function UploadModal() {
   ]);
   const [removingIds, setRemovingIds] = useState<Record<string, boolean>>({});
 
-  if (activeModal !== 'UPLOAD_PAPERS') return null;
+  const isOpen = activeModal === 'UPLOAD_PAPERS';
 
   const handleAddFile = (kind: DocumentKind, defaultName: string) => {
     const newItem: UploadItem = {
@@ -58,8 +58,8 @@ export function UploadModal() {
   };
 
   return (
-    <Dialog open={activeModal === 'UPLOAD_PAPERS'} onOpenChange={() => setModal('NONE')}>
-      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-lg rounded-2xl">
+    <Dialog open={isOpen} onOpenChange={() => setModal('NONE')}>
+      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-lg rounded-3xl">
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
             <div className="flex items-center gap-2">

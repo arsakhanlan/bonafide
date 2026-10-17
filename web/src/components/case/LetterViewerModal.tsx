@@ -77,7 +77,8 @@ export function LetterViewerModal() {
     }
   }, [caseData]);
 
-  if (activeModal !== 'REVIEW_LETTER' || !letter) return null;
+  const isOpen = activeModal === 'REVIEW_LETTER' && Boolean(letter);
+  if (!letter) return null;
 
   const placeholders = extractPlaceholders(bodyText);
   const hasPlaceholders = placeholders.length > 0;
@@ -147,8 +148,8 @@ export function LetterViewerModal() {
   });
 
   return (
-    <Dialog open={activeModal === 'REVIEW_LETTER'} onOpenChange={() => setModal('NONE')}>
-      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-4xl h-[94vh] max-h-[94vh] flex flex-col p-0 gap-0 overflow-hidden bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-2xl rounded-2xl">
+    <Dialog open={isOpen} onOpenChange={() => setModal('NONE')}>
+      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-4xl h-[94vh] max-h-[94vh] flex flex-col p-0 gap-0 overflow-hidden bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-2xl rounded-3xl">
         {/* Modal Top Header (No-Print) */}
         <DialogHeader className="shrink-0 p-3.5 sm:p-5 pb-3 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-2">
           <div className="flex flex-wrap items-center justify-between gap-2.5 pr-6">

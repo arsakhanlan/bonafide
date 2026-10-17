@@ -17,7 +17,7 @@ export function RecordReplyModal() {
 
   const [replyText, setReplyText] = useState('');
 
-  if (activeModal !== 'RECORD_REPLY') return null;
+  const isOpen = activeModal === 'RECORD_REPLY';
 
   const presets = [
     {
@@ -41,8 +41,8 @@ export function RecordReplyModal() {
   };
 
   return (
-    <Dialog open={activeModal === 'RECORD_REPLY'} onOpenChange={() => setModal('NONE')}>
-      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-lg rounded-2xl">
+    <Dialog open={isOpen} onOpenChange={() => setModal('NONE')}>
+      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-lg rounded-3xl">
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
             <div className="flex items-center gap-2">

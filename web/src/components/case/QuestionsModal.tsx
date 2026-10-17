@@ -22,7 +22,7 @@ export function QuestionsModal() {
     q2: '',
   });
 
-  if (activeModal !== 'ANSWER_QUESTIONS' || questions.length === 0) return null;
+  const isOpen = activeModal === 'ANSWER_QUESTIONS' && questions.length > 0;
 
   const handleFillDemo = () => {
     setAnswers({
@@ -41,8 +41,8 @@ export function QuestionsModal() {
   };
 
   return (
-    <Dialog open={activeModal === 'ANSWER_QUESTIONS'} onOpenChange={() => setModal('NONE')}>
-      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-xl rounded-2xl">
+    <Dialog open={isOpen} onOpenChange={() => setModal('NONE')}>
+      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-xl rounded-3xl">
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
             <div className="flex items-center gap-2">
