@@ -48,18 +48,16 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        // Indian BFSI & statutory status accents
+        // Sovereign BFSI & statutory status accents
         legal: {
-          amber: '#f59e0b',
-          amberBg: '#fffbeb',
-          emerald: '#10b981',
+          lapis: '#1d4ed8',
+          lapisBg: '#eff4fe',
+          emerald: '#047857',
           emeraldBg: '#ecfdf5',
-          rose: '#f43f5e',
-          roseBg: '#fff1f2',
-          blue: '#0284c7',
-          blueBg: '#f0f9ff',
-          indigo: '#4f46e5',
-          indigoBg: '#eef2ff',
+          amber: '#b45309',
+          amberBg: '#fffbeb',
+          crimson: '#be123c',
+          crimsonBg: '#fff1f2',
         },
       },
       borderRadius: {
@@ -69,15 +67,21 @@ export default {
       },
       fontFamily: {
         sans: [
-          'Inter',
+          '"Plus Jakarta Sans"',
           '-apple-system',
           'BlinkMacSystemFont',
           'Segoe UI',
           'Roboto',
           'sans-serif',
         ],
+        serif: [
+          'Newsreader',
+          'Georgia',
+          'Cambria',
+          'serif',
+        ],
         mono: [
-          'JetBrains Mono',
+          '"JetBrains Mono"',
           'ui-monospace',
           'SFMono-Regular',
           'Menlo',

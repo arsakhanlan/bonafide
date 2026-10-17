@@ -31,7 +31,7 @@ export function App() {
   const [activeIntelTab, setActiveIntelTab] = useState<string>('trace');
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50/70 dark:bg-slate-950 text-foreground transition-colors selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors selection:bg-blue-600 selection:text-white">
       <Header />
 
       <main className="flex-1 container px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 max-w-6xl">
@@ -68,13 +68,13 @@ export function App() {
 
               {/* Intelligence Stage (5 cols / ~42%): AI Agent Trace & Verification Evidence */}
               <div className="lg:col-span-5 space-y-4 sm:space-y-6">
-                <Card className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-card rounded-2xl overflow-hidden">
+                <Card className="border-border bg-card shadow-card rounded-2xl overflow-hidden">
                   <Tabs value={activeIntelTab} onValueChange={setActiveIntelTab} className="w-full">
-                    <div className="px-3 pt-3 pb-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40">
-                      <TabsList className="w-full grid grid-cols-3 bg-slate-200/80 dark:bg-slate-800 p-0.5 h-9 rounded-lg">
+                    <div className="px-3 pt-3 pb-2 border-b border-border/60 bg-muted/30">
+                      <TabsList className="w-full grid grid-cols-3 bg-secondary/80 p-0.5 h-9 rounded-lg">
                         <TabsTrigger
                           value="trace"
-                          className="text-[11px] sm:text-xs font-semibold px-1 sm:px-2.5 py-1 justify-center rounded-md data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs dark:data-[state=active]:bg-slate-950 dark:data-[state=active]:text-white transition-all flex items-center gap-1 sm:gap-1.5"
+                          className="text-[11px] sm:text-xs font-semibold px-1 sm:px-2.5 py-1 justify-center rounded-md data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs transition-all flex items-center gap-1 sm:gap-1.5"
                         >
                           <Cpu className="h-3.5 w-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
                           <span className="truncate">Agent Mesh</span>
@@ -82,17 +82,17 @@ export function App() {
 
                         <TabsTrigger
                           value="evidence"
-                          className="text-[11px] sm:text-xs font-semibold px-1 sm:px-2.5 py-1 justify-center rounded-md data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs dark:data-[state=active]:bg-slate-950 dark:data-[state=active]:text-white transition-all flex items-center gap-1 sm:gap-1.5"
+                          className="text-[11px] sm:text-xs font-semibold px-1 sm:px-2.5 py-1 justify-center rounded-md data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs transition-all flex items-center gap-1 sm:gap-1.5"
                         >
-                          <FileCheck className="h-3.5 w-3.5 shrink-0 text-slate-500" />
+                          <FileCheck className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                           <span className="truncate">Evidence ({documents.length})</span>
                         </TabsTrigger>
 
                         <TabsTrigger
                           value="audit"
-                          className="text-[11px] sm:text-xs font-semibold px-1 sm:px-2.5 py-1 justify-center rounded-md data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs dark:data-[state=active]:bg-slate-950 dark:data-[state=active]:text-white transition-all flex items-center gap-1 sm:gap-1.5"
+                          className="text-[11px] sm:text-xs font-semibold px-1 sm:px-2.5 py-1 justify-center rounded-md data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs transition-all flex items-center gap-1 sm:gap-1.5"
                         >
-                          <History className="h-3.5 w-3.5 shrink-0 text-slate-500" />
+                          <History className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                           <span className="truncate">Audit Log</span>
                         </TabsTrigger>
                       </TabsList>
