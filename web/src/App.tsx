@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/Footer';
 import { PersonaSelector } from '@/components/demo/PersonaSelector';
 import { TimeMachineSkip } from '@/components/demo/TimeMachineSkip';
 import { SimpleHeroStatus } from '@/components/case/SimpleHeroStatus';
+import { MoneyCard } from '@/components/case/MoneyCard';
 import { CitizenJourneyStepper } from '@/components/case/CitizenJourneyStepper';
 import { NextStepHero } from '@/components/case/NextStepHero';
 import { StatutoryDeadlinesCard } from '@/components/case/StatutoryDeadlinesCard';
@@ -22,14 +23,15 @@ import { NewCaseModal } from '@/components/case/NewCaseModal';
 import { SwaggerModal } from '@/components/case/SwaggerModal';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useCase } from '@/context/CaseContext';
-import { FileText, Clock, FileCheck, Cpu, History } from 'lucide-react';
+import { FileCheck, Cpu, History } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 
 export function App() {
-  const { caseData, activeModal, setModal, letters } = useCase();
-  const [activeTab, setActiveTab] = useState<string>('letter');
+  const { caseData, activeModal, setModal, documents } = useCase();
+  const [activeIntelTab, setActiveIntelTab] = useState<string>('trace');
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50/60 dark:bg-slate-950 text-foreground transition-colors selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-slate-50/70 dark:bg-slate-950 text-foreground transition-colors selection:bg-blue-600 selection:text-white">
       <Header />
 
       <main className="flex-1 container py-6 space-y-6 max-w-6xl">
@@ -40,76 +42,76 @@ export function App() {
         </section>
 
         {caseData && (
-          <section aria-label="Active Case Details" className="space-y-6">
-            {/* 1. Ultra-clean Citizen Reassurance & Financial Entitlement Hero */}
+          <section aria-label="Active Case Command Center" className="space-y-6">
+            {/* 1. Case Context & Legal Grounding Banner */}
             <SimpleHeroStatus />
 
-            {/* 2. Clear 4-Step Citizen Journey Progress Tracker */}
+            {/* 2. Statutory Balance Bifurcation (BNSS §106 Strict Formula) */}
+            <MoneyCard />
+
+            {/* 3. The 4-Step Citizen Roadmap */}
             <CitizenJourneyStepper />
 
-            {/* 3. The One Big Action Button */}
+            {/* 4. The Single Decisive Action Hero */}
             <NextStepHero />
 
-            {/* 4. Safety Protection Referral (For Sunil / Mule detection) */}
+            {/* 5. Safety Referral (Triggered on mule / lending accounts) */}
             <ReferralCard />
 
-            {/* 5. Progressive Tabbed Deep Workspace (Zero Data Loss, Zero Cognitive Clutter) */}
-            <div className="space-y-4 pt-2">
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <div className="flex items-center justify-between flex-wrap gap-2 pb-1">
-                  <TabsList className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-1 h-11 rounded-xl shadow-sm">
-                    <TabsTrigger value="letter" className="gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-slate-950">
-                      <FileText className="h-3.5 w-3.5" />
-                      <span>Representation Letter ({letters.length})</span>
-                    </TabsTrigger>
+            {/* 6. Dual-Pane Command Center: Zero Data Hidden, Zero Visual Clutter */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* Primary Stage (7 cols / ~58%): Representation Letters & 7-Day Statutory Countdown */}
+              <div className="lg:col-span-7 space-y-6">
+                <LettersList />
+                <StatutoryDeadlinesCard />
+              </div>
 
-                    <TabsTrigger value="clock" className="gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-slate-950">
-                      <Clock className="h-3.5 w-3.5" />
-                      <span>7-Day Bank Clock</span>
-                    </TabsTrigger>
+              {/* Intelligence Stage (5 cols / ~42%): AI Agent Trace & Verification Evidence */}
+              <div className="lg:col-span-5 space-y-6">
+                <Card className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-card overflow-hidden">
+                  <Tabs value={activeIntelTab} onValueChange={setActiveIntelTab} className="w-full">
+                    <div className="px-3 pt-3 pb-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 flex items-center justify-between">
+                      <TabsList className="bg-slate-200/80 dark:bg-slate-800 p-0.5 h-8 rounded-lg">
+                        <TabsTrigger
+                          value="trace"
+                          className="text-xs font-semibold px-2.5 py-1 rounded-md data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs dark:data-[state=active]:bg-slate-950 dark:data-[state=active]:text-white transition-all flex items-center gap-1.5"
+                        >
+                          <Cpu className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                          <span>Agent Mesh</span>
+                        </TabsTrigger>
 
-                    <TabsTrigger value="evidence" className="gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-slate-950">
-                      <FileCheck className="h-3.5 w-3.5" />
-                      <span>Evidence Papers</span>
-                    </TabsTrigger>
+                        <TabsTrigger
+                          value="evidence"
+                          className="text-xs font-semibold px-2.5 py-1 rounded-md data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs dark:data-[state=active]:bg-slate-950 dark:data-[state=active]:text-white transition-all flex items-center gap-1.5"
+                        >
+                          <FileCheck className="h-3.5 w-3.5 text-slate-500" />
+                          <span>Evidence ({documents.length})</span>
+                        </TabsTrigger>
 
-                    <TabsTrigger value="trace" className="gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-slate-950">
-                      <Cpu className="h-3.5 w-3.5" />
-                      <span>AI Agent Trace</span>
-                    </TabsTrigger>
+                        <TabsTrigger
+                          value="audit"
+                          className="text-xs font-semibold px-2.5 py-1 rounded-md data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs dark:data-[state=active]:bg-slate-950 dark:data-[state=active]:text-white transition-all flex items-center gap-1.5"
+                        >
+                          <History className="h-3.5 w-3.5 text-slate-500" />
+                          <span>Audit Log</span>
+                        </TabsTrigger>
+                      </TabsList>
+                    </div>
 
-                    <TabsTrigger value="audit" className="gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-slate-950">
-                      <History className="h-3.5 w-3.5" />
-                      <span>Audit Trail</span>
-                    </TabsTrigger>
-                  </TabsList>
-                </div>
-
-                {/* Tab 1: Representation Letter */}
-                <TabsContent value="letter" className="mt-4 space-y-4">
-                  <LettersList />
-                </TabsContent>
-
-                {/* Tab 2: 7-Day Bank Clock */}
-                <TabsContent value="clock" className="mt-4 space-y-4">
-                  <StatutoryDeadlinesCard />
-                </TabsContent>
-
-                {/* Tab 3: Evidence Papers */}
-                <TabsContent value="evidence" className="mt-4 space-y-4">
-                  <DocumentsList />
-                </TabsContent>
-
-                {/* Tab 4: AI Agent Reasoning Mesh (For technical evaluators) */}
-                <TabsContent value="trace" className="mt-4 space-y-4">
-                  <AgentTraceLive />
-                </TabsContent>
-
-                {/* Tab 5: Case Audit History */}
-                <TabsContent value="audit" className="mt-4 space-y-4">
-                  <CaseTimeline />
-                </TabsContent>
-              </Tabs>
+                    <div className="p-4 tab-animated-content">
+                      <TabsContent value="trace" className="m-0 focus-visible:outline-none">
+                        <AgentTraceLive embedded />
+                      </TabsContent>
+                      <TabsContent value="evidence" className="m-0 focus-visible:outline-none">
+                        <DocumentsList embedded />
+                      </TabsContent>
+                      <TabsContent value="audit" className="m-0 focus-visible:outline-none">
+                        <CaseTimeline embedded />
+                      </TabsContent>
+                    </div>
+                  </Tabs>
+                </Card>
+              </div>
             </div>
           </section>
         )}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCase } from '@/context/CaseContext';
-import { Check, Clock, FileText, Send, Sparkles, ShieldCheck } from 'lucide-react';
+import { Check, ShieldCheck } from 'lucide-react';
 
 export function CitizenJourneyStepper() {
   const { caseData, letters, setModal } = useCase();
@@ -9,7 +9,6 @@ export function CitizenJourneyStepper() {
 
   const isApproved = letters.some(l => l.status === 'APPROVED');
   const isSent = letters.some(l => l.status === 'SENT');
-  const isWaiting = caseData.stage === 'WAITING';
   const isResolved = caseData.stage === 'RESOLVED' || caseData.stage === 'PARTLY_RELEASED';
 
   const steps = [
@@ -49,11 +48,11 @@ export function CitizenJourneyStepper() {
   ];
 
   return (
-    <div className="rounded-2xl border border-slate-200/90 bg-white dark:border-slate-800/90 dark:bg-slate-900/60 p-5 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-subtle dark:border-slate-800 dark:bg-slate-900 transition-all">
+      <div className="flex items-center justify-between mb-3.5">
         <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-          <Sparkles className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-          Your Case Journey to Unfreeze:
+          <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-blue-400 stroke-[1.75]" />
+          Statutory Unfreeze Roadmap:
         </span>
         <span className="text-xs font-mono text-muted-foreground">
           Step {isSent ? '4 of 4' : isApproved ? '3 of 4' : '3 of 4'}
@@ -61,7 +60,7 @@ export function CitizenJourneyStepper() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 relative">
-        {steps.map((s, idx) => {
+        {steps.map(s => {
           const isDone = s.status === 'COMPLETED';
           const isCurrent = s.status === 'ACTIVE';
 
@@ -71,12 +70,12 @@ export function CitizenJourneyStepper() {
               type="button"
               disabled={!s.onClick}
               onClick={s.onClick}
-              className={`p-3.5 rounded-xl border text-left transition-all relative flex flex-col justify-between ${
+              className={`p-3.5 rounded-xl border text-left transition-all relative flex flex-col justify-between card-hover-micro ${
                 isCurrent
-                  ? 'border-indigo-600 bg-indigo-50/50 dark:border-indigo-500 dark:bg-indigo-950/20 ring-1 ring-indigo-500/30'
+                  ? 'border-blue-600 bg-blue-50/40 dark:border-blue-500 dark:bg-blue-950/20 ring-1 ring-blue-500/20 shadow-subtle'
                   : isDone
-                  ? 'border-emerald-200 bg-emerald-50/30 dark:border-emerald-950/60 dark:bg-emerald-950/10'
-                  : 'border-slate-200/80 bg-slate-50/40 dark:border-slate-800 dark:bg-slate-900/30 opacity-70'
+                  ? 'border-slate-200 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-900/60'
+                  : 'border-slate-200/60 bg-slate-50/30 dark:border-slate-800/60 dark:bg-slate-900/30 opacity-70'
               }`}
             >
               <div>
@@ -84,9 +83,9 @@ export function CitizenJourneyStepper() {
                   <span
                     className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
                       isDone
-                        ? 'bg-emerald-600 text-white'
+                        ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
                         : isCurrent
-                        ? 'bg-indigo-600 text-white animate-pulse'
+                        ? 'bg-blue-600 text-white'
                         : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
                     }`}
                   >
@@ -96,13 +95,13 @@ export function CitizenJourneyStepper() {
                   <span
                     className={`text-[10px] font-mono font-semibold uppercase ${
                       isDone
-                        ? 'text-emerald-700 dark:text-emerald-400'
+                        ? 'text-slate-600 dark:text-slate-400'
                         : isCurrent
-                        ? 'text-indigo-700 dark:text-indigo-400'
+                        ? 'text-blue-700 dark:text-blue-400'
                         : 'text-muted-foreground'
                     }`}
                   >
-                    {isDone ? 'Done' : isCurrent ? 'Action Now' : 'Pending'}
+                    {isDone ? 'Complete' : isCurrent ? 'Next Action' : 'Pending'}
                   </span>
                 </div>
 
@@ -121,3 +120,4 @@ export function CitizenJourneyStepper() {
     </div>
   );
 }
+

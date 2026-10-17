@@ -115,13 +115,13 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <div className="p-2 rounded-xl bg-white/10 text-white">
-                <StepIcon className="h-5 w-5 text-indigo-300" />
+                <StepIcon className="h-5 w-5 text-blue-400" />
               </div>
               <div>
-                <Badge variant={step.badgeColor} className="text-[10px] font-mono uppercase tracking-wider py-0 h-4">
+                <Badge variant="outline" className="text-[10px] font-mono uppercase tracking-wider py-0 h-4 border-slate-700 bg-slate-800 text-slate-200">
                   {step.badge}
                 </Badge>
-                <div className="text-xs text-slate-300 font-mono mt-0.5">
+                <div className="text-xs text-slate-400 font-mono mt-0.5">
                   Step {currentStep + 1} of {tourSteps.length}
                 </div>
               </div>
@@ -146,10 +146,10 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
                 key={i}
                 className={`h-1.5 rounded-full transition-all ${
                   i === currentStep
-                    ? 'w-8 bg-indigo-400'
+                    ? 'w-8 bg-blue-500'
                     : i < currentStep
-                    ? 'w-3 bg-indigo-600/70'
-                    : 'w-3 bg-white/20'
+                    ? 'w-3 bg-blue-700'
+                    : 'w-3 bg-slate-700'
                 }`}
               />
             ))}
@@ -164,7 +164,7 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
             <div className="grid grid-cols-2 gap-2 pt-2">
               <button
                 onClick={() => { selectPersona('RAVI'); onClose(); }}
-                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-400 text-left text-xs bg-slate-50 dark:bg-slate-900/60 transition-colors"
+                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-400 text-left text-xs bg-slate-50 dark:bg-slate-900/60 transition-colors card-hover-micro"
               >
                 <span className="font-bold text-slate-900 dark:text-slate-100 block">Ravi Sharma</span>
                 <span className="text-[11px] text-muted-foreground">Shopkeeper (Benchmark Happy Path)</span>
@@ -172,7 +172,7 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
 
               <button
                 onClick={() => { selectPersona('MEERA'); onClose(); }}
-                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-400 text-left text-xs bg-slate-50 dark:bg-slate-900/60 transition-colors"
+                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-400 text-left text-xs bg-slate-50 dark:bg-slate-900/60 transition-colors card-hover-micro"
               >
                 <span className="font-bold text-slate-900 dark:text-slate-100 block">Meera Sen</span>
                 <span className="text-[11px] text-muted-foreground">Freelancer (Interactive Q&A)</span>
@@ -180,7 +180,7 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
 
               <button
                 onClick={() => { selectPersona('ARJUN'); onClose(); }}
-                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-400 text-left text-xs bg-slate-50 dark:bg-slate-900/60 transition-colors"
+                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-400 text-left text-xs bg-slate-50 dark:bg-slate-900/60 transition-colors card-hover-micro"
               >
                 <span className="font-bold text-slate-900 dark:text-slate-100 block">Arjun Verma</span>
                 <span className="text-[11px] text-muted-foreground">Crypto P2P Seller (Escrow Logs)</span>
@@ -188,10 +188,10 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
 
               <button
                 onClick={() => { selectPersona('SUNIL'); onClose(); }}
-                className="p-2.5 rounded-xl border border-rose-200 dark:border-rose-900 hover:border-rose-400 text-left text-xs bg-rose-50/50 dark:bg-rose-950/30 transition-colors"
+                className="p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:border-slate-400 text-left text-xs bg-slate-50 dark:bg-slate-900/60 transition-colors card-hover-micro"
               >
-                <span className="font-bold text-rose-900 dark:text-rose-200 block">Sunil Kumar</span>
-                <span className="text-[11px] text-rose-700/80 dark:text-rose-300/80">Account Lending (Legal Aid Referral)</span>
+                <span className="font-bold text-slate-900 dark:text-slate-100 block">Sunil Kumar</span>
+                <span className="text-[11px] text-muted-foreground">Account Lending (Legal Aid Referral)</span>
               </button>
             </div>
           )}
@@ -212,9 +212,8 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
 
           <Button
             size="sm"
-            variant="hero"
             onClick={handleNext}
-            className="text-xs font-semibold gap-1.5 px-4"
+            className="text-xs font-semibold gap-1.5 px-4 bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 shadow-sm"
           >
             <span>{step.actionText}</span>
             <ArrowRight className="h-3.5 w-3.5" />
@@ -224,3 +223,4 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
     </Dialog>
   );
 }
+

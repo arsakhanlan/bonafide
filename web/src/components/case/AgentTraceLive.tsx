@@ -1,86 +1,127 @@
 import React from 'react';
 import { useCase } from '@/context/CaseContext';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Bot, Cpu, CheckCircle2, AlertCircle, Info, Terminal } from 'lucide-react';
+import { Cpu, CheckCircle2, AlertCircle } from 'lucide-react';
 
-export function AgentTraceLive() {
+interface AgentTraceLiveProps {
+  embedded?: boolean;
+}
+
+export function AgentTraceLive({ embedded = false }: AgentTraceLiveProps) {
   const { steps } = useCase();
 
   const getAgentBadge = (agent: string) => {
     switch (agent) {
-      case 'READER':
-        return { label: 'Reader Agent', color: 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300' };
-      case 'SORTER':
-        return { label: 'Sorter Agent', color: 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300' };
-      case 'CHECKER':
-        return { label: 'Checker & Grounding', color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' };
       case 'CASE_BOSS':
-        return { label: 'Case Boss (Orchestrator)', color: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' };
+        return {
+          label: 'Orchestrator',
+          color: 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border-blue-200 dark:border-blue-900',
+        };
+      case 'READER':
+        return {
+          label: 'Doc Reader',
+          color: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700',
+        };
+      case 'CHECKER':
+        return {
+          label: 'BNSS Grounding',
+          color: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700',
+        };
+      case 'SORTER':
+        return {
+          label: 'Transaction Sorter',
+          color: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700',
+        };
       case 'CLOCK':
-        return { label: 'Deadline Engine', color: 'bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300' };
+        return {
+          label: 'Statutory Timer',
+          color: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700',
+        };
       default:
-        return { label: agent, color: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300' };
+        return {
+          label: agent,
+          color: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700',
+        };
     }
   };
 
+  const content = (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-800 text-xs">
+        <span className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+          <Cpu className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+          Autonomous Reasoning Mesh
+        </span>
+        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-mono">
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
+          <span>Active ADK Trace</span>
+        </div>
+      </div>
+
+      <div className="max-h-[380px] overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60 font-mono text-xs pr-1">
+        {steps.map(step => {
+          const badge = getAgentBadge(step.agent);
+          const isWarn = step.level === 'WARN';
+          const isError = step.level === 'ERROR';
+
+          return (
+            <div
+              key={step.id}
+              className="py-2 px-1.5 flex items-start gap-2.5 hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors rounded-lg"
+            >
+              <div className="pt-0.5 shrink-0">
+                {isError ? (
+                  <AlertCircle className="h-3.5 w-3.5 text-rose-500" />
+                ) : isWarn ? (
+                  <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
+                ) : (
+                  <CheckCircle2 className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                )}
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                  <span
+                    className={`px-1.5 py-0.2 rounded border text-[9px] font-semibold tracking-wider uppercase font-mono ${badge.color}`}
+                  >
+                    {badge.label}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-mono">
+                    {step.timestamp}
+                  </span>
+                </div>
+                <p className="text-slate-800 dark:text-slate-200 leading-relaxed font-sans text-xs">
+                  {step.message}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  if (embedded) {
+    return content;
+  }
+
   return (
-    <Card className="border-slate-200/90 shadow-sm dark:border-slate-800/90">
-      <CardHeader className="bg-slate-50/70 py-4 px-6 border-b border-slate-100 dark:bg-slate-900/40 dark:border-slate-800/80">
+    <Card className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-card">
+      <CardHeader className="py-4 px-6 border-b border-slate-100 dark:border-slate-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Cpu className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-            <CardTitle className="text-sm font-semibold tracking-wide">
+            <Cpu className="h-4 w-4 text-slate-800 dark:text-slate-200" />
+            <CardTitle className="text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-100">
               Live Multi-Agent Reasoning Trace
             </CardTitle>
           </div>
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
             <span>Autonomous ADK Mesh</span>
           </div>
         </div>
       </CardHeader>
-
-      <CardContent className="p-0">
-        <div className="max-h-[320px] overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60 p-2 font-mono text-xs">
-          {steps.map(step => {
-            const badge = getAgentBadge(step.agent);
-            const isWarn = step.level === 'WARN';
-            const isError = step.level === 'ERROR';
-
-            return (
-              <div
-                key={step.id}
-                className="py-2.5 px-3 flex items-start gap-3 hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors rounded-lg"
-              >
-                <div className="pt-0.5 shrink-0">
-                  {isError ? (
-                    <AlertCircle className="h-3.5 w-3.5 text-rose-500" />
-                  ) : isWarn ? (
-                    <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
-                  ) : (
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-                  )}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-semibold tracking-wider uppercase ${badge.color}`}>
-                      {badge.label}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground font-mono">
-                      {step.timestamp}
-                    </span>
-                  </div>
-                  <p className="text-slate-800 dark:text-slate-200 leading-relaxed font-sans text-xs">
-                    {step.message}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </CardContent>
+      <CardContent className="p-4">{content}</CardContent>
     </Card>
   );
 }
