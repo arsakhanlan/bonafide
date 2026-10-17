@@ -67,6 +67,7 @@
 
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
@@ -74,11 +75,18 @@
     font-feature-settings: "rlig" 1, "calt" 1, "cv02", "cv03", "cv04", "cv11";
     background-image: radial-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px);
     background-size: 24px 24px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior-y: none;
   }
 
   .dark body {
     background-image: radial-gradient(rgba(51, 65, 85, 0.25) 1px, transparent 1px);
     background-size: 24px 24px;
+  }
+
+  button, a, input, select, textarea {
+    touch-action: manipulation;
   }
 
   :focus-visible {
@@ -205,4 +213,21 @@
 .card-hover-micro:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 14px -3px rgb(15 23 42 / 0.08);
+}
+
+/* Hide scrollbar for clean mobile snap rails */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Safe area padding for mobile PWA standalone mode */
+.safe-area-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+.safe-area-top {
+  padding-top: max(0.5rem, env(safe-area-inset-top));
 }

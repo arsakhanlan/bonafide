@@ -12,9 +12,9 @@ export function LettersList() {
   if (letters.length === 0) return null;
 
   return (
-    <Card className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-card">
-      <CardHeader className="py-4 px-6 border-b border-slate-100 dark:border-slate-800">
-        <div className="flex items-center justify-between">
+    <Card className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-card rounded-2xl overflow-hidden">
+      <CardHeader className="py-3.5 px-4 sm:px-6 border-b border-slate-100 dark:border-slate-800">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <FileText className="h-4 w-4 text-slate-800 dark:text-slate-200 stroke-[1.75]" />
             <CardTitle className="text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-100">
@@ -27,7 +27,7 @@ export function LettersList() {
         </div>
       </CardHeader>
 
-      <CardContent className="p-5 space-y-3">
+      <CardContent className="p-3.5 sm:p-5 space-y-3">
         {letters.map(letter => {
           const isApproved = letter.status === 'APPROVED';
           const isSent = letter.status === 'SENT';
@@ -35,11 +35,11 @@ export function LettersList() {
           return (
             <div
               key={letter.id}
-              className="p-4 rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950/40 hover:border-slate-300 dark:hover:border-slate-700 transition-all text-xs space-y-3 card-hover-micro"
+              className="p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950/40 hover:border-slate-300 dark:hover:border-slate-700 transition-all text-xs space-y-3 card-hover-micro"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div>
-                  <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-bold text-slate-900 dark:text-slate-100 text-sm">
                       {letter.title}
                     </span>
@@ -56,17 +56,17 @@ export function LettersList() {
                       {letter.status}
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-xs text-muted-foreground mt-0.5 truncate">
                     To: {letter.recipient || 'The Branch Manager / Nodal Officer'}
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="grid grid-cols-2 gap-2 w-full sm:w-auto sm:flex sm:items-center shrink-0 pt-1 sm:pt-0">
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => setModal('REVIEW_LETTER', letter.id)}
-                    className="h-8 text-xs gap-1.5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800"
+                    className="h-9 px-3 text-xs gap-1.5 justify-center bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-[0.98]"
                   >
                     <Printer className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
                     <span>Review & Print</span>
@@ -77,7 +77,7 @@ export function LettersList() {
                       size="sm"
                       variant="default"
                       onClick={() => setModal('MARK_SENT', letter.id)}
-                      className="h-8 text-xs gap-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 font-semibold shadow-sm"
+                      className="h-9 px-3 text-xs gap-1.5 justify-center bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 font-semibold shadow-sm active:scale-[0.98]"
                     >
                       <Send className="h-3.5 w-3.5" />
                       <span>Mark as Sent</span>

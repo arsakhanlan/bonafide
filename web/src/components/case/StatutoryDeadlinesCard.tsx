@@ -60,9 +60,9 @@ export function StatutoryDeadlinesCard() {
   ];
 
   return (
-    <Card id="statutory-deadlines-section" className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-sm">
-      <CardHeader className="py-4 px-6 border-b border-slate-100 dark:border-slate-800">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+    <Card id="statutory-deadlines-section" className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-sm rounded-2xl overflow-hidden">
+      <CardHeader className="py-3.5 px-4 sm:px-6 border-b border-slate-100 dark:border-slate-800">
+        <div className="flex flex-wrap items-center justify-between gap-2.5">
           <div className="flex items-center gap-2">
             <Timer className="h-4 w-4 text-slate-800 dark:text-slate-200" />
             <CardTitle className="text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-100">
@@ -84,16 +84,16 @@ export function StatutoryDeadlinesCard() {
         </div>
       </CardHeader>
 
-      <CardContent className="p-6 space-y-6">
+      <CardContent className="p-4 sm:p-6 space-y-5">
         {/* Main Countdown Box */}
         <div
-          className={`rounded-xl border p-5 transition-all ${
+          className={`rounded-xl border p-4 sm:p-5 transition-all ${
             isExpired
               ? 'border-rose-300 bg-rose-50/40 dark:border-rose-900/60 dark:bg-rose-950/20'
               : 'border-slate-200 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-950/40'
           }`}
         >
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-5 border-b border-slate-200/70 dark:border-slate-800">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 pb-4 sm:pb-5 border-b border-slate-200/70 dark:border-slate-800">
             {/* Countdown Digits */}
             <div className="space-y-1">
               <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground block">
@@ -101,7 +101,7 @@ export function StatutoryDeadlinesCard() {
               </span>
               <div className="flex items-baseline gap-3">
                 <span
-                  className={`text-4xl sm:text-5xl font-black font-mono tracking-tight num-tabular ${
+                  className={`text-3xl sm:text-5xl font-black font-mono tracking-tight num-tabular ${
                     isExpired
                       ? 'text-rose-600 dark:text-rose-400'
                       : 'text-slate-900 dark:text-white'
@@ -121,7 +121,7 @@ export function StatutoryDeadlinesCard() {
             </div>
 
             {/* Target Obligation Note */}
-            <div className="rounded-lg bg-white dark:bg-slate-900 p-3 border border-slate-200 dark:border-slate-800 text-xs space-y-1 max-w-sm">
+            <div className="rounded-lg bg-white dark:bg-slate-900 p-3 border border-slate-200 dark:border-slate-800 text-xs space-y-1 w-full md:max-w-sm">
               <div className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
                 <Building2 className="h-3.5 w-3.5 text-slate-600 dark:text-slate-400" />
                 <span>Obligated: {caseData?.money?.bankName || 'Branch Manager'}</span>
@@ -145,7 +145,7 @@ export function StatutoryDeadlinesCard() {
               </span>
             </div>
 
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-7 gap-1 sm:gap-2">
               {dayMilestones.map(day => {
                 const isPassed = elapsedDays >= day || isExpired;
                 const isCurrent = elapsedDays + 1 === day && !isExpired;
@@ -201,7 +201,7 @@ export function StatutoryDeadlinesCard() {
                   size="sm"
                   variant="destructive"
                   onClick={() => setModal('REVIEW_LETTER', 'REMINDER_L1_BANK')}
-                  className="h-7 text-xs font-semibold gap-1.5"
+                  className="w-full sm:w-auto h-8 text-xs font-semibold gap-1.5 justify-center"
                 >
                   <FileText className="h-3 w-3" />
                   Review Overdue Reminder Letter
@@ -223,7 +223,7 @@ export function StatutoryDeadlinesCard() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
             {statutoryPhases.map(phase => {
               const isActive = phase.status === 'ACTIVE';
               const isPhaseExpired = phase.status === 'EXPIRED';

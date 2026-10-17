@@ -39,12 +39,12 @@ export function UploadModal() {
 
   return (
     <Dialog open={activeModal === 'UPLOAD_PAPERS'} onOpenChange={() => setModal('NONE')}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-lg rounded-2xl">
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
             <div className="flex items-center gap-2">
-              <Upload className="h-5 w-5 text-indigo-600" />
-              <DialogTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">
+              <Upload className="h-5 w-5 text-indigo-600 shrink-0" />
+              <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
                 Upload Freeze Papers & Proofs
               </DialogTitle>
             </div>
@@ -53,7 +53,7 @@ export function UploadModal() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3 py-2">
+          <div className="space-y-3 py-1">
             {/* Quick add chips */}
             <div>
               <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block mb-1.5">
@@ -65,7 +65,7 @@ export function UploadModal() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleAddFile('NOTICE', 'Cyber_Notice_SMS.txt')}
-                  className="h-7 text-xs gap-1"
+                  className="h-8 text-xs gap-1 active:scale-[0.98]"
                 >
                   <Plus className="h-3 w-3" /> + Notice / SMS
                 </Button>
@@ -74,7 +74,7 @@ export function UploadModal() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleAddFile('STATEMENT', 'Bank_Statement_Oct.pdf')}
-                  className="h-7 text-xs gap-1"
+                  className="h-8 text-xs gap-1 active:scale-[0.98]"
                 >
                   <Plus className="h-3 w-3" /> + Bank Statement
                 </Button>
@@ -83,7 +83,7 @@ export function UploadModal() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleAddFile('INVOICE', 'Sale_Tax_Invoice.pdf')}
-                  className="h-7 text-xs gap-1"
+                  className="h-8 text-xs gap-1 active:scale-[0.98]"
                 >
                   <Plus className="h-3 w-3" /> + Bill / Invoice
                 </Button>
@@ -92,7 +92,7 @@ export function UploadModal() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleAddFile('CHAT', 'Client_Chat_Receipt.txt')}
-                  className="h-7 text-xs gap-1"
+                  className="h-8 text-xs gap-1 active:scale-[0.98]"
                 >
                   <Plus className="h-3 w-3" /> + Customer Chat
                 </Button>
@@ -106,12 +106,12 @@ export function UploadModal() {
                   key={i}
                   className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 text-xs"
                 >
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-slate-500" />
-                    <span className="font-medium text-slate-800 dark:text-slate-200">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <FileText className="h-4 w-4 text-slate-500 shrink-0" />
+                    <span className="font-medium text-slate-800 dark:text-slate-200 truncate">
                       {f.name}
                     </span>
-                    <Badge variant="secondary" className="text-[10px] h-4 py-0">
+                    <Badge variant="secondary" className="text-[10px] h-4 py-0 shrink-0">
                       {f.kind}
                     </Badge>
                   </div>
@@ -120,7 +120,7 @@ export function UploadModal() {
                     variant="ghost"
                     size="icon"
                     onClick={() => handleRemove(i)}
-                    className="h-7 w-7 text-rose-500 hover:text-rose-700"
+                    className="h-7 w-7 text-rose-500 hover:text-rose-700 shrink-0"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
@@ -137,13 +137,13 @@ export function UploadModal() {
             </div>
           </div>
 
-          <DialogFooter className="flex items-center justify-between gap-2 pt-2">
+          <DialogFooter className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-2">
             <Button
               type="button"
               variant="ghost"
               size="sm"
               onClick={() => setModal('NONE')}
-              className="text-xs"
+              className="text-xs h-9 justify-center"
             >
               Cancel
             </Button>
@@ -152,7 +152,7 @@ export function UploadModal() {
               variant="default"
               size="sm"
               disabled={isProcessing || filesToUpload.length === 0}
-              className="text-xs gap-1.5 bg-slate-900 dark:bg-white dark:text-slate-900"
+              className="text-xs h-10 sm:h-9 gap-1.5 bg-slate-900 dark:bg-white dark:text-slate-900 font-semibold shadow-sm justify-center w-full sm:w-auto"
             >
               <Upload className="h-4 w-4" />
               Extract Evidence with Reader Agent

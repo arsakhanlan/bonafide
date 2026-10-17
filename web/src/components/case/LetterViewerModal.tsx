@@ -146,16 +146,16 @@ export function LetterViewerModal() {
 
   return (
     <Dialog open={activeModal === 'REVIEW_LETTER'} onOpenChange={() => setModal('NONE')}>
-      <DialogContent className="max-w-4xl h-[92vh] max-h-[92vh] flex flex-col p-0 gap-0 overflow-hidden bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-2xl">
+      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-4xl h-[94vh] max-h-[94vh] flex flex-col p-0 gap-0 overflow-hidden bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-2xl rounded-2xl">
         {/* Modal Top Header (No-Print) */}
-        <DialogHeader className="shrink-0 p-5 pb-3 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-2">
-          <div className="flex flex-wrap items-center justify-between gap-3 pr-6">
+        <DialogHeader className="shrink-0 p-3.5 sm:p-5 pb-3 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-2.5 pr-6">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="p-2 rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-950 shrink-0">
                 <FileText className="h-4 w-4 stroke-[2]" />
               </div>
               <div className="min-w-0">
-                <DialogTitle className="text-base font-bold text-slate-900 dark:text-slate-100 truncate">
+                <DialogTitle className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 truncate">
                   {letter.title}
                 </DialogTitle>
                 <DialogDescription className="text-xs text-muted-foreground truncate">
@@ -164,14 +164,14 @@ export function LetterViewerModal() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               {/* Paper Tone Toggle (In Document Mode) */}
               {viewMode === 'DOCUMENT' && (
                 <button
                   type="button"
                   title="Toggle White Paper vs Dark Document"
                   onClick={() => setPaperTone(paperTone === 'AUTO' ? 'WHITE' : 'AUTO')}
-                  className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                  className="hidden md:flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                 >
                   {paperTone === 'WHITE' ? (
                     <>
@@ -192,27 +192,29 @@ export function LetterViewerModal() {
                 <button
                   type="button"
                   onClick={() => setViewMode('DOCUMENT')}
-                  className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 rounded-md text-xs font-semibold transition-all ${
                     viewMode === 'DOCUMENT'
                       ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-950 dark:text-white'
                       : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                   }`}
                 >
                   <Eye className="h-3.5 w-3.5" />
-                  <span>Document View</span>
+                  <span className="hidden xs:inline">Document View</span>
+                  <span className="xs:hidden">Doc</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setViewMode('EDIT')}
-                  className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 rounded-md text-xs font-semibold transition-all ${
                     viewMode === 'EDIT'
                       ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-950 dark:text-white'
                       : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                   }`}
                 >
                   <Edit3 className="h-3.5 w-3.5" />
-                  <span>Edit Text</span>
+                  <span className="hidden xs:inline">Edit Text</span>
+                  <span className="xs:hidden">Edit</span>
                 </button>
               </div>
 
@@ -274,13 +276,13 @@ export function LetterViewerModal() {
         )}
 
         {/* Main Viewing Canvas */}
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain bg-slate-100/70 dark:bg-slate-950/80 p-4 sm:p-6 pb-14">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain bg-slate-100/70 dark:bg-slate-950/80 p-2.5 sm:p-6 pb-14">
           {viewMode === 'DOCUMENT' ? (
             /* =========================================================================
                AUTHENTIC LEGAL STATIONERY SHEET (Cleanly scrollable, zero overflow)
                ========================================================================= */
             <div
-              className={`w-full max-w-2xl mx-auto rounded-xl border p-6 sm:p-9 font-serif text-[12.5px] sm:text-[13px] leading-relaxed relative shadow-lifted transition-all ${
+              className={`w-full max-w-2xl mx-auto rounded-xl border p-4 sm:p-9 font-serif text-[12px] sm:text-[13px] leading-relaxed relative shadow-lifted transition-all ${
                 paperTone === 'WHITE'
                   ? 'bg-white text-slate-900 border-slate-300 shadow-md'
                   : 'bg-white text-slate-900 border-slate-200/80 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-800'
@@ -479,7 +481,7 @@ export function LetterViewerModal() {
 
                 {/* Digital Verification Stamp */}
                 <div
-                  className={`rounded-lg border-2 p-2.5 text-center shrink-0 w-[190px] text-[9.5px] font-mono ${
+                  className={`rounded-lg border-2 p-2.5 text-center shrink-0 w-full sm:w-[190px] text-[9.5px] font-mono ${
                     paperTone === 'WHITE'
                       ? 'border-slate-900 text-slate-900 bg-slate-50/50'
                       : 'border-slate-900 text-slate-900 bg-slate-50/50 dark:border-slate-200 dark:text-slate-100 dark:bg-slate-950/50'
@@ -535,23 +537,24 @@ export function LetterViewerModal() {
         </div>
 
         {/* Modal Bottom Footer (No-Print) */}
-        <DialogFooter className="shrink-0 p-4 px-6 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
+        <DialogFooter className="shrink-0 p-3 sm:p-4 px-4 sm:px-6 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-2.5">
+          <div className="grid grid-cols-2 gap-2 w-full sm:w-auto sm:flex sm:items-center">
             <Button
               size="sm"
               variant="outline"
               onClick={handlePrint}
-              className="text-xs gap-1.5 h-9 bg-white text-slate-900 border-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 shadow-sm font-semibold"
+              className="text-xs gap-1.5 h-9 justify-center bg-white text-slate-900 border-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 shadow-sm font-semibold active:scale-[0.98]"
             >
               <Printer className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-              <span>Print Official Letter (A4)</span>
+              <span className="hidden sm:inline">Print Official Letter (A4)</span>
+              <span className="sm:hidden">Print (A4)</span>
             </Button>
 
             <Button
               size="sm"
               variant="outline"
               onClick={handleCopy}
-              className="text-xs gap-1.5 h-9 border-slate-300 dark:border-slate-700"
+              className="text-xs gap-1.5 h-9 justify-center border-slate-300 dark:border-slate-700 active:scale-[0.98]"
             >
               {isCopied ? (
                 <Check className="h-3.5 w-3.5 text-emerald-600" />
@@ -562,12 +565,12 @@ export function LetterViewerModal() {
             </Button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button
               size="sm"
               variant="ghost"
               onClick={() => setModal('NONE')}
-              className="text-xs h-9 text-slate-600 dark:text-slate-400"
+              className="text-xs h-9 text-slate-600 dark:text-slate-400 flex-1 sm:flex-none justify-center"
             >
               Close
             </Button>
@@ -577,10 +580,10 @@ export function LetterViewerModal() {
                 size="sm"
                 disabled={isProcessing}
                 onClick={handleApprove}
-                className="text-xs h-9 font-semibold gap-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 shadow-sm"
+                className="text-xs h-9 font-semibold gap-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 shadow-sm flex-1 sm:flex-none justify-center active:scale-[0.98]"
               >
                 <CheckCircle2 className="h-4 w-4" />
-                <span>Approve & Sign Letter</span>
+                <span>Approve & Sign</span>
               </Button>
             )}
 
@@ -588,10 +591,11 @@ export function LetterViewerModal() {
               <Button
                 size="sm"
                 onClick={() => setModal('MARK_SENT', letter.id)}
-                className="text-xs h-9 font-semibold gap-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 shadow-sm"
+                className="text-xs h-9 font-semibold gap-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 shadow-sm flex-1 sm:flex-none justify-center active:scale-[0.98]"
               >
                 <Send className="h-4 w-4" />
-                <span>Deliver to Bank (Start 7-Day Clock)</span>
+                <span className="hidden sm:inline">Deliver to Bank (Start 7-Day Clock)</span>
+                <span className="sm:hidden">Deliver to Bank</span>
               </Button>
             )}
           </div>

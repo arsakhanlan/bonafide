@@ -181,18 +181,18 @@ export function SwaggerModal({ isOpen, onClose }: SwaggerModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 overflow-hidden">
-        <DialogHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-4xl max-h-[92vh] flex flex-col p-0 overflow-hidden rounded-2xl">
+        <DialogHeader className="p-4 sm:p-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
           <div className="flex flex-wrap items-center justify-between gap-3 pr-6">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900">
-                <Code className="h-5 w-5" />
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900 shrink-0">
+                <Code className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
-              <div>
-                <DialogTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">
+              <div className="min-w-0">
+                <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 truncate">
                   Bonafide OpenAPI & Swagger Explorer
                 </DialogTitle>
-                <DialogDescription className="text-xs text-muted-foreground">
+                <DialogDescription className="text-xs text-muted-foreground truncate">
                   OpenAPI 3.0.3 specification for Spring Boot API & Cloud Run service
                 </DialogDescription>
               </div>
@@ -222,12 +222,12 @@ export function SwaggerModal({ isOpen, onClose }: SwaggerModalProps) {
           </div>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-1.5 pt-3">
+          <div className="flex items-center gap-1.5 pt-2.5 sm:pt-3 overflow-x-auto scrollbar-none pb-0.5">
             {(['ALL', 'Cases', 'Demo', 'Letters', 'Events'] as const).map(t => (
               <button
                 key={t}
                 onClick={() => setSelectedTag(t)}
-                className={`text-xs px-2.5 py-1 rounded-md font-medium transition-colors ${
+                className={`text-xs px-2.5 py-1 rounded-md font-medium transition-colors shrink-0 ${
                   selectedTag === t
                     ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
                     : 'text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-800'
@@ -240,7 +240,7 @@ export function SwaggerModal({ isOpen, onClose }: SwaggerModalProps) {
         </DialogHeader>
 
         {/* Content list */}
-        <div className="flex-1 p-6 overflow-y-auto space-y-4">
+        <div className="flex-1 p-3.5 sm:p-6 overflow-y-auto space-y-3 sm:space-y-4">
           {filtered.map((ep, idx) => (
             <div
               key={idx}

@@ -27,12 +27,12 @@ export function NewCaseModal() {
 
   return (
     <Dialog open={activeModal === 'NEW_CASE'} onOpenChange={() => setModal('NONE')}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-md rounded-2xl">
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
             <div className="flex items-center gap-2">
-              <Plus className="h-5 w-5 text-indigo-600" />
-              <DialogTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">
+              <Plus className="h-5 w-5 text-indigo-600 shrink-0" />
+              <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
                 Start a New Freeze Defense Case
               </DialogTitle>
             </div>
@@ -41,7 +41,7 @@ export function NewCaseModal() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3 py-2">
+          <div className="space-y-3 py-1">
             <div>
               <label className="text-xs font-semibold text-slate-900 dark:text-slate-100 block mb-1">
                 Case Name or Store Name:
@@ -51,7 +51,7 @@ export function NewCaseModal() {
                 onChange={e => setTitle(e.target.value)}
                 placeholder="e.g. Pune Electronics - HDFC Lien Defense"
                 required
-                className="text-xs"
+                className="text-sm sm:text-xs h-10 sm:h-9"
               />
             </div>
 
@@ -63,7 +63,7 @@ export function NewCaseModal() {
                 <button
                   type="button"
                   onClick={() => setLanguage('en')}
-                  className={`p-2.5 rounded-lg border text-center text-xs font-medium transition-all ${
+                  className={`p-2.5 rounded-lg border text-center text-xs font-medium transition-all active:scale-[0.98] ${
                     language === 'en'
                       ? 'border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-slate-950 font-semibold'
                       : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/40'
@@ -74,7 +74,7 @@ export function NewCaseModal() {
                 <button
                   type="button"
                   onClick={() => setLanguage('hi')}
-                  className={`p-2.5 rounded-lg border text-center text-xs font-medium transition-all ${
+                  className={`p-2.5 rounded-lg border text-center text-xs font-medium transition-all active:scale-[0.98] ${
                     language === 'hi'
                       ? 'border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-slate-950 font-semibold'
                       : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/40'
@@ -86,13 +86,13 @@ export function NewCaseModal() {
             </div>
           </div>
 
-          <DialogFooter className="flex items-center justify-between gap-2 pt-2">
+          <DialogFooter className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-2">
             <Button
               type="button"
               variant="ghost"
               size="sm"
               onClick={() => setModal('NONE')}
-              className="text-xs"
+              className="text-xs h-9 justify-center"
             >
               Cancel
             </Button>
@@ -101,7 +101,7 @@ export function NewCaseModal() {
               variant="default"
               size="sm"
               disabled={isProcessing}
-              className="text-xs gap-1.5 bg-slate-900 dark:bg-white dark:text-slate-900 font-semibold"
+              className="text-xs h-10 sm:h-9 gap-1.5 bg-slate-900 dark:bg-white dark:text-slate-900 font-semibold shadow-sm justify-center w-full sm:w-auto"
             >
               <CheckCircle2 className="h-4 w-4" />
               Create Case File

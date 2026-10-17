@@ -13,12 +13,12 @@ export function ReferralCard() {
   const referral = caseData.referral;
 
   return (
-    <Card id="referral-section" className="border-2 border-purple-500/80 bg-purple-50/30 dark:border-purple-600/60 dark:bg-purple-950/20 shadow-md">
-      <CardHeader className="bg-purple-100/70 dark:bg-purple-900/40 py-4 px-6 border-b border-purple-200/80 dark:border-purple-800/80">
-        <div className="flex items-center justify-between">
+    <Card id="referral-section" className="border-2 border-purple-500/80 bg-purple-50/30 dark:border-purple-600/60 dark:bg-purple-950/20 shadow-md rounded-2xl overflow-hidden">
+      <CardHeader className="bg-purple-100/70 dark:bg-purple-900/40 py-3.5 px-4 sm:px-6 border-b border-purple-200/80 dark:border-purple-800/80">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-purple-950 dark:text-purple-200">
-            <AlertOctagon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-            <CardTitle className="text-base font-bold">
+            <AlertOctagon className="h-5 w-5 text-purple-600 dark:text-purple-400 shrink-0" />
+            <CardTitle className="text-sm sm:text-base font-bold">
               Account-Lending Safety Protocol: Legal Aid Referral
             </CardTitle>
           </div>
@@ -28,10 +28,10 @@ export function ReferralCard() {
         </div>
       </CardHeader>
 
-      <CardContent className="p-6 space-y-5">
-        <div className="rounded-xl bg-white dark:bg-slate-900 p-4 border border-purple-200/80 dark:border-purple-900/60 text-xs space-y-2">
+      <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-5">
+        <div className="rounded-xl bg-white dark:bg-slate-900 p-3.5 sm:p-4 border border-purple-200/80 dark:border-purple-900/60 text-xs space-y-2">
           <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-slate-100 text-sm">
-            <ShieldAlert className="h-4 w-4 text-purple-600" />
+            <ShieldAlert className="h-4 w-4 text-purple-600 shrink-0" />
             Why can't self-help letters be generated for this case?
           </div>
           <p className="text-muted-foreground leading-relaxed">
@@ -43,7 +43,7 @@ export function ReferralCard() {
         </div>
 
         {/* Legal Aid Contact Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
           <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1">
             <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300 text-xs font-semibold uppercase tracking-wider">
               <PhoneCall className="h-4 w-4" />
