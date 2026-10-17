@@ -148,27 +148,68 @@ public class LetterService {
         return chunks.size() > 8 ? chunks.subList(0, 8) : chunks;
     }
 
-    /** After the loop, code always re-checks and drops any citation whose quote fails. */
+    /**
+     * After the loop, code always re-checks. A citation whose quote is not word-for-word is
+     * repaired with the closest real sentence from the rule chunk; only if nothing matches
+     * is it dropped (and its marker removed).
+     */
     static Draft removeFailingCitations(Draft draft, CheckContext context) {
         if (draft == null) {
             return null;
         }
         Set<Integer> drop = new LinkedHashSet<>();
+        List<Citation> repaired = new ArrayList<>();
         for (Citation citation : draft.citations() == null ? List.<Citation>of() : draft.citations()) {
             RuleChunk chunk = context.chunkById(citation.chunkId());
             if (chunk == null || !QuoteChecker.contains(chunk.text(), citation.quote())) {
-                drop.add(citation.n());
+                String best = bestMatchingSentence(chunk == null ? "" : chunk.text(), citation.quote());
+                if (best != null) {
+                    repaired.add(new Citation(citation.n(), citation.chunkId(), best));
+                } else {
+                    drop.add(citation.n());
+                }
+            } else {
+                repaired.add(citation);
             }
         }
         if (drop.isEmpty()) {
-            return draft;
+            return new Draft(draft.title(), draft.to(), draft.subject(), draft.body(), repaired, draft.attachments());
         }
-        List<Citation> kept = draft.citations().stream().filter(c -> !drop.contains(c.n())).toList();
         String body = draft.body();
         for (int n : drop) {
             body = body.replaceAll("\\[" + n + "]", "");
         }
-        return new Draft(draft.title(), draft.to(), draft.subject(), body, kept, draft.attachments());
+        return new Draft(draft.title(), draft.to(), draft.subject(), body, repaired, draft.attachments());
+    }
+
+    /** The chunk sentence that shares the most words with the attempted quote, or null. */
+    static String bestMatchingSentence(String chunkText, String attemptedQuote) {
+        if (chunkText == null || attemptedQuote == null) {
+            return null;
+        }
+        List<String> wanted = List.of(attemptedQuote.toLowerCase().replaceAll("[^a-z0-9 ]", " ").trim().split("\\s+"));
+        wanted = wanted.stream().filter(w -> w.length() > 2).toList();
+        if (wanted.isEmpty()) {
+            return null;
+        }
+        String best = null;
+        int bestScore = 0;
+        for (String sentence : chunkText.replaceAll("\\n", " ").split("(?<=[.!?])\\s+")) {
+            String clean = sentence.trim();
+            if (clean.length() < 20) {
+                continue;
+            }
+            List<String> words = List.of(clean.toLowerCase().replaceAll("[^a-z0-9 ]", " ").trim().split("\\s+"));
+            int score = (int) wanted.stream().filter(words::contains).count();
+            if (score > bestScore) {
+                bestScore = score;
+                best = clean;
+            }
+        }
+        if (best == null || bestScore < wanted.size() / 3.0) {
+            return null;
+        }
+        return best;
     }
 
     private Map<String, Object> letterMap(
