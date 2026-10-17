@@ -1,113 +1,407 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useCase } from '@/context/CaseContext';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Clock, AlertTriangle, CheckCircle, Calendar, ShieldAlert } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Clock,
+  AlertTriangle,
+  CheckCircle2,
+  Calendar,
+  ShieldAlert,
+  Scale,
+  ArrowRight,
+  Building2,
+  FileText,
+  FastForward,
+  ChevronDown,
+  ChevronUp,
+  AlertOctagon,
+  Timer,
+  ExternalLink,
+} from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 
 export function StatutoryDeadlinesCard() {
-  const { deadlines, caseData } = useCase();
+  const { deadlines, caseData, skipTime, isProcessing, setModal, currentSimulatedDate } = useCase();
+  const [showLegalDetails, setShowLegalDetails] = useState(false);
+
+  // Default primary clock is the 7-day bank grievance clock
+  const primaryDeadline = deadlines.find(d => d.clock === 'BANK_FILE_GRIEVANCE') || deadlines[0];
+  const isExpired = primaryDeadline?.status === 'EXPIRED';
+  const daysRemaining = primaryDeadline?.daysRemaining ?? (isExpired ? 0 : 7);
+
+  // Total 7-day timeline milestones
+  const dayMilestones = [1, 2, 3, 4, 5, 6, 7];
+  const elapsedDays = Math.max(0, Math.min(7, 7 - daysRemaining));
+
+  // The 3 statutory phases under MHA SOP 2026-01-02
+  const statutoryPhases = [
+    {
+      step: 1,
+      name: 'Bank 7-Day Grievance Window',
+      actor: 'Bank Branch / Nodal Officer',
+      statute: 'MHA SOP Cl. 10.1(a) & BNSS §106',
+      duration: '7 Days',
+      desc: 'Bank must record formal grievance and restrict lien solely to disputed amount.',
+      status: isExpired ? 'EXPIRED' : primaryDeadline ? 'ACTIVE' : 'READY',
+    },
+    {
+      step: 2,
+      name: 'Police IO 15-Day Determination',
+      actor: 'Cyber Police Station IO',
+      statute: 'MHA SOP Cl. 10.1(d)-(f)',
+      duration: '15 Days',
+      desc: 'Investigating Officer reviews tax invoice & proof of consideration to issue partial unfreeze order.',
+      status: 'UPCOMING',
+    },
+    {
+      step: 3,
+      name: '90-Day Absolute Backstop Release',
+      actor: 'Reserve Bank / Scheduled Bank',
+      statute: 'MHA SOP Cl. 10.1 (90-Day Mandate)',
+      duration: '90 Days',
+      desc: 'Statutory mandate: Bank must automatically lift hold if police do not produce judicial extension.',
+      status: 'UPCOMING',
+    },
+  ];
 
   return (
-    <Card id="statutory-deadlines-section" className="border-slate-200/90 shadow-sm dark:border-slate-800/90">
-      <CardHeader className="bg-slate-50/70 py-4 px-6 border-b border-slate-100 dark:bg-slate-900/40 dark:border-slate-800/80">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            <CardTitle className="text-sm font-semibold tracking-wide">
-              Statutory Clocks & Compliance Deadlines
-            </CardTitle>
+    <Card id="statutory-deadlines-section" className="overflow-hidden border-slate-200/90 shadow-sm dark:border-slate-800/90">
+      {/* Header with Live Status & Statutory Badge */}
+      <CardHeader className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur-md">
+              <Timer className="h-5 w-5 text-indigo-300" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-base font-bold text-white tracking-tight">
+                  Statutory Clocks & Compliance Timers
+                </CardTitle>
+                <Badge
+                  variant="outline"
+                  className="border-white/20 text-white bg-white/10 text-[10px] font-mono py-0 h-4.5"
+                >
+                  MHA SOP (2 Jan 2026)
+                </Badge>
+              </div>
+              <p className="text-xs text-slate-300 font-sans mt-0.5">
+                Legally enforceable deadlines under Section 106 Bharatiya Nagarik Suraksha Sanhita
+              </p>
+            </div>
           </div>
-          <Badge variant="outline" className="text-[10px] font-mono">
-            MHA SOP / RBI Redressal
-          </Badge>
+
+          <div className="flex items-center gap-2">
+            {isExpired ? (
+              <Badge variant="destructive" className="bg-rose-600 text-white font-mono text-xs animate-pulse">
+                STATUTORY DEFAULT (DAY 8+)
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="bg-emerald-500/20 text-emerald-300 border-emerald-400/40 font-mono text-xs flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                CLOCK RUNNING: {daysRemaining} DAYS LEFT
+              </Badge>
+            )}
+          </div>
         </div>
       </CardHeader>
 
-      <CardContent className="p-6">
-        {deadlines.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-slate-200 p-8 text-center dark:border-slate-800">
-            <Clock className="mx-auto h-8 w-8 text-slate-300 dark:text-slate-600 mb-2" />
-            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-              No active statutory clocks running
-            </p>
-            <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
-              Once you deliver your representation letter to the bank and mark it as sent, the bank's strict 7-day compliance timer will start here.
-            </p>
+      <CardContent className="p-6 space-y-6">
+        {/* Main Countdown Cockpit */}
+        <div
+          className={`rounded-2xl border p-5 transition-all ${
+            isExpired
+              ? 'border-rose-300 bg-rose-50/50 dark:border-rose-900/60 dark:bg-rose-950/20'
+              : 'border-slate-200 bg-gradient-to-br from-white to-slate-50/60 dark:border-slate-800 dark:from-slate-900/40 dark:to-slate-900/20'
+          }`}
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-5 border-b border-slate-200/70 dark:border-slate-800">
+            {/* Countdown Numbers */}
+            <div className="space-y-1">
+              <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground block">
+                Primary Statutory Window:
+              </span>
+              <div className="flex items-baseline gap-3">
+                <span
+                  className={`text-4xl sm:text-5xl font-black font-mono tracking-tight num-tabular ${
+                    isExpired
+                      ? 'text-rose-600 dark:text-rose-400'
+                      : 'text-slate-900 dark:text-white'
+                  }`}
+                >
+                  {isExpired ? '00' : String(daysRemaining).padStart(2, '0')}
+                </span>
+                <div>
+                  <span className="text-base font-bold text-slate-900 dark:text-slate-100 block">
+                    {isExpired ? 'Days (Lapsed)' : 'Days Remaining'}
+                  </span>
+                  <span className="text-xs text-muted-foreground font-mono">
+                    Due: {formatDate(primaryDeadline?.dueOn || '2026-10-24')} (5:00 PM IST)
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Target Obligation Card */}
+            <div className="rounded-xl bg-white dark:bg-slate-900 p-3.5 border border-slate-200/80 dark:border-slate-800 text-xs space-y-1.5 max-w-sm">
+              <div className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
+                <Building2 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                <span>Obligated Entity: {caseData?.money?.bankName || 'Branch Manager / Nodal Desk'}</span>
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                <strong>Mandate:</strong> Log Section 106 grievance on internal portal and restrict lien to{' '}
+                <strong className="text-slate-900 dark:text-slate-100 font-mono">₹2,000</strong>. Remaining funds must be unlocked.
+              </p>
+            </div>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {deadlines.map(d => {
-              const isExpired = d.status === 'EXPIRED';
-              const daysLeft = d.daysRemaining ?? 7;
-              const progressPct = isExpired ? 100 : Math.max(10, Math.min(100, ((7 - daysLeft) / 7) * 100));
+
+          {/* Segmented 7-Day Timeline Counter */}
+          <div className="pt-5 space-y-2.5">
+            <div className="flex items-center justify-between text-xs font-medium">
+              <span className="text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5 text-indigo-500" />
+                7-Day Compliance Stepper:
+              </span>
+              <span className="font-mono text-[11px] text-muted-foreground">
+                {isExpired ? '7 of 7 Days Elapsed' : `${elapsedDays} of 7 Days Elapsed`}
+              </span>
+            </div>
+
+            {/* 7 Segmented Blocks with Day Badges */}
+            <div className="grid grid-cols-7 gap-2">
+              {dayMilestones.map(day => {
+                const isPassed = elapsedDays >= day || isExpired;
+                const isCurrent = elapsedDays + 1 === day && !isExpired;
+
+                return (
+                  <div key={day} className="flex flex-col items-center gap-1.5">
+                    <div
+                      className={`w-full h-3 rounded-full transition-all ${
+                        isExpired
+                          ? 'bg-rose-500'
+                          : isPassed
+                          ? 'bg-indigo-600 dark:bg-indigo-500'
+                          : isCurrent
+                          ? 'bg-indigo-400 animate-pulse'
+                          : 'bg-slate-200 dark:bg-slate-800'
+                      }`}
+                    />
+                    <span
+                      className={`text-[10px] font-mono ${
+                        isCurrent
+                          ? 'font-bold text-indigo-600 dark:text-indigo-400'
+                          : isPassed
+                          ? 'text-slate-700 dark:text-slate-300'
+                          : 'text-slate-400 dark:text-slate-600'
+                      }`}
+                    >
+                      D{day}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* High-Impact Breach Warning when Expired */}
+          {isExpired && (
+            <div className="mt-5 rounded-xl border-2 border-rose-500/80 bg-rose-100/60 dark:bg-rose-950/40 p-4 space-y-3">
+              <div className="flex items-start gap-3">
+                <AlertOctagon className="h-5 w-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-bold text-rose-950 dark:text-rose-100 text-sm">
+                    Statutory Default Detected: Bank Has Exceeded 7 Calendar Days
+                  </h4>
+                  <p className="text-xs text-rose-900/90 dark:text-rose-200/90 mt-1 leading-relaxed">
+                    Under MHA SOP Cl. 10.1(a), the bank was legally required to log your grievance by{' '}
+                    <strong>{formatDate(primaryDeadline?.dueOn)}</strong>. Having failed to do so, the AI Agent has automatically prepared formal escalation remedies.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-rose-200 dark:border-rose-900/60">
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => setModal('REVIEW_LETTER', 'REMINDER_L1_BANK')}
+                  className="h-8 text-xs font-semibold gap-1.5 shadow-sm"
+                >
+                  <FileText className="h-3.5 w-3.5" />
+                  Review Statutory Overdue Reminder Letter
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setModal('RECORD_REPLY')}
+                  className="h-8 text-xs gap-1.5 bg-white dark:bg-slate-900 border-rose-300 dark:border-rose-800 text-rose-950 dark:text-rose-200"
+                >
+                  Record Late Bank Notice
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 3-Stage Statutory Defense Roadmap */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+              <Scale className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+              Statutory Freeze Defense Pipeline
+            </span>
+            <span className="text-[11px] text-muted-foreground font-mono">
+              3-Tier Protection Architecture
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {statutoryPhases.map(phase => {
+              const isActive = phase.status === 'ACTIVE';
+              const isPhaseExpired = phase.status === 'EXPIRED';
 
               return (
                 <div
-                  key={d.id}
-                  className={`rounded-xl border p-4.5 transition-all ${
-                    isExpired
-                      ? 'border-rose-300 bg-rose-50/40 dark:border-rose-900/60 dark:bg-rose-950/20'
-                      : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/30'
+                  key={phase.step}
+                  className={`p-4 rounded-xl border transition-all text-xs space-y-2 relative flex flex-col justify-between ${
+                    isPhaseExpired
+                      ? 'border-rose-300 bg-rose-50/30 dark:border-rose-900/60 dark:bg-rose-950/20'
+                      : isActive
+                      ? 'border-indigo-600 bg-indigo-50/40 text-slate-900 dark:border-indigo-500 dark:bg-indigo-950/20 dark:text-slate-100 ring-1 ring-indigo-500/20 shadow-sm'
+                      : 'border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900/40'
                   }`}
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm text-slate-900 dark:text-slate-100">
-                          {d.title}
-                        </span>
-                        <Badge
-                          variant={isExpired ? 'destructive' : 'info'}
-                          className="text-[10px] py-0 h-4.5 font-medium"
-                        >
-                          {isExpired ? 'STATUTORY DEADLINE EXPIRED' : `${daysLeft} days remaining`}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {d.description}
-                      </p>
+                  <div>
+                    <div className="flex items-center justify-between gap-1 mb-1.5">
+                      <span className="font-mono text-[10px] text-muted-foreground font-semibold">
+                        Phase 0{phase.step}
+                      </span>
+                      <Badge
+                        variant={isPhaseExpired ? 'destructive' : isActive ? 'default' : 'secondary'}
+                        className={`text-[9px] py-0 h-4 font-mono ${
+                          isActive ? 'bg-indigo-600 text-white' : ''
+                        }`}
+                      >
+                        {phase.duration}
+                      </Badge>
                     </div>
 
-                    <div className="text-right shrink-0">
-                      <div className="text-xs font-mono text-muted-foreground">
-                        Statutory Due Date
-                      </div>
-                      <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center sm:justify-end gap-1">
-                        <Calendar className="h-3.5 w-3.5 text-slate-400" />
-                        {formatDate(d.dueOn)}
-                      </div>
-                    </div>
+                    <h5 className="font-bold text-sm text-slate-900 dark:text-slate-100 leading-snug">
+                      {phase.name}
+                    </h5>
+
+                    <p className="text-[11px] text-indigo-600 dark:text-indigo-400 font-mono mt-0.5 font-medium">
+                      {phase.statute}
+                    </p>
+
+                    <p className="text-[11px] text-muted-foreground mt-1.5 leading-relaxed">
+                      {phase.desc}
+                    </p>
                   </div>
 
-                  {/* Progress bar */}
-                  <div className="space-y-1.5 pt-2">
-                    <div className="flex justify-between text-[11px] text-muted-foreground font-mono">
-                      <span>Day 0 (Dispatched)</span>
-                      <span>Day 7 (Statutory Deadline)</span>
-                    </div>
-                    <Progress
-                      value={progressPct}
-                      className={isExpired ? '[&>div]:bg-rose-600' : '[&>div]:bg-blue-600'}
-                    />
+                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px]">
+                    <span className="text-muted-foreground">Entity: {phase.actor}</span>
+                    {isPhaseExpired ? (
+                      <span className="text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1">
+                        Breached <AlertTriangle className="h-3 w-3" />
+                      </span>
+                    ) : isActive ? (
+                      <span className="text-indigo-600 dark:text-indigo-400 font-bold flex items-center gap-1">
+                        In Progress <Clock className="h-3 w-3" />
+                      </span>
+                    ) : (
+                      <span className="text-slate-400">Scheduled</span>
+                    )}
                   </div>
-
-                  {isExpired && (
-                    <div className="mt-3 rounded-lg bg-rose-100/70 p-2.5 text-xs text-rose-900 dark:bg-rose-900/40 dark:text-rose-200 flex items-start gap-2 font-medium">
-                      <ShieldAlert className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400 mt-0.5" />
-                      <div>
-                        Bank compliance window lapsed without lien resolution. The AI has automatically queued a formal Overdue Reminder Notice and escalation to Banking Ombudsman.
-                      </div>
-                    </div>
-                  )}
                 </div>
               );
             })}
           </div>
-        )}
+        </div>
+
+        {/* Evaluator Quick Skip Buttons (Inline) */}
+        <div className="rounded-xl bg-slate-50 dark:bg-slate-900/50 p-3.5 border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+            <FastForward className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <span className="font-semibold">Interactive Clock Simulator:</span>
+            <span className="text-muted-foreground hidden sm:inline">
+              Test how the AI responds when the bank fails to reply
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={isProcessing}
+              onClick={() => skipTime(1)}
+              className="h-7 text-xs bg-white dark:bg-slate-950 font-medium"
+            >
+              +1 Day
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={isProcessing}
+              onClick={() => skipTime(7)}
+              className="h-7 text-xs bg-white dark:bg-slate-950 font-medium text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-900"
+            >
+              Advance to Day 7
+            </Button>
+            <Button
+              size="sm"
+              variant="default"
+              disabled={isProcessing}
+              onClick={() => skipTime(8)}
+              className="h-7 text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white"
+            >
+              Simulate Day 8 Breach
+            </Button>
+          </div>
+        </div>
+
+        {/* Collapsible Statutory Legal Rationale & Penalties */}
+        <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setShowLegalDetails(!showLegalDetails)}
+            className="w-full flex items-center justify-between p-3.5 text-xs font-semibold text-slate-800 dark:text-slate-200 bg-slate-50/70 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <Scale className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+              <span>Statutory Rulebook & Legal Remedies for Bank Delay</span>
+            </div>
+            {showLegalDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </button>
+
+          {showLegalDetails && (
+            <div className="p-4 bg-white dark:bg-slate-950 text-xs text-slate-700 dark:text-slate-300 space-y-2.5 border-t border-slate-200 dark:border-slate-800">
+              <div className="space-y-1">
+                <strong className="text-slate-900 dark:text-slate-100">1. MHA Cyber SOP Cl. 10.1(a) (Mandatory 7-Day Window):</strong>
+                <p className="text-muted-foreground leading-relaxed pl-3 border-l-2 border-indigo-500">
+                  "Upon receipt of citizen representation with transaction justification, the nodal bank branch is legally bound to record the grievance ticket within 7 calendar days and restrict debit restrictions to the contested amount."
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <strong className="text-slate-900 dark:text-slate-100">2. Section 106 BNSS, 2023 (Proportional Lien Rule):</strong>
+                <p className="text-muted-foreground leading-relaxed pl-3 border-l-2 border-indigo-500">
+                  Police seizure requisitions cannot freeze un-tainted funds. The bank must bifurcate the balance and permit normal transactions on surplus funds.
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <strong className="text-slate-900 dark:text-slate-100">3. 90-Day Absolute Backstop Unfreeze:</strong>
+                <p className="text-muted-foreground leading-relaxed pl-3 border-l-2 border-indigo-500">
+                  A bank cannot hold funds indefinitely. Under MHA guidelines, holds expire automatically at 90 days unless law enforcement obtains a formal magisterial order extending the freeze.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
 }
-
