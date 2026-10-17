@@ -115,7 +115,11 @@ public class RuleLoader {
                 current = new StringBuilder(line);
             } else if (letter.find() && currentRef.startsWith("clause")) {
                 flush(docId, status, date, sourceUrl, currentRef, parts, current.toString(), chunks);
-                currentRef = currentRef + "(" + letter.group(1) + ")";
+                // Nested lettering stays one level deep: "clause 11.2(a)", then "clause 11.2(b)"…
+                String base = currentRef.contains("(")
+                        ? currentRef.substring(0, currentRef.indexOf("("))
+                        : currentRef;
+                currentRef = base + "(" + letter.group(1) + ")";
                 parts = 1;
                 current = new StringBuilder(line);
             } else {
