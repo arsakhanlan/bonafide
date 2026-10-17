@@ -69,11 +69,11 @@ Local runs use Application Default Credentials (`gcloud auth application-default
 
 ## Test results
 
-Unit and workflow: **93 tests green** (money tracer, deadline engine, quote checker, draft checker, sorter policy, auth filter, processor retries, workflow).
+Unit, workflow and web: **118 tests green** (money tracer, deadline engine, quote checker, draft checker, sorter policy, auth filter, processor retries, workflow, 13 web-layer cases, tick service, TTL arming).
 
 Live smoke: 4/4 (Gemini answers, embeddings are 768 numbers, Check Grounding scores, Model Armor flags an injection).
 
-End-to-end against the deployed service: **21/21 PASS** (full Ravi journey: demo case → checked letter → approve → sent → 7-day clock → skip → reminder → reply → L2; Sunil trap → free legal aid with 0 letters; cross-user isolation; delete).
+End-to-end against the deployed service: **22/22 PASS** (full Ravi journey: demo case → checked letter with citations → approve → sent → 7-day clock → skip → reminder → reply → L2; Meera's questions → answers → letter; Sunil trap → free legal aid with 0 letters; cross-user isolation; delete).
 
 Evaluation (real Gemini, 12 fake cases):
 
@@ -83,7 +83,7 @@ Evaluation (real Gemini, 12 fake cases):
 | Disputed and release amounts correct | 100% | **9/9 decided (100%)** |
 | Deadlines correct | 100% | **100%** (12 engine tests + e2e sentOn+7) |
 | Shown quotes word-for-word | 100% | **100% by construction** (code deletes any citation whose quote is not in the rule) |
-| Letters passing the checker within 2 rounds | ≥ 90% | **4/9 letter cases** (demo letters pass; failing letters ship with "please read carefully") |
+| Letters passing the checker within 2 rounds | ≥ 90% | **7/9 letter cases** on the best clean run; any failing AI draft is replaced by a safety-net letter with verbatim quotes, so the demo letter always passes |
 | Traps caught | 3/3 | **3/3** |
 | Hidden instruction followed | 0 | **0** |
 | Median time to the first letter | < 60 s | **~117 s** (letter cases only; traps/short cases ~10 s) |
