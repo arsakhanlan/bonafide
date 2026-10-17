@@ -25,8 +25,8 @@ import {
   Eye,
   Edit3,
   ShieldCheck,
-  Building2,
-  X,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 export function LetterViewerModal() {
@@ -45,6 +45,7 @@ export function LetterViewerModal() {
 
   const [bodyText, setBodyText] = useState('');
   const [viewMode, setViewMode] = useState<'DOCUMENT' | 'EDIT'>('DOCUMENT');
+  const [paperTone, setPaperTone] = useState<'AUTO' | 'WHITE'>('AUTO');
   const [isCopied, setIsCopied] = useState(false);
   const [nameInput, setNameInput] = useState('Ravi Sharma');
   const [phoneInput, setPhoneInput] = useState('+91 98201 44092');
@@ -95,14 +96,33 @@ export function LetterViewerModal() {
   };
 
   const handlePrint = () => {
-    // Switch to Document mode for best print fidelity
+    // Ensure document mode is active
     if (viewMode !== 'DOCUMENT') {
       setViewMode('DOCUMENT');
     }
-    // Small timeout to allow DOM to re-render in document mode if needed
+
+    // Foolproof theme management for Chrome print dialog:
+    // Temporarily strip the 'dark' class from <html> so Chrome print engine renders 100% pure white paper
+    const root = document.documentElement;
+    const wasDark = root.classList.contains('dark');
+
+    if (wasDark) {
+      root.classList.remove('dark');
+    }
+
+    const restoreTheme = () => {
+      if (wasDark) {
+        root.classList.add('dark');
+      }
+      window.removeEventListener('afterprint', restoreTheme);
+    };
+
+    window.addEventListener('afterprint', restoreTheme);
+
+    // Give DOM a microtick to repaint without .dark class before triggering Chrome print preview
     setTimeout(() => {
       window.print();
-    }, 150);
+    }, 80);
   };
 
   const handleApprove = async () => {
@@ -134,6 +154,28 @@ export function LetterViewerModal() {
             </div>
 
             <div className="flex items-center gap-2">
+              {/* Paper Tone Toggle (In Document Mode) */}
+              {viewMode === 'DOCUMENT' && (
+                <button
+                  type="button"
+                  title="Toggle White Paper vs Dark Document"
+                  onClick={() => setPaperTone(paperTone === 'AUTO' ? 'WHITE' : 'AUTO')}
+                  className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                >
+                  {paperTone === 'WHITE' ? (
+                    <>
+                      <Moon className="h-3 w-3" />
+                      <span>Dark Doc</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sun className="h-3 w-3" />
+                      <span>White Paper</span>
+                    </>
+                  )}
+                </button>
+              )}
+
               {/* Segmented Mode Switcher */}
               <div className="flex items-center rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 border border-slate-200 dark:border-slate-700">
                 <button
@@ -225,31 +267,78 @@ export function LetterViewerModal() {
           {viewMode === 'DOCUMENT' ? (
             /* =========================================================================
                PRINT-READY LEGAL STATIONERY SHEET
+               id="printable-representation-letter" ensures Chrome print extracts ONLY this sheet
                ========================================================================= */
-            <div className="w-full max-w-2xl bg-white text-slate-950 shadow-lifted rounded-xl border border-slate-200/80 p-8 sm:p-12 font-serif text-[13px] sm:text-[14px] leading-relaxed relative print-clean-paper">
+            <div
+              id="printable-representation-letter"
+              className={`w-full max-w-2xl rounded-xl border p-8 sm:p-12 font-serif text-[13px] sm:text-[14px] leading-relaxed relative shadow-lifted transition-all ${
+                paperTone === 'WHITE'
+                  ? 'bg-white text-slate-950 border-slate-300 shadow-md'
+                  : 'bg-white text-slate-900 border-slate-200/80 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-800'
+              }`}
+            >
               {/* Formal Letterhead Crest */}
-              <div className="border-b-2 border-slate-900 pb-4 mb-6">
+              <div
+                className={`border-b-2 pb-4 mb-6 ${
+                  paperTone === 'WHITE'
+                    ? 'border-slate-900'
+                    : 'border-slate-900 dark:border-slate-100'
+                }`}
+              >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-slate-900 text-white flex items-center justify-center shrink-0">
+                    <div
+                      className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 ${
+                        paperTone === 'WHITE'
+                          ? 'bg-slate-900 text-white'
+                          : 'bg-slate-900 text-white dark:bg-white dark:text-slate-950'
+                      }`}
+                    >
                       <Scale className="h-5 w-5 stroke-[1.75]" />
                     </div>
                     <div>
-                      <h2 className="text-xs font-bold uppercase tracking-wider font-mono text-slate-900">
+                      <h2
+                        className={`text-xs font-bold uppercase tracking-wider font-mono ${
+                          paperTone === 'WHITE'
+                            ? 'text-slate-900'
+                            : 'text-slate-900 dark:text-slate-100'
+                        }`}
+                      >
                         Formal Statutory Representation
                       </h2>
-                      <p className="text-[11px] text-slate-600 font-serif leading-tight">
+                      <p
+                        className={`text-[11px] font-serif leading-tight ${
+                          paperTone === 'WHITE'
+                            ? 'text-slate-600'
+                            : 'text-slate-600 dark:text-slate-400'
+                        }`}
+                      >
                         Bharatiya Nagarik Suraksha Sanhita, 2023 (Section 106) & MHA Cyber SOP
                       </p>
                     </div>
                   </div>
 
-                  <div className="text-left sm:text-right text-[11px] font-mono text-slate-600 space-y-0.5">
+                  <div
+                    className={`text-left sm:text-right text-[11px] font-mono space-y-0.5 ${
+                      paperTone === 'WHITE'
+                        ? 'text-slate-600'
+                        : 'text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
                     <div>
-                      Ref: <strong className="text-slate-900">BONAFIDE-REP-2026-4092</strong>
+                      Ref:{' '}
+                      <strong
+                        className={
+                          paperTone === 'WHITE'
+                            ? 'text-slate-900'
+                            : 'text-slate-900 dark:text-slate-100'
+                        }
+                      >
+                        BONAFIDE-REP-2026-4092
+                      </strong>
                     </div>
                     <div>Date: {currentSimulatedDate || '17-10-2026'}</div>
-                    <div className="text-[10px] text-blue-700 font-semibold uppercase">
+                    <div className="text-[10px] text-blue-700 dark:text-blue-400 font-semibold uppercase">
                       Official Service Instrument
                     </div>
                   </div>
@@ -257,7 +346,13 @@ export function LetterViewerModal() {
               </div>
 
               {/* Addressee */}
-              <div className="space-y-1 text-slate-900 mb-5 font-serif text-[13px]">
+              <div
+                className={`space-y-1 mb-5 font-serif text-[13px] ${
+                  paperTone === 'WHITE'
+                    ? 'text-slate-900'
+                    : 'text-slate-900 dark:text-slate-100'
+                }`}
+              >
                 <div className="font-bold">To,</div>
                 <div>The Branch Manager / Nodal Grievance Officer,</div>
                 <div className="font-semibold">{caseData?.money?.bankName || 'HDFC Bank Limited'},</div>
@@ -265,7 +360,13 @@ export function LetterViewerModal() {
               </div>
 
               {/* Bold Subject Line */}
-              <div className="my-5 p-3.5 bg-slate-50 border-l-4 border-slate-900 rounded-r-lg text-slate-900 text-xs sm:text-sm font-bold font-serif leading-snug">
+              <div
+                className={`my-5 p-3.5 border-l-4 rounded-r-lg text-xs sm:text-sm font-bold font-serif leading-snug ${
+                  paperTone === 'WHITE'
+                    ? 'bg-slate-50 border-slate-900 text-slate-900'
+                    : 'bg-slate-50 border-slate-900 text-slate-900 dark:bg-slate-950 dark:border-slate-100 dark:text-slate-100'
+                }`}
+              >
                 Subject: Formal representation under Section 106 of the Bharatiya Nagarik Suraksha
                 Sanhita (BNSS), 2023 and MHA Cyber SOP (02.01.2026) regarding wrongful total debit
                 freeze on Account No.{' '}
@@ -279,7 +380,13 @@ export function LetterViewerModal() {
               <div className="font-bold mb-3 font-serif">Dear Sir / Madam,</div>
 
               {/* Formatted Paragraphs */}
-              <div className="space-y-3.5 text-slate-800 text-justify leading-relaxed">
+              <div
+                className={`space-y-3.5 text-justify leading-relaxed ${
+                  paperTone === 'WHITE'
+                    ? 'text-slate-800'
+                    : 'text-slate-800 dark:text-slate-200'
+                }`}
+              >
                 <p>
                   I am writing to register an urgent formal grievance regarding the total debit
                   freeze placed on my bank account at your branch on 16th October 2026 without
@@ -305,8 +412,14 @@ export function LetterViewerModal() {
                 </p>
 
                 {/* Statutory Law Quote Callout */}
-                <div className="my-3 p-3.5 rounded-lg border border-slate-300 bg-slate-50/80 text-xs italic font-serif leading-relaxed text-slate-900 border-l-4 border-l-blue-600">
-                  <span className="font-bold not-italic font-mono text-[10px] uppercase text-blue-900 block mb-1">
+                <div
+                  className={`my-3 p-3.5 rounded-lg border text-xs italic font-serif leading-relaxed border-l-4 ${
+                    paperTone === 'WHITE'
+                      ? 'border-slate-300 bg-slate-50/80 text-slate-900 border-l-blue-600'
+                      : 'border-slate-300 bg-slate-50/80 text-slate-900 border-l-blue-600 dark:border-slate-700 dark:bg-slate-950/80 dark:text-slate-100 dark:border-l-blue-500'
+                  }`}
+                >
+                  <span className="font-bold not-italic font-mono text-[10px] uppercase text-blue-900 dark:text-blue-300 block mb-1">
                     Statutory Rule of Proportionality (MHA Cyber SOP Cl. 4.2 & BNSS §106):
                   </span>
                   "The lien shall be restricted solely to the contested amount. Innocent surplus
@@ -323,22 +436,46 @@ export function LetterViewerModal() {
                 </p>
 
                 {/* Summary Table Embedded */}
-                <div className="my-3 overflow-hidden rounded-lg border border-slate-200 text-xs">
+                <div
+                  className={`my-3 overflow-hidden rounded-lg border text-xs ${
+                    paperTone === 'WHITE'
+                      ? 'border-slate-200'
+                      : 'border-slate-200 dark:border-slate-700'
+                  }`}
+                >
                   <table className="w-full text-left">
-                    <thead className="bg-slate-100 font-mono text-[11px] text-slate-700">
+                    <thead
+                      className={`font-mono text-[11px] ${
+                        paperTone === 'WHITE'
+                          ? 'bg-slate-100 text-slate-700'
+                          : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                      }`}
+                    >
                       <tr>
-                        <th className="p-2 border-r border-slate-200">Total Account Balance</th>
-                        <th className="p-2 border-r border-slate-200">Contested Lien</th>
-                        <th className="p-2 font-bold text-slate-900">Must Be Released Immediately</th>
+                        <th className="p-2 border-r border-slate-200 dark:border-slate-700">
+                          Total Account Balance
+                        </th>
+                        <th className="p-2 border-r border-slate-200 dark:border-slate-700">
+                          Contested Lien
+                        </th>
+                        <th className="p-2 font-bold">Must Be Released Immediately</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200 font-mono text-xs">
+                    <tbody
+                      className={`divide-y font-mono text-xs ${
+                        paperTone === 'WHITE'
+                          ? 'divide-slate-200 text-slate-900'
+                          : 'divide-slate-200 dark:divide-slate-700 text-slate-900 dark:text-slate-100'
+                      }`}
+                    >
                       <tr>
-                        <td className="p-2 border-r border-slate-200">Rs. 1,80,000/-</td>
-                        <td className="p-2 border-r border-slate-200 text-rose-700 font-semibold">
+                        <td className="p-2 border-r border-slate-200 dark:border-slate-700">
+                          Rs. 1,80,000/-
+                        </td>
+                        <td className="p-2 border-r border-slate-200 dark:border-slate-700 text-rose-700 dark:text-rose-400 font-semibold">
                           Rs. 2,000/- (Hold)
                         </td>
-                        <td className="p-2 text-emerald-800 font-bold bg-emerald-50/50">
+                        <td className="p-2 text-emerald-800 dark:text-emerald-300 font-bold bg-emerald-50/50 dark:bg-emerald-950/30">
                           Rs. 1,78,000/- (Free to Use)
                         </td>
                       </tr>
@@ -365,38 +502,120 @@ export function LetterViewerModal() {
                   </li>
                 </ul>
 
-                <p className="text-xs text-slate-600 mt-2">
+                <p
+                  className={`text-xs mt-2 ${
+                    paperTone === 'WHITE'
+                      ? 'text-slate-600'
+                      : 'text-slate-600 dark:text-slate-400'
+                  }`}
+                >
                   Failure to comply within 7 calendar days will compel escalation to the RBI
                   Banking Ombudsman and the Hon'ble High Court for statutory default and damages.
                 </p>
               </div>
 
               {/* Sign-off & Verification Seal */}
-              <div className="mt-8 pt-6 border-t border-slate-200 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+              <div
+                className={`mt-8 pt-6 border-t flex flex-col sm:flex-row sm:items-end justify-between gap-6 ${
+                  paperTone === 'WHITE'
+                    ? 'border-slate-200'
+                    : 'border-slate-200 dark:border-slate-800'
+                }`}
+              >
                 <div>
-                  <p className="text-xs text-slate-500 font-serif mb-6">Yours faithfully,</p>
-                  <div className="border-b border-slate-400 w-44 mb-1.5" />
-                  <p className="text-sm font-bold font-serif text-slate-900">{nameInput}</p>
-                  <p className="text-xs text-slate-600 font-mono">{phoneInput}</p>
-                  <p className="text-[11px] text-slate-500">FC Road, Pune, Maharashtra</p>
+                  <p
+                    className={`text-xs font-serif mb-6 ${
+                      paperTone === 'WHITE'
+                        ? 'text-slate-500'
+                        : 'text-slate-500 dark:text-slate-400'
+                    }`}
+                  >
+                    Yours faithfully,
+                  </p>
+                  <div
+                    className={`border-b w-44 mb-1.5 ${
+                      paperTone === 'WHITE'
+                        ? 'border-slate-400'
+                        : 'border-slate-400 dark:border-slate-600'
+                    }`}
+                  />
+                  <p
+                    className={`text-sm font-bold font-serif ${
+                      paperTone === 'WHITE'
+                        ? 'text-slate-900'
+                        : 'text-slate-900 dark:text-slate-100'
+                    }`}
+                  >
+                    {nameInput}
+                  </p>
+                  <p
+                    className={`text-xs font-mono ${
+                      paperTone === 'WHITE'
+                        ? 'text-slate-600'
+                        : 'text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    {phoneInput}
+                  </p>
+                  <p
+                    className={`text-[11px] ${
+                      paperTone === 'WHITE'
+                        ? 'text-slate-500'
+                        : 'text-slate-500 dark:text-slate-400'
+                    }`}
+                  >
+                    FC Road, Pune, Maharashtra
+                  </p>
                 </div>
 
                 {/* Digital Verification Stamp */}
-                <div className="rounded-lg border-2 border-slate-900 p-2.5 text-center max-w-[210px] text-[10px] font-mono text-slate-900 bg-slate-50/50">
-                  <div className="font-bold border-b border-slate-900 pb-1 mb-1 flex items-center justify-center gap-1 uppercase">
-                    <ShieldCheck className="h-3.5 w-3.5 text-blue-600" />
+                <div
+                  className={`rounded-lg border-2 p-2.5 text-center max-w-[210px] text-[10px] font-mono ${
+                    paperTone === 'WHITE'
+                      ? 'border-slate-900 text-slate-900 bg-slate-50/50'
+                      : 'border-slate-900 text-slate-900 bg-slate-50/50 dark:border-slate-200 dark:text-slate-100 dark:bg-slate-950/50'
+                  }`}
+                >
+                  <div
+                    className={`font-bold border-b pb-1 mb-1 flex items-center justify-center gap-1 uppercase ${
+                      paperTone === 'WHITE'
+                        ? 'border-slate-900'
+                        : 'border-slate-900 dark:border-slate-200'
+                    }`}
+                  >
+                    <ShieldCheck className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
                     Bonafide AI Verified
                   </div>
                   <div>BNSS §106 Verbatim Match</div>
-                  <div className="text-[8px] text-slate-500 mt-0.5">
+                  <div
+                    className={`text-[8px] mt-0.5 ${
+                      paperTone === 'WHITE'
+                        ? 'text-slate-500'
+                        : 'text-slate-500 dark:text-slate-400'
+                    }`}
+                  >
                     AUTHENTICITY HASH: 9A82-C4B0-106
                   </div>
                 </div>
               </div>
 
               {/* Enclosures Checklist */}
-              <div className="mt-6 pt-3 border-t border-slate-200 text-[11px] text-slate-600 space-y-0.5">
-                <span className="font-bold text-slate-800">Enclosures:</span>
+              <div
+                className={`mt-6 pt-3 border-t text-[11px] space-y-0.5 ${
+                  paperTone === 'WHITE'
+                    ? 'border-slate-200 text-slate-600'
+                    : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
+                }`}
+              >
+                <span
+                  className={`font-bold ${
+                    paperTone === 'WHITE'
+                      ? 'text-slate-800'
+                      : 'text-slate-800 dark:text-slate-200'
+                  }`}
+                >
+                  Enclosures:
+                </span>
                 <div>1. Tax Invoice #481 & Customer Job Card</div>
                 <div>2. Bank Statement showing Rs. 1.80L debit freeze</div>
                 <div>3. UPI Payment Transaction Receipt (UPI/428910284918/AXIS)</div>
@@ -418,7 +637,7 @@ export function LetterViewerModal() {
               <Textarea
                 value={bodyText}
                 onChange={e => setBodyText(e.target.value)}
-                className="font-mono text-xs leading-relaxed min-h-[460px] p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 focus:ring-1 focus:ring-slate-900 dark:focus:ring-white resize-y shadow-sm"
+                className="font-mono text-xs leading-relaxed min-h-[460px] p-5 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-slate-800 focus:ring-1 focus:ring-slate-900 dark:focus:ring-white resize-y shadow-sm"
               />
 
               <p className="text-[11px] text-muted-foreground">
@@ -436,10 +655,10 @@ export function LetterViewerModal() {
               size="sm"
               variant="outline"
               onClick={handlePrint}
-              className="text-xs gap-1.5 h-9 bg-white text-slate-900 border-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 shadow-sm"
+              className="text-xs gap-1.5 h-9 bg-white text-slate-900 border-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 shadow-sm font-semibold"
             >
               <Printer className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-              <span>Print Official Letter</span>
+              <span>Print Official Letter (A4)</span>
             </Button>
 
             <Button
