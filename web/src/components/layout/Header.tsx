@@ -47,11 +47,12 @@ export function Header() {
             size="sm"
             variant="outline"
             onClick={() => setModal('GUIDED_TOUR')}
-            className="h-8 px-2.5 sm:px-3 gap-1.5 font-semibold text-xs border-border bg-card text-foreground hover:bg-secondary shadow-xs transition-all hover:border-emerald-500/40"
+            className="h-8 px-2.5 sm:px-3 gap-1.5 font-semibold text-xs border-emerald-500/30 bg-card text-foreground hover:bg-secondary shadow-xs transition-all hover:border-emerald-500/60 group"
           >
-            <Play className="h-3 w-3 fill-current text-emerald-600 dark:text-emerald-400" />
+            <Play className="h-3 w-3 fill-current text-emerald-600 dark:text-emerald-400 animate-back-and-forth" />
             <span className="hidden sm:inline">2-Min Demo Tour</span>
             <span className="sm:hidden">Tour</span>
+            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono animate-back-and-forth">→</span>
           </Button>
 
           {/* Swagger / API Docs button */}

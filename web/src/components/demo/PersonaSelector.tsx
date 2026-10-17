@@ -47,7 +47,7 @@ export function PersonaSelector() {
         <span>Evaluator Personas</span>
         <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Swipe to test scenarios →</span>
       </div>
-      <div className="flex overflow-x-auto sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 pb-1.5 sm:pb-0 scrollbar-none snap-x snap-mandatory -mx-3 px-3 sm:mx-0 sm:px-0">
+      <div className="flex overflow-x-auto sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 pt-2 pb-2 sm:pt-2 sm:pb-1 scrollbar-none snap-x snap-mandatory -mx-3 px-3 sm:mx-0 sm:px-0">
         {personas.map(p => {
           const isSelected = selectedPersona === p.id;
           const Icon = p.icon;
@@ -56,10 +56,10 @@ export function PersonaSelector() {
               key={p.id}
               disabled={isProcessing}
               onClick={() => selectPersona(p.id)}
-              className={`group text-left p-3.5 rounded-2xl border transition-all text-xs relative flex flex-col justify-between card-hover-micro min-w-[250px] max-w-[280px] sm:min-w-0 sm:max-w-none flex-1 snap-start shrink-0 sm:shrink ${
+              className={`group text-left p-3.5 rounded-2xl border transition-all text-xs relative flex flex-col justify-between card-hover-micro hover:z-20 min-w-[250px] max-w-[280px] sm:min-w-0 sm:max-w-none flex-1 snap-start shrink-0 sm:shrink ${
                 isSelected
-                  ? 'border-emerald-600 bg-emerald-50/70 text-foreground ring-2 ring-emerald-600/25 dark:border-emerald-500 dark:bg-emerald-950/40 dark:ring-emerald-500/25 shadow-md shadow-emerald-500/10'
-                  : 'border-border bg-card/90 hover:border-emerald-500/40 hover:bg-card shadow-subtle text-foreground'
+                  ? 'border-emerald-600 bg-emerald-50/70 text-foreground ring-2 ring-emerald-600/25 dark:border-emerald-500 dark:bg-emerald-950/40 dark:ring-emerald-500/25 shadow-md shadow-emerald-500/10 z-10'
+                  : 'border-border bg-card/90 hover:border-emerald-500/50 hover:bg-card shadow-subtle text-foreground'
               }`}
             >
             <div>

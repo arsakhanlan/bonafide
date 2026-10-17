@@ -97,25 +97,21 @@ export function NextStepHero() {
   const ActionIcon = action.icon;
 
   return (
-    <div className="rounded-2xl border border-emerald-900/50 bg-gradient-to-br from-[#07170f] via-[#0b1d13] to-[#040c07] p-5 sm:p-7 text-white shadow-lifted relative overflow-hidden laser-shimmer">
-      {/* Ambient subtle glow lights */}
-      <div className="pointer-events-none absolute -right-10 -bottom-10 h-44 w-44 rounded-full bg-emerald-500/20 blur-3xl" />
-      <div className="pointer-events-none absolute left-1/3 -top-10 h-32 w-32 rounded-full bg-amber-500/10 blur-3xl" />
-
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 shadow-sm transition-all relative overflow-hidden">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6 relative">
-        <div className="space-y-2.5 max-w-2xl">
-          <div className="inline-flex items-center gap-2 rounded-lg bg-emerald-500/20 px-2.5 py-1 text-xs font-semibold tracking-wide border border-emerald-400/30 text-emerald-200">
-            <ActionIcon className="h-3.5 w-3.5 text-emerald-300 animate-pulse" />
+        <div className="space-y-2 max-w-2xl">
+          <div className="inline-flex items-center gap-2 rounded-lg bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold tracking-wide border border-emerald-500/25 text-emerald-800 dark:text-emerald-300">
+            <ActionIcon className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
             <span className="uppercase tracking-wider text-[11px] font-mono">
               Immediate Statutory Action
             </span>
           </div>
 
-          <h3 className="text-lg sm:text-2xl font-extrabold tracking-tight text-white leading-snug">
+          <h3 className="text-lg sm:text-2xl font-extrabold tracking-tight text-foreground leading-snug">
             {action.title}
           </h3>
 
-          <p className="text-xs sm:text-sm text-stone-300 leading-relaxed font-normal">
+          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-normal">
             {action.description}
           </p>
         </div>
@@ -125,7 +121,7 @@ export function NextStepHero() {
             size="lg"
             variant="default"
             onClick={action.onClick}
-            className="group w-full sm:w-auto h-12 px-6 rounded-xl text-sm font-bold justify-center bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 hover:to-teal-200 text-stone-950 shadow-lg shadow-emerald-950/40 active:scale-[0.98] transition-all"
+            className="group w-full sm:w-auto h-11 px-5 rounded-xl text-sm font-bold justify-center bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs active:scale-[0.98] transition-all"
           >
             <span>{action.buttonText}</span>
             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -136,7 +132,7 @@ export function NextStepHero() {
               size="sm"
               variant="outline"
               onClick={() => setModal('RECORD_REPLY')}
-              className="w-full sm:w-auto h-10 text-xs justify-center border-white/20 bg-white/5 text-white hover:bg-white/15"
+              className="w-full sm:w-auto h-9 text-xs justify-center border-border bg-secondary/50 text-foreground hover:bg-secondary"
             >
               Received Bank Response? Record It
             </Button>
