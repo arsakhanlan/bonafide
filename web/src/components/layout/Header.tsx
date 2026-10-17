@@ -18,16 +18,16 @@ export function Header() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/90 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90 transition-colors">
-      <div className="container flex h-16 items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/95 transition-colors">
+      <div className="container px-3 sm:px-6 flex h-14 sm:h-16 items-center justify-between gap-2 sm:gap-4">
         {/* Brand mark */}
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white shadow-sm dark:bg-white dark:text-slate-900">
-            <Shield className="h-4.5 w-4.5" />
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-slate-900 text-white shadow-sm dark:bg-white dark:text-slate-900 shrink-0">
+            <Shield className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold tracking-tight text-base text-slate-900 dark:text-white">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="font-bold tracking-tight text-sm sm:text-base text-slate-900 dark:text-white">
                 Bonafide
               </span>
               <Badge variant="outline" className="hidden sm:inline-flex text-[10px] font-mono py-0 h-4.5 border-slate-300 dark:border-slate-700">
@@ -41,16 +41,17 @@ export function Header() {
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* 2-Min Demo Tour Button */}
           <Button
             size="sm"
             variant="outline"
             onClick={() => setModal('GUIDED_TOUR')}
-            className="gap-1.5 font-semibold text-xs border-slate-300 bg-white text-slate-900 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-700 shadow-sm transition-all"
+            className="h-8 px-2 sm:px-3 gap-1 sm:gap-1.5 font-semibold text-xs border-slate-300 bg-white text-slate-900 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-700 shadow-sm transition-all"
           >
             <Play className="h-3 w-3 fill-current" />
-            <span>2-Min Demo Tour</span>
+            <span className="hidden sm:inline">2-Min Demo Tour</span>
+            <span className="sm:hidden">Tour</span>
           </Button>
 
           {/* Swagger / API Docs button */}

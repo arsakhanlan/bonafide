@@ -3,8 +3,8 @@ import { ShieldCheck, Scale, PhoneCall } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-slate-200 bg-slate-50/50 py-6 text-xs text-muted-foreground dark:border-slate-800 dark:bg-slate-950/50">
-      <div className="container flex flex-col md:flex-row items-center justify-between gap-4">
+    <footer className="mt-auto border-t border-slate-200 bg-slate-50/50 py-5 sm:py-6 text-xs text-muted-foreground dark:border-slate-800 dark:bg-slate-950/50 safe-area-bottom">
+      <div className="container px-3 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
         <div className="flex items-center gap-2 text-center md:text-left">
           <Scale className="h-4 w-4 text-slate-500 shrink-0" />
           <p>

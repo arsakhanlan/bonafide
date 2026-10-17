@@ -1,0 +1,20 @@
+{
+  "name": "Bonafide — Bank Account Freeze Defense",
+  "short_name": "Bonafide",
+  "description": "Autonomous bank account freeze defense for innocent citizens under BNSS §106 and MHA Cyber SOP.",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/shield.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
+

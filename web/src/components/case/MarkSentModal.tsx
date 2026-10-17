@@ -65,12 +65,12 @@ export function MarkSentModal() {
 
   return (
     <Dialog open={activeModal === 'MARK_SENT'} onOpenChange={() => setModal('NONE')}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-lg rounded-2xl">
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
             <div className="flex items-center gap-2">
-              <Send className="h-5 w-5 text-emerald-600" />
-              <DialogTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">
+              <Send className="h-5 w-5 text-emerald-600 shrink-0" />
+              <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
                 Mark Letter Sent & Start 7-Day Clock
               </DialogTitle>
             </div>
@@ -79,7 +79,7 @@ export function MarkSentModal() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-2">
+          <div className="space-y-3.5 py-1">
             <div>
               <label className="text-xs font-semibold text-slate-900 dark:text-slate-100 block mb-1">
                 Date Letter Was Delivered / Dispatched:
@@ -89,7 +89,7 @@ export function MarkSentModal() {
                 value={sentOn}
                 onChange={e => setSentOn(e.target.value)}
                 required
-                className="text-xs font-mono"
+                className="text-sm sm:text-xs font-mono h-10 sm:h-9"
               />
             </div>
 
@@ -97,7 +97,7 @@ export function MarkSentModal() {
               <label className="text-xs font-semibold text-slate-900 dark:text-slate-100 block mb-2">
                 How did you deliver the letter?
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {deliveryChannels.map(ch => {
                   const Icon = ch.icon;
                   const isSelected = how === ch.id;
@@ -106,14 +106,14 @@ export function MarkSentModal() {
                       key={ch.id}
                       type="button"
                       onClick={() => setHow(ch.id)}
-                      className={`p-3 rounded-xl border text-left transition-all ${
+                      className={`p-3 rounded-xl border text-left transition-all active:scale-[0.99] ${
                         isSelected
                           ? 'border-emerald-600 bg-emerald-50 text-emerald-950 dark:bg-emerald-950/40 dark:text-emerald-100 dark:border-emerald-500 ring-1 ring-emerald-500'
                           : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/40'
                       }`}
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <Icon className={`h-4 w-4 ${isSelected ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'}`} />
+                        <Icon className={`h-4 w-4 shrink-0 ${isSelected ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'}`} />
                         <span className="text-xs font-bold leading-tight">
                           {ch.label}
                         </span>
@@ -135,13 +135,13 @@ export function MarkSentModal() {
             </div>
           </div>
 
-          <DialogFooter className="flex items-center justify-between gap-2 pt-2">
+          <DialogFooter className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-2">
             <Button
               type="button"
               variant="ghost"
               size="sm"
               onClick={() => setModal('NONE')}
-              className="text-xs"
+              className="text-xs h-9 justify-center"
             >
               Cancel
             </Button>
@@ -150,7 +150,7 @@ export function MarkSentModal() {
               variant="default"
               size="sm"
               disabled={isProcessing}
-              className="text-xs gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm"
+              className="text-xs h-10 sm:h-9 gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm justify-center w-full sm:w-auto"
             >
               <Clock className="h-4 w-4" />
               Start 7-Day Grievance Clock

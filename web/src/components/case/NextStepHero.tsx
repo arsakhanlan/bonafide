@@ -97,9 +97,9 @@ export function NextStepHero() {
   const ActionIcon = action.icon;
 
   return (
-    <div className="rounded-2xl border border-slate-900 bg-slate-900 p-6 md:p-7 text-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-2.5 max-w-2xl">
+    <div className="rounded-2xl border border-slate-900 bg-slate-900 p-5 sm:p-7 text-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
+        <div className="space-y-2 max-w-2xl">
           <div className="inline-flex items-center gap-2 rounded-md bg-white/10 px-2.5 py-1 text-xs font-semibold tracking-wide">
             <ActionIcon className="h-3.5 w-3.5 text-slate-300" />
             <span className="uppercase tracking-wider text-[11px] text-slate-200">
@@ -107,21 +107,21 @@ export function NextStepHero() {
             </span>
           </div>
 
-          <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+          <h3 className="text-lg sm:text-2xl font-bold tracking-tight text-white leading-snug">
             {action.title}
           </h3>
 
-          <p className="text-sm text-slate-300 leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
             {action.description}
           </p>
         </div>
 
-        <div className="shrink-0 flex flex-col sm:flex-row md:flex-col gap-2.5">
+        <div className="shrink-0 flex flex-col sm:flex-row md:flex-col gap-2.5 w-full md:w-auto pt-1 md:pt-0">
           <Button
             size="lg"
             variant="default"
             onClick={action.onClick}
-            className="group h-11 px-6 rounded-xl text-sm font-semibold bg-white text-slate-950 hover:bg-slate-100 shadow-sm active:scale-[0.98] transition-all"
+            className="group w-full sm:w-auto h-12 px-6 rounded-xl text-sm font-semibold justify-center bg-white text-slate-950 hover:bg-slate-100 shadow-sm active:scale-[0.98] transition-all"
           >
             <span>{action.buttonText}</span>
             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -132,7 +132,7 @@ export function NextStepHero() {
               size="sm"
               variant="outline"
               onClick={() => setModal('RECORD_REPLY')}
-              className="h-9 text-xs border-white/20 bg-transparent text-white hover:bg-white/10"
+              className="w-full sm:w-auto h-10 text-xs justify-center border-white/20 bg-transparent text-white hover:bg-white/10"
             >
               Received Bank Response? Record It
             </Button>

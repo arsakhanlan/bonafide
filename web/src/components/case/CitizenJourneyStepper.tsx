@@ -48,8 +48,8 @@ export function CitizenJourneyStepper() {
   ];
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-subtle dark:border-slate-800 dark:bg-slate-900 transition-all">
-      <div className="flex items-center justify-between mb-3.5">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-subtle dark:border-slate-800 dark:bg-slate-900 transition-all">
+      <div className="flex items-center justify-between mb-3">
         <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
           <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-blue-400 stroke-[1.75]" />
           Statutory Unfreeze Roadmap:
@@ -59,7 +59,7 @@ export function CitizenJourneyStepper() {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 relative">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 relative">
         {steps.map(s => {
           const isDone = s.status === 'COMPLETED';
           const isCurrent = s.status === 'ACTIVE';
@@ -70,7 +70,7 @@ export function CitizenJourneyStepper() {
               type="button"
               disabled={!s.onClick}
               onClick={s.onClick}
-              className={`p-3.5 rounded-xl border text-left transition-all relative flex flex-col justify-between card-hover-micro ${
+              className={`p-3 sm:p-3.5 rounded-xl border text-left transition-all relative flex flex-col justify-between card-hover-micro active:scale-[0.99] ${
                 isCurrent
                   ? 'border-blue-600 bg-blue-50/40 dark:border-blue-500 dark:bg-blue-950/20 ring-1 ring-blue-500/20 shadow-subtle'
                   : isDone

@@ -42,12 +42,12 @@ export function RecordReplyModal() {
 
   return (
     <Dialog open={activeModal === 'RECORD_REPLY'} onOpenChange={() => setModal('NONE')}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-lg rounded-2xl">
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
             <div className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5 text-indigo-600" />
-              <DialogTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">
+              <MessageSquare className="h-5 w-5 text-indigo-600 shrink-0" />
+              <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
                 Record Bank or Police Response
               </DialogTitle>
             </div>
@@ -56,7 +56,7 @@ export function RecordReplyModal() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3 py-2">
+          <div className="space-y-3 py-1">
             <div>
               <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block mb-1.5">
                 Quick Evaluator Presets:
@@ -67,10 +67,10 @@ export function RecordReplyModal() {
                     key={i}
                     type="button"
                     onClick={() => setReplyText(p.text)}
-                    className="w-full text-left p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs"
+                    className="w-full text-left p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs active:scale-[0.99]"
                   >
                     <div className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-                      <Sparkles className="h-3 w-3 text-indigo-500" />
+                      <Sparkles className="h-3 w-3 text-indigo-500 shrink-0" />
                       {p.title}
                     </div>
                     <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
@@ -96,13 +96,13 @@ export function RecordReplyModal() {
             </div>
           </div>
 
-          <DialogFooter className="flex items-center justify-between gap-2 pt-2">
+          <DialogFooter className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-2">
             <Button
               type="button"
               variant="ghost"
               size="sm"
               onClick={() => setModal('NONE')}
-              className="text-xs"
+              className="text-xs h-9 justify-center"
             >
               Cancel
             </Button>
@@ -111,7 +111,7 @@ export function RecordReplyModal() {
               variant="default"
               size="sm"
               disabled={isProcessing || !replyText.trim()}
-              className="text-xs gap-1.5 bg-slate-900 dark:bg-white dark:text-slate-900"
+              className="text-xs h-10 sm:h-9 gap-1.5 bg-slate-900 dark:bg-white dark:text-slate-900 font-semibold shadow-sm justify-center w-full sm:w-auto"
             >
               <Send className="h-4 w-4" />
               Process Response with AI Boss
