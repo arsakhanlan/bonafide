@@ -16,6 +16,8 @@ import {
   Shield,
   Layers,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   Terminal,
 } from 'lucide-react';
 
@@ -27,6 +29,7 @@ interface SwaggerModalProps {
 export function SwaggerModal({ isOpen, onClose }: SwaggerModalProps) {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [selectedTag, setSelectedTag] = useState<string>('ALL');
+  const [expandedEndpoints, setExpandedEndpoints] = useState<Record<number, boolean>>({ 0: true });
 
   const endpoints = [
     {
@@ -241,75 +244,91 @@ export function SwaggerModal({ isOpen, onClose }: SwaggerModalProps) {
 
         {/* Content list */}
         <div className="flex-1 p-3.5 sm:p-6 overflow-y-auto space-y-3 sm:space-y-4">
-          {filtered.map((ep, idx) => (
-            <div
-              key={idx}
-              className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-4 space-y-3 shadow-sm hover:border-slate-300 dark:hover:border-slate-700 transition-all text-xs"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="flex items-center gap-2 font-mono">
-                  <span className={`px-2 py-0.5 rounded text-[11px] font-bold border ${getMethodBadge(ep.method)}`}>
-                    {ep.method}
-                  </span>
-                  <span className="font-semibold text-sm text-slate-900 dark:text-slate-100">
-                    {ep.path}
-                  </span>
-                </div>
+          {filtered.map((ep, idx) => {
+            const isExpanded = expandedEndpoints[idx] ?? false;
+            return (
+              <div
+                key={idx}
+                className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-3.5 sm:p-4 space-y-3 shadow-sm hover:border-slate-300 dark:hover:border-slate-700 transition-all text-xs"
+              >
+                <div
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 cursor-pointer select-none"
+                  onClick={() => setExpandedEndpoints(prev => ({ ...prev, [idx]: !isExpanded }))}
+                >
+                  <div className="flex items-center gap-2 font-mono min-w-0">
+                    <span className={`px-2 py-0.5 rounded text-[11px] font-bold border shrink-0 ${getMethodBadge(ep.method)}`}>
+                      {ep.method}
+                    </span>
+                    <span className="font-semibold text-sm text-slate-900 dark:text-slate-100 truncate">
+                      {ep.path}
+                    </span>
+                  </div>
 
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-[10px] font-mono text-muted-foreground">
-                    <Shield className="h-3 w-3 mr-1 text-emerald-500" />
-                    {ep.auth}
-                  </Badge>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleCopy(ep.curl, idx)}
-                    className="h-7 text-xs gap-1 px-2"
-                  >
-                    {copiedIndex === idx ? (
-                      <Check className="h-3.5 w-3.5 text-emerald-600" />
-                    ) : (
-                      <Copy className="h-3.5 w-3.5" />
-                    )}
-                    <span>{copiedIndex === idx ? 'Copied' : 'Copy cURL'}</span>
-                  </Button>
-                </div>
-              </div>
-
-              <p className="text-xs text-slate-700 dark:text-slate-300 font-sans">
-                {ep.summary} — <span className="text-muted-foreground">{ep.description}</span>
-              </p>
-
-              {ep.body && (
-                <div className="space-y-1">
-                  <span className="text-[10px] uppercase font-mono text-muted-foreground font-semibold">
-                    Request Body (JSON):
-                  </span>
-                  <pre className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-950 font-mono text-[11px] text-slate-900 dark:text-slate-200 overflow-x-auto">
-                    {ep.body}
-                  </pre>
-                </div>
-              )}
-
-              <div className="space-y-1">
-                <span className="text-[10px] uppercase font-mono text-muted-foreground font-semibold">
-                  Responses:
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {ep.responses.map((r, rIdx) => (
-                    <div
-                      key={rIdx}
-                      className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 text-[11px] font-mono"
+                  <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                    <Badge variant="outline" className="text-[10px] font-mono text-muted-foreground">
+                      <Shield className="h-3 w-3 mr-1 text-emerald-500" />
+                      {ep.auth}
+                    </Badge>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCopy(ep.curl, idx);
+                      }}
+                      className="h-7 text-xs gap-1 px-2"
                     >
-                      <span className="font-semibold text-slate-900 dark:text-slate-100">{r.code}</span>
-                      <span className="text-muted-foreground">— {r.desc}</span>
-                    </div>
-                  ))}
+                      {copiedIndex === idx ? (
+                        <Check className="h-3.5 w-3.5 text-emerald-600" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                      <span>{copiedIndex === idx ? 'Copied' : 'Copy cURL'}</span>
+                    </Button>
+                    <span className="p-1 text-muted-foreground hover:text-foreground">
+                      {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    </span>
+                  </div>
                 </div>
+
+                <p className="text-xs text-slate-700 dark:text-slate-300 font-sans">
+                  {ep.summary} — <span className="text-muted-foreground">{ep.description}</span>
+                </p>
+
+                {isExpanded && (
+                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3 animate-in fade-in-0 duration-200">
+                    {ep.body && (
+                      <div className="space-y-1">
+                        <span className="text-[10px] uppercase font-mono text-muted-foreground font-semibold">
+                          Request Body (JSON):
+                        </span>
+                        <pre className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-950 font-mono text-[11px] text-slate-900 dark:text-slate-200 overflow-x-auto">
+                          {ep.body}
+                        </pre>
+                      </div>
+                    )}
+
+                    <div className="space-y-1">
+                      <span className="text-[10px] uppercase font-mono text-muted-foreground font-semibold">
+                        Responses:
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        {ep.responses.map((r, rIdx) => (
+                          <div
+                            key={rIdx}
+                            className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 text-[11px] font-mono"
+                          >
+                            <span className="font-semibold text-slate-900 dark:text-slate-100">{r.code}</span>
+                            <span className="text-muted-foreground">— {r.desc}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </DialogContent>
     </Dialog>

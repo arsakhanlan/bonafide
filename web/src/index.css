@@ -255,6 +255,46 @@
   animation: backAndForth 1.4s ease-in-out infinite;
 }
 
+/* Tour slide transitions */
+@keyframes tourSlideForward {
+  from {
+    opacity: 0;
+    transform: translateX(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes tourSlideBackward {
+  from {
+    opacity: 0;
+    transform: translateX(-18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.tour-slide-forward {
+  animation: tourSlideForward 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tour-slide-backward {
+  animation: tourSlideBackward 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Subtle sovereign India tricolor accent gradient */
+.bg-sovereign-tricolor {
+  background: linear-gradient(90deg, #ff9933 0%, #ffffff 50%, #138808 100%);
+}
+
+.bg-sovereign-tricolor-subtle {
+  background: linear-gradient(90deg, rgba(255, 153, 51, 0.25) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(19, 136, 8, 0.25) 100%);
+}
+
 /* Micro-interaction card hover */
 .card-hover-micro {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
