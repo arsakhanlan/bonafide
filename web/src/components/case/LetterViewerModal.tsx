@@ -146,9 +146,9 @@ export function LetterViewerModal() {
 
   return (
     <Dialog open={activeModal === 'REVIEW_LETTER'} onOpenChange={() => setModal('NONE')}>
-      <DialogContent className="max-w-4xl max-h-[94vh] flex flex-col p-0 overflow-hidden bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-2xl">
+      <DialogContent className="max-w-4xl h-[92vh] max-h-[92vh] flex flex-col p-0 gap-0 overflow-hidden bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-2xl">
         {/* Modal Top Header (No-Print) */}
-        <DialogHeader className="p-5 pb-3 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-2">
+        <DialogHeader className="shrink-0 p-5 pb-3 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-2">
           <div className="flex flex-wrap items-center justify-between gap-3 pr-6">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="p-2 rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-950 shrink-0">
@@ -252,7 +252,7 @@ export function LetterViewerModal() {
 
         {/* Quick Placeholder Auto-fill notification if needed */}
         {hasPlaceholders && (
-          <div className="bg-slate-100 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 px-6 py-2 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="shrink-0 bg-slate-100 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 px-6 py-2 flex flex-wrap items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200">
               <AlertTriangle className="h-3.5 w-3.5 text-amber-600 shrink-0" />
               <span>
@@ -274,13 +274,13 @@ export function LetterViewerModal() {
         )}
 
         {/* Main Viewing Canvas */}
-        <div className="flex-1 overflow-y-auto bg-slate-100/70 dark:bg-slate-950/80 p-3 sm:p-6 flex justify-center">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain bg-slate-100/70 dark:bg-slate-950/80 p-4 sm:p-6 pb-14">
           {viewMode === 'DOCUMENT' ? (
             /* =========================================================================
-               AUTHENTIC LEGAL STATIONERY SHEET (Fits cleanly, zero overflow)
+               AUTHENTIC LEGAL STATIONERY SHEET (Cleanly scrollable, zero overflow)
                ========================================================================= */
             <div
-              className={`w-full max-w-2xl rounded-xl border p-6 sm:p-9 font-serif text-[12.5px] sm:text-[13px] leading-relaxed relative shadow-lifted transition-all overflow-hidden ${
+              className={`w-full max-w-2xl mx-auto rounded-xl border p-6 sm:p-9 font-serif text-[12.5px] sm:text-[13px] leading-relaxed relative shadow-lifted transition-all ${
                 paperTone === 'WHITE'
                   ? 'bg-white text-slate-900 border-slate-300 shadow-md'
                   : 'bg-white text-slate-900 border-slate-200/80 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-800'
@@ -512,7 +512,7 @@ export function LetterViewerModal() {
             /* =========================================================================
                RAW TEXT EDIT MODE
                ========================================================================= */
-            <div className="w-full max-w-2xl space-y-3">
+            <div className="w-full max-w-2xl mx-auto space-y-3">
               <div className="flex justify-between items-center text-xs text-muted-foreground">
                 <span className="font-semibold text-slate-800 dark:text-slate-200">
                   Edit Representation Letter Text:
@@ -535,7 +535,7 @@ export function LetterViewerModal() {
         </div>
 
         {/* Modal Bottom Footer (No-Print) */}
-        <DialogFooter className="p-4 px-6 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-wrap items-center justify-between gap-3">
+        <DialogFooter className="shrink-0 p-4 px-6 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Button
               size="sm"
