@@ -662,6 +662,63 @@
   animation: thinkingBar 1s ease-in-out infinite;
 }
 
+@keyframes analysisPulse {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+.animate-analysis-pulse {
+  animation: analysisPulse 1.3s ease-in-out infinite;
+}
+
+@keyframes analysisSweep {
+  0% {
+    transform: translateX(-130%);
+  }
+  100% {
+    transform: translateX(230%);
+  }
+}
+
+.analysis-scan {
+  position: relative;
+  overflow: hidden;
+}
+
+.analysis-scan::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 35%,
+    rgba(16, 185, 129, 0.14) 50%,
+    transparent 65%
+  );
+  transform: translateX(-130%);
+  animation: analysisSweep 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes analysisBar {
+  0% {
+    transform: translateX(-130%);
+  }
+  100% {
+    transform: translateX(360%);
+  }
+}
+
+.animate-analysis-bar {
+  animation: analysisBar 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 @keyframes brandSpin {
   to {
     transform: rotate(360deg);

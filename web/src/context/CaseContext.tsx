@@ -961,7 +961,7 @@ Yours faithfully,
       if (shouldAdvance) {
         // Close the sheet first so the roadmap and activity log can be watched working.
         setActiveModal('NONE');
-        await new Promise(resolve => setTimeout(resolve, 1600));
+        await new Promise(resolve => setTimeout(resolve, 2300));
         const ravi = MOCK_PERSONAS.RAVI;
         const letter: Letter = { ...ravi.letters[0], status: 'DRAFT' };
         setLetters([letter]);

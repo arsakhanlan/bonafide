@@ -21,6 +21,7 @@ import {
 import { getStageMetadata } from '@/lib/utils';
 import { audienceOf } from '@/lib/letterAudience';
 import { useProfile } from '@/lib/profile';
+import { formatElapsed, useElapsed } from '@/lib/useElapsed';
 import { IS_MOCK, isDemoCase } from '@/lib/mode';
 
 export function SimpleHeroStatus() {
@@ -28,18 +29,20 @@ export function SimpleHeroStatus() {
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
   const [showPersonaPicker, setShowPersonaPicker] = useState(false);
   const profile = useProfile();
+  const elapsed = useElapsed(Boolean(caseData?.busy));
 
   if (!caseData) return null;
 
   const stageMeta = getStageMetadata(caseData.stage);
   const lastSent = [...letters].reverse().find(l => l.status === 'SENT');
   const waitingOn = audienceOf(lastSent?.kind);
-  const stageLabel =
-    caseData.stage === 'WAITING' && waitingOn === 'police'
-      ? 'Waiting for the police'
-      : caseData.stage === 'WAITING' && waitingOn === 'district'
-      ? 'Waiting for the district officer'
-      : stageMeta.label;
+  const stageLabel = caseData.busy
+    ? 'Analysing'
+    : caseData.stage === 'WAITING' && waitingOn === 'police'
+    ? 'Waiting for the police'
+    : caseData.stage === 'WAITING' && waitingOn === 'district'
+    ? 'Waiting for the district officer'
+    : stageMeta.label;
 
   const displayName = IS_MOCK
     ? caseData.title.split('—')[0].trim() || profile.name
@@ -118,6 +121,12 @@ export function SimpleHeroStatus() {
               </span>
               {stageLabel}
             </Badge>
+            {caseData.busy && (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-card px-2 py-0.5 font-mono text-[10px] font-semibold tabular-nums text-emerald-700 dark:text-emerald-300">
+                <Spinner className="h-2.5 w-2.5" />
+                {formatElapsed(elapsed)}
+              </span>
+            )}
           </div>
         </div>
 

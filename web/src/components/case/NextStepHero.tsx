@@ -3,6 +3,8 @@ import { useCase } from '@/context/CaseContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
+import { AnalysisProgress } from '@/components/case/AnalysisProgress';
+import { useElapsed } from '@/lib/useElapsed';
 import {
   ArrowRight,
   CheckCircle2,
@@ -37,7 +39,8 @@ interface ActionView {
 }
 
 export function NextStepHero() {
-  const { caseData, setModal, letters, steps } = useCase();
+  const { caseData, setModal, letters, steps, documents } = useCase();
+  const elapsed = useElapsed(Boolean(caseData?.busy));
 
   if (!caseData || !caseData.nextStep) return null;
 
@@ -355,6 +358,10 @@ export function NextStepHero() {
                 </span>
               </div>
             )}
+
+            {caseData.busy && documents.length > 0 && (
+              <AnalysisProgress documents={documents} elapsed={elapsed} />
+            )}
           </div>
         </div>
 
@@ -366,7 +373,14 @@ export function NextStepHero() {
             onClick={action.onClick}
             className="h-11 w-full justify-center px-5 text-sm font-bold sm:w-auto"
           >
-            {caseData.busy ? <Spinner className="h-4 w-4" /> : <span>{action.buttonText}</span>}
+            {caseData.busy ? (
+              <>
+                <Spinner className="h-4 w-4" />
+                <span>{action.buttonText}</span>
+              </>
+            ) : (
+              <span>{action.buttonText}</span>
+            )}
             {!caseData.busy && <ArrowRight className="h-4 w-4" />}
           </Button>
 
