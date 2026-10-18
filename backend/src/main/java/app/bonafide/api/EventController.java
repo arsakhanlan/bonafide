@@ -73,8 +73,13 @@ public class EventController {
     private static Map<String, Object> payload(SendEventRequest request) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("files", request.files() == null ? List.of() : request.files());
-        payload.put("text", request.text());
-        payload.put("answers", request.answers());
+        // Nulls must never reach a handler's payload (in-process events keep the map as built).
+        if (request.text() != null) {
+            payload.put("text", request.text());
+        }
+        if (request.answers() != null) {
+            payload.put("answers", request.answers());
+        }
         return payload;
     }
 

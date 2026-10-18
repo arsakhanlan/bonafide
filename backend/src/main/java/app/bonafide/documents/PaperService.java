@@ -26,8 +26,11 @@ public class PaperService {
     public Prepared prepare(Map<String, Object> payload) {
         List<Part> parts = new ArrayList<>();
         List<Paper> papers = new ArrayList<>();
+        if (!(payload.get("files") instanceof List<?> fileList)) {
+            return new Prepared(List.of(), List.of());
+        }
         @SuppressWarnings("unchecked")
-        List<Map<String, String>> refs = (List<Map<String, String>>) payload.getOrDefault("files", List.of());
+        List<Map<String, String>> refs = (List<Map<String, String>>) fileList;
         int n = 0;
         for (Map<String, String> ref : refs) {
             String docId = "doc" + (++n);

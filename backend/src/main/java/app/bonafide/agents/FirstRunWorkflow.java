@@ -138,9 +138,11 @@ public class FirstRunWorkflow {
     /** The person's answers to earlier questions, if this event carries them. */
     private static List<Map<String, Object>> mergeAnswers(Case caseNow, Event event) {
         List<Map<String, Object>> questions = caseNow.questions();
+        if (!(event.payload().get("answers") instanceof List<?> answerList)) {
+            return questions;
+        }
         @SuppressWarnings("unchecked")
-        List<Map<String, String>> answers =
-                (List<Map<String, String>>) event.payload().getOrDefault("answers", List.of());
+        List<Map<String, String>> answers = (List<Map<String, String>>) answerList;
         if (answers.isEmpty()) {
             return questions;
         }
