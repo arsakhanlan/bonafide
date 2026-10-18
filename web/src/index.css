@@ -466,17 +466,22 @@
 @keyframes dialogContentIn {
   0% {
     opacity: 0;
+    clip-path: inset(
+      var(--morph-top, 45%) var(--morph-right, 45%) var(--morph-bottom, 45%)
+        var(--morph-left, 45%) round var(--morph-radius, 9999px)
+    );
     transform: translate(
         calc(-50% + var(--dialog-shift-x, 0px)),
         calc(-50% + var(--dialog-shift-y, 0px))
       )
-      scale(0.88);
+      scale(0.985);
   }
-  55% {
+  18% {
     opacity: 1;
   }
   100% {
     opacity: 1;
+    clip-path: inset(-80px -80px -80px -80px round 40px);
     transform: translate(-50%, -50%) scale(1);
   }
 }
@@ -484,15 +489,20 @@
 @keyframes dialogContentOut {
   0% {
     opacity: 1;
+    clip-path: inset(-80px -80px -80px -80px round 40px);
     transform: translate(-50%, -50%) scale(1);
   }
   100% {
     opacity: 0;
+    clip-path: inset(
+      var(--morph-top, 45%) var(--morph-right, 45%) var(--morph-bottom, 45%)
+        var(--morph-left, 45%) round var(--morph-radius, 9999px)
+    );
     transform: translate(
         calc(-50% + var(--dialog-shift-x, 0px)),
         calc(-50% + var(--dialog-shift-y, 0px))
       )
-      scale(0.88);
+      scale(0.985);
   }
 }
 
@@ -516,23 +526,21 @@
 
 /* Radix keeps the element mounted until its exit animation ends. */
 .dialog-overlay[data-state="open"] {
-  animation: dialogOverlayIn 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: dialogOverlayIn 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .dialog-overlay[data-state="closed"] {
-  animation: dialogOverlayOut 150ms cubic-bezier(0.4, 0, 1, 1) both;
+  animation: dialogOverlayOut 240ms cubic-bezier(0.4, 0, 1, 1) both;
 }
 
 .dialog-content[data-state="open"] {
-  animation: dialogContentIn 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  transform-origin: var(--dialog-origin, center);
-  will-change: transform, opacity;
+  animation: dialogContentIn 360ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  will-change: clip-path, transform, opacity;
 }
 
 .dialog-content[data-state="closed"] {
-  animation: dialogContentOut 200ms cubic-bezier(0.4, 0, 1, 1) both;
-  transform-origin: var(--dialog-origin, center);
-  will-change: transform, opacity;
+  animation: dialogContentOut 240ms cubic-bezier(0.4, 0, 1, 1) both;
+  will-change: clip-path, transform, opacity;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -700,7 +708,8 @@
 }
 
 .animate-dropdown-in {
-  animation: dropdownOpen 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top right;
+  animation: dropdownOpen 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Upload file list Add & Delete animations */

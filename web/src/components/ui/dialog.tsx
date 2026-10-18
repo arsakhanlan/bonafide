@@ -41,18 +41,45 @@ const DialogContent = React.forwardRef<
 
       const trigger = lastModalTrigger();
       if (!trigger) return;
-      const box = node.getBoundingClientRect();
-      const origin = trigger.getBoundingClientRect();
-      if (!box.width || !box.height) return;
 
-      const shiftX = (origin.left + origin.width / 2 - (box.left + box.width / 2)) * 0.4;
-      const shiftY = (origin.top + origin.height / 2 - (box.top + box.height / 2)) * 0.4;
+      const width = node.offsetWidth;
+      const height = node.offsetHeight;
+      if (!width || !height) return;
+
+      // The dialog is fixed at the viewport centre; use that as the final frame.
+      const left = window.innerWidth / 2 - width / 2;
+      const top = window.innerHeight / 2 - height / 2;
+      const box = trigger.getBoundingClientRect();
+
+      // The clip starts as a seed matching the button, pulled to the nearest
+      // point inside the panel when the control sits outside it.
+      const seedCenterX = Math.min(
+        Math.max(box.left + box.width / 2, left + 20),
+        left + width - 20
+      );
+      const seedCenterY = Math.min(
+        Math.max(box.top + box.height / 2, top + 20),
+        top + height - 20
+      );
+      const seedWidth = Math.min(Math.max(box.width, 36), width * 0.45);
+      const seedHeight = Math.min(Math.max(box.height, 22), height * 0.3);
+
+      const insetLeft = Math.max(0, seedCenterX - seedWidth / 2 - left);
+      const insetRight = Math.max(0, left + width - (seedCenterX + seedWidth / 2));
+      const insetTop = Math.max(0, seedCenterY - seedHeight / 2 - top);
+      const insetBottom = Math.max(0, top + height - (seedCenterY + seedHeight / 2));
+
+      const shiftX = (box.left + box.width / 2 - (left + width / 2)) * 0.18;
+      const shiftY = (box.top + box.height / 2 - (top + height / 2)) * 0.18;
+      const radius = getComputedStyle(trigger).borderTopLeftRadius || '24px';
+
+      node.style.setProperty('--morph-top', `${insetTop}px`);
+      node.style.setProperty('--morph-right', `${insetRight}px`);
+      node.style.setProperty('--morph-bottom', `${insetBottom}px`);
+      node.style.setProperty('--morph-left', `${insetLeft}px`);
+      node.style.setProperty('--morph-radius', radius);
       node.style.setProperty('--dialog-shift-x', `${shiftX}px`);
       node.style.setProperty('--dialog-shift-y', `${shiftY}px`);
-      node.style.setProperty(
-        '--dialog-origin',
-        `${origin.left + origin.width / 2 - box.left}px ${origin.top + origin.height / 2 - box.top}px`
-      );
     },
     [ref]
   );
