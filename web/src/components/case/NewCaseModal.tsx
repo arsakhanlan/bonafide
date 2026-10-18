@@ -9,16 +9,21 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
-import { Plus, Shield, CheckCircle2, ChevronDown, ChevronUp, Loader2, Sparkles } from 'lucide-react';
+import { Collapse } from '@/components/ui/collapse';
+import { Plus, Shield, CheckCircle2, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { IS_MOCK } from '@/lib/mode';
+import { loadProfile } from '@/lib/profile';
 
 export function NewCaseModal() {
   const { activeModal, setModal, createNewCase, isProcessing } = useCase();
 
-  const [title, setTitle] = useState(
-    IS_MOCK ? 'Ravi Sharma — Mobile Repair Shop, Pune' : ''
-  );
+  const [title, setTitle] = useState(() => {
+    if (IS_MOCK) return 'Ravi Sharma — Mobile Repair Shop, Pune';
+    const name = loadProfile().name;
+    return name ? `${name} — bank freeze` : '';
+  });
   const [showChecklist, setShowChecklist] = useState(false);
 
   const isOpen = activeModal === 'NEW_CASE';
@@ -86,8 +91,8 @@ export function NewCaseModal() {
                 )}
               </button>
 
-              {showChecklist && (
-                <div className="px-3 pb-3 pt-1 border-t border-slate-200 dark:border-slate-800 space-y-2 text-[11px] text-muted-foreground accordion-animate-open">
+              <Collapse open={showChecklist}>
+                <div className="px-3 pb-3 pt-1 border-t border-slate-200 dark:border-slate-800 space-y-2 text-[11px] text-muted-foreground">
                   <div className="flex items-start gap-2">
                     <span className="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">1</span>
                     <span>Upload your bank lien SMS, freeze memo, or bank statement.</span>
@@ -101,7 +106,7 @@ export function NewCaseModal() {
                     <span>Generates a ready-to-sign statutory unfreeze letter quoting BNSS §106 and MHA SOP.</span>
                   </div>
                 </div>
-              )}
+              </Collapse>
             </div>
           </div>
 
@@ -123,7 +128,7 @@ export function NewCaseModal() {
               className="text-xs h-10 sm:h-9 gap-1.5 bg-slate-900 dark:bg-white dark:text-slate-900 font-semibold shadow-sm justify-center w-full sm:w-auto"
             >
               {isProcessing ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Spinner className="h-4 w-4" />
               ) : (
                 <CheckCircle2 className="h-4 w-4" />
               )}

@@ -14,9 +14,9 @@ const buttonVariants = cva(
         destructive:
           'btn-raised btn-raised-rose btn-sheen bg-gradient-to-br from-rose-500 to-rose-700 text-white hover:from-rose-400 hover:to-rose-600 dark:from-rose-500 dark:to-rose-700 dark:hover:from-rose-400 dark:hover:to-rose-600',
         outline:
-          'btn-sweep border border-border bg-card/90 shadow-xs hover:-translate-y-px hover:border-emerald-500/40 hover:text-foreground hover:shadow-sm',
+          'btn-sweep border border-border bg-card/90 shadow-xs hover:border-emerald-500/40 hover:text-foreground hover:shadow-sm',
         secondary:
-          'btn-sweep bg-secondary text-secondary-foreground shadow-xs hover:-translate-y-px hover:bg-secondary/80',
+          'btn-sweep bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
         ghost: 'btn-sweep hover:text-foreground',
         link: 'h-auto rounded-none p-0 text-primary underline-offset-4 hover:underline',
         success:

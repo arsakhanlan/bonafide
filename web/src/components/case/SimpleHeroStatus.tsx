@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useCase } from '@/context/CaseContext';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
+import { Collapse } from '@/components/ui/collapse';
 import {
   Building2,
   Scale,
@@ -13,17 +15,19 @@ import {
   FastForward,
   Clock,
   CalendarDays,
-  Loader2,
   Users,
+  UserRound,
 } from 'lucide-react';
 import { getStageMetadata } from '@/lib/utils';
 import { audienceOf } from '@/lib/letterAudience';
+import { useProfile } from '@/lib/profile';
 import { IS_MOCK, isDemoCase } from '@/lib/mode';
 
 export function SimpleHeroStatus() {
   const { caseData, letters, skipTime, isProcessing, currentSimulatedDate, simulatedDays, selectedPersona, selectPersona } = useCase();
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
   const [showPersonaPicker, setShowPersonaPicker] = useState(false);
+  const profile = useProfile();
 
   if (!caseData) return null;
 
@@ -36,6 +40,21 @@ export function SimpleHeroStatus() {
       : caseData.stage === 'WAITING' && waitingOn === 'district'
       ? 'Waiting for the district officer'
       : stageMeta.label;
+
+  const displayName = IS_MOCK
+    ? caseData.title.split('—')[0].trim() || profile.name
+    : profile.name;
+  const showName =
+    Boolean(displayName) &&
+    !caseData.title.toLowerCase().includes((displayName || '').toLowerCase());
+  const displayBank =
+    caseData.money?.bankName ||
+    (caseData.facts?.bank as string | undefined) ||
+    (caseData.facts?.bankName as string | undefined) ||
+    '';
+  const displayAccount =
+    caseData.money?.accountMasked ||
+    (caseData.facts?.accountLast4 ? `•••• ${caseData.facts.accountLast4}` : '');
   const showDemo = IS_MOCK || isDemoCase(caseData.demo);
 
   const personaList = [
@@ -65,18 +84,27 @@ export function SimpleHeroStatus() {
           </div>
 
           <div className="flex items-center gap-x-2.5 gap-y-1 text-xs text-muted-foreground font-medium flex-wrap">
-            {caseData.money?.bankName && (
+            {showName && (
               <>
                 <div className="inline-flex items-center gap-1.5">
-                  <Building2 className="h-3.5 w-3.5 text-muted-foreground shrink-0 stroke-[1.75]" />
-                  <span className="font-semibold text-foreground">{caseData.money.bankName}</span>
+                  <UserRound className="h-3.5 w-3.5 shrink-0 text-muted-foreground stroke-[1.75]" />
+                  <span className="font-semibold text-foreground">{displayName}</span>
                 </div>
                 <span className="text-muted-foreground/30">•</span>
               </>
             )}
-            {caseData.money?.accountMasked && (
+            {displayBank && (
               <>
-                <span className="font-mono text-muted-foreground/80">{caseData.money.accountMasked}</span>
+                <div className="inline-flex items-center gap-1.5">
+                  <Building2 className="h-3.5 w-3.5 text-muted-foreground shrink-0 stroke-[1.75]" />
+                  <span className="font-semibold text-foreground">{displayBank}</span>
+                </div>
+                <span className="text-muted-foreground/30">•</span>
+              </>
+            )}
+            {displayAccount && (
+              <>
+                <span className="font-mono text-muted-foreground/80">{displayAccount}</span>
                 <span className="text-muted-foreground/30">•</span>
               </>
             )}
@@ -154,8 +182,8 @@ export function SimpleHeroStatus() {
       )}
 
       {/* Collapsible Statutory Legal Safeguard Details */}
-      {isAccordionOpen && (
-        <div className="rounded-2xl bg-secondary/40 border border-border/80 p-4 space-y-3 text-xs text-muted-foreground font-legal accordion-animate-open">
+      <Collapse open={isAccordionOpen}>
+        <div className="rounded-2xl border border-border/80 bg-secondary/40 p-4 space-y-3 text-xs text-muted-foreground font-legal">
           <div className="flex items-center gap-2 text-foreground font-sans font-semibold text-xs pb-1.5 border-b border-border/60">
             <Scale className="h-4 w-4 text-emerald-600 dark:text-emerald-400 stroke-[2]" />
             <span>Bharatiya Nagarik Suraksha Sanhita (BNSS) §106 & MHA SOP Cl. 4.2 Protection</span>
@@ -183,7 +211,7 @@ export function SimpleHeroStatus() {
             </div>
           </div>
         </div>
-      )}
+      </Collapse>
 
       {/* Bottom Integrated Row: Evaluator Time Machine (demo only) */}
       {showDemo && (
@@ -209,7 +237,7 @@ export function SimpleHeroStatus() {
               onClick={() => skipTime(1)}
               className="h-10 px-3 text-xs bg-card hover:bg-secondary border-border sm:h-8 sm:px-2.5"
             >
-              {isProcessing ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Clock className="h-3 w-3 mr-1 text-muted-foreground" />}
+              {isProcessing ? <Spinner className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1 text-muted-foreground" />}
               <span>+1 Day</span>
             </Button>
 
@@ -220,7 +248,7 @@ export function SimpleHeroStatus() {
               onClick={() => skipTime(7)}
               className="h-10 px-3 text-xs bg-card hover:bg-secondary border-border sm:h-8 sm:px-2.5"
             >
-              {isProcessing ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <CalendarDays className="h-3 w-3 mr-1 text-muted-foreground" />}
+              {isProcessing ? <Spinner className="h-3 w-3 mr-1" /> : <CalendarDays className="h-3 w-3 mr-1 text-muted-foreground" />}
               <span>+7 Days (Bank Clock)</span>
             </Button>
 
@@ -231,7 +259,7 @@ export function SimpleHeroStatus() {
               onClick={() => skipTime(30)}
               className="h-10 px-3 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs sm:h-8 sm:px-2.5"
             >
-              {isProcessing ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <FastForward className="h-3 w-3 mr-1" />}
+              {isProcessing ? <Spinner className="h-3 w-3 mr-1" /> : <FastForward className="h-3 w-3 mr-1" />}
               <span>+30 Days (Standard)</span>
             </Button>
           </div>

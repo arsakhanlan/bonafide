@@ -11,8 +11,52 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { FileText, FileCheck, Shield, Upload, Eye, CheckCircle2, Scale } from 'lucide-react';
+import {
+  FileText,
+  FileCheck,
+  FileSpreadsheet,
+  Shield,
+  Upload,
+  Eye,
+  CheckCircle2,
+  Scale,
+  Image as ImageIcon,
+  IdCard,
+  MessageCircle,
+  Receipt,
+  Smartphone,
+  LucideIcon,
+} from 'lucide-react';
 import { IS_MOCK } from '@/lib/mode';
+
+/** Pick an icon that matches the paper's kind or filename. */
+function documentVisual(doc: {
+  name?: string;
+  kind?: string;
+  mime?: string;
+}): { Icon: LucideIcon; tint: string } {
+  const name = (doc.name || '').toLowerCase();
+  const mime = doc.mime || '';
+  if (mime.startsWith('image/') || /screen|photo|image|\.(png|jpg|jpeg|webp)$/.test(name)) {
+    return { Icon: ImageIcon, tint: 'text-sky-600 dark:text-sky-400' };
+  }
+  if (doc.kind === 'CHAT' || /whatsapp|chat|conversation|telegram/.test(name)) {
+    return { Icon: MessageCircle, tint: 'text-emerald-600 dark:text-emerald-400' };
+  }
+  if (doc.kind === 'NOTICE' || /sms|notice|freeze|lien|hold/.test(name)) {
+    return { Icon: Smartphone, tint: 'text-amber-600 dark:text-amber-400' };
+  }
+  if (doc.kind === 'STATEMENT' || /statement|passbook|ledger/.test(name)) {
+    return { Icon: FileSpreadsheet, tint: 'text-teal-600 dark:text-teal-400' };
+  }
+  if (doc.kind === 'INVOICE' || /invoice|bill|receipt|tax/.test(name)) {
+    return { Icon: Receipt, tint: 'text-violet-600 dark:text-violet-400' };
+  }
+  if (doc.kind === 'ID' || /aadhaar|pan|license|identity/.test(name)) {
+    return { Icon: IdCard, tint: 'text-rose-600 dark:text-rose-400' };
+  }
+  return { Icon: FileText, tint: 'text-slate-600 dark:text-slate-300' };
+}
 
 interface DocumentsListProps {
   embedded?: boolean;
@@ -69,15 +113,17 @@ export function DocumentsList({ embedded = false }: DocumentsListProps) {
         </div>
       ) : (
         <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1">
-          {documents.map(doc => (
+          {documents.map(doc => {
+          const { Icon, tint } = documentVisual(doc);
+          return (
             <div
               key={doc.id}
               onClick={() => setInspectDoc(doc)}
               className="flex items-center justify-between p-2.5 rounded-xl border border-border bg-card hover:border-emerald-500/40 hover:bg-secondary/40 transition-all text-xs card-hover-micro cursor-pointer"
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="p-2 rounded-lg bg-secondary text-muted-foreground shrink-0">
-                  <FileText className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                <div className="shrink-0 rounded-xl bg-secondary p-2">
+                  <Icon className={`h-4 w-4 ${tint}`} />
                 </div>
                 <div className="min-w-0">
                   <p className="font-semibold text-foreground truncate text-xs">
@@ -118,7 +164,8 @@ export function DocumentsList({ embedded = false }: DocumentsListProps) {
                 </Badge>
               </div>
             </div>
-          ))}
+          );
+        })}
         </div>
       )}
 

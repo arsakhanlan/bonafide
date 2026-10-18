@@ -2,13 +2,13 @@ import React from 'react';
 import { useCase } from '@/context/CaseContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Spinner } from '@/components/ui/spinner';
 import {
   ArrowRight,
   CheckCircle2,
   Clock,
   FileSearch,
   HelpCircle,
-  Loader2,
   MessageSquare,
   Scale,
   Send,
@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { cn, formatDate, formatINR } from '@/lib/utils';
 import { audienceOf } from '@/lib/letterAudience';
+import { agentLabel } from '@/lib/agentStatus';
 import { NextStepAction } from '@/types/case';
 
 type Tone = 'action' | 'wait' | 'done';
@@ -36,7 +37,7 @@ interface ActionView {
 }
 
 export function NextStepHero() {
-  const { caseData, setModal, letters } = useCase();
+  const { caseData, setModal, letters, steps } = useCase();
 
   if (!caseData || !caseData.nextStep) return null;
 
@@ -62,7 +63,7 @@ export function NextStepHero() {
           'The agents are checking the amounts and the law. This page will update by itself — you can stay right here.',
         buttonText: 'Working…',
         onClick: () => {},
-        icon: Loader2,
+        icon: Clock,
         tone: 'action',
         trust: 'Nothing is sent anywhere while we work.',
       };
@@ -305,7 +306,7 @@ export function NextStepHero() {
                 : 'bg-gradient-to-br from-emerald-600 to-teal-700 shadow-emerald-600/20'
             )}
           >
-            <Icon className={cn('h-5 w-5', caseData.busy && 'animate-spin')} />
+            {caseData.busy ? <Spinner className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
           </div>
 
           <div className="min-w-0">
@@ -337,6 +338,23 @@ export function NextStepHero() {
             <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted-foreground sm:text-sm">
               {action.description}
             </p>
+            {steps.length > 0 && (
+              <div className="mt-2 flex items-start gap-1.5 text-[11px] text-muted-foreground">
+                <span
+                  className={cn(
+                    'mt-1 h-1.5 w-1.5 shrink-0 rounded-full',
+                    caseData.busy ? 'animate-pulse bg-emerald-500' : 'bg-emerald-500/60'
+                  )}
+                />
+                <span className="line-clamp-2">
+                  <span className="font-semibold text-foreground/80">
+                    {agentLabel(steps[steps.length - 1].agent)}
+                  </span>
+                  {' — '}
+                  {steps[steps.length - 1].message}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -348,7 +366,7 @@ export function NextStepHero() {
             onClick={action.onClick}
             className="h-11 w-full justify-center px-5 text-sm font-bold sm:w-auto"
           >
-            {caseData.busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <span>{action.buttonText}</span>}
+            {caseData.busy ? <Spinner className="h-4 w-4" /> : <span>{action.buttonText}</span>}
             {!caseData.busy && <ArrowRight className="h-4 w-4" />}
           </Button>
 

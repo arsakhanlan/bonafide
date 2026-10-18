@@ -3,6 +3,7 @@ import { useCase } from '@/context/CaseContext';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Collapse } from '@/components/ui/collapse';
 import {
   Clock,
   Scale,
@@ -227,13 +228,14 @@ export function StatutoryDeadlinesCard() {
             </span>
             {showLegalDetails ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </button>
-          {showLegalDetails && (
+          <Collapse open={showLegalDetails}>
             <p className="pt-2 text-[11px] text-muted-foreground leading-relaxed">
               Once your letter is delivered, official deadlines start in plain code: the bank must
-              file your grievance within 7 days, the officer then has time to decide, and statutory
-              backstops follow. Bonafide tracks each one and wakes up when one passes.
+              file your grievance within 7 days, the police or district officer then has 15 days to
+              decide, and statutory backstops follow. Bonafide tracks each one and wakes up when one
+              passes.
             </p>
-          )}
+          </Collapse>
         </div>
 
         {met.length > 0 && (

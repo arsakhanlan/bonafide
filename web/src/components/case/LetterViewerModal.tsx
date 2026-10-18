@@ -9,12 +9,14 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { extractPlaceholders } from '@/lib/utils';
 import { printA4RepresentationLetter } from '@/lib/printA4';
 import { announceApproval } from '@/lib/approvalSeal';
 import { audienceOf } from '@/lib/letterAudience';
+import { loadProfile, saveProfile } from '@/lib/profile';
 import { IS_MOCK } from '@/lib/mode';
 import {
   FileText,
@@ -31,8 +33,7 @@ import {
   ShieldCheck,
   Sun,
   Moon,
-  Loader2,
-} from 'lucide-react';
+  } from 'lucide-react';
 
 export function LetterViewerModal() {
   const {
@@ -52,9 +53,15 @@ export function LetterViewerModal() {
   const [viewMode, setViewMode] = useState<'DOCUMENT' | 'EDIT'>('DOCUMENT');
   const [paperTone, setPaperTone] = useState<'AUTO' | 'WHITE'>('AUTO');
   const [isCopied, setIsCopied] = useState(false);
-  const [nameInput, setNameInput] = useState(IS_MOCK ? 'Ravi Sharma' : '');
-  const [phoneInput, setPhoneInput] = useState(IS_MOCK ? '+91 98201 44092' : '');
-  const [accountInput, setAccountInput] = useState(IS_MOCK ? '501004829104092' : '');
+  const [nameInput, setNameInput] = useState(() =>
+    IS_MOCK ? 'Ravi Sharma' : loadProfile().name
+  );
+  const [phoneInput, setPhoneInput] = useState(() =>
+    IS_MOCK ? '+91 98201 44092' : loadProfile().phone
+  );
+  const [accountInput, setAccountInput] = useState(() =>
+    IS_MOCK ? '501004829104092' : loadProfile().account
+  );
 
   useEffect(() => {
     if (letter) {
@@ -86,17 +93,28 @@ export function LetterViewerModal() {
   const placeholders = extractPlaceholders(bodyText);
   const hasPlaceholders = placeholders.length > 0;
 
+  /** Fill the visible copies without mutating the letter until it is approved. */
+  const filledBody = () =>
+    bodyText
+      .replace(/\{\{Your name\}\}/g, nameInput.trim())
+      .replace(/\{\{Your phone\}\}/g, phoneInput.trim())
+      .replace(/\{\{Your Account Number\}\}/g, accountInput.trim())
+      .replace(/\{\{[^}]+\}\}/g, 'Provided in Enclosure');
+
+  const displayBody = filledBody();
+
+  const rememberDetails = () => {
+    if (!IS_MOCK) {
+      saveProfile({ name: nameInput, phone: phoneInput, account: accountInput });
+    }
+  };
+
   const handleAutoFillPlaceholders = () => {
-    let replaced = bodyText;
-    replaced = replaced.replace(/\{\{Your name\}\}/g, nameInput);
-    replaced = replaced.replace(/\{\{Your phone\}\}/g, phoneInput);
-    replaced = replaced.replace(/\{\{Your Account Number\}\}/g, accountInput);
-    replaced = replaced.replace(/\{\{[^}]+\}\}/g, 'Provided in Enclosure');
-    setBodyText(replaced);
+    setBodyText(filledBody());
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(bodyText);
+    navigator.clipboard.writeText(displayBody);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
   };
@@ -106,7 +124,7 @@ export function LetterViewerModal() {
     printA4RepresentationLetter({
       title: letter.title,
       recipient: letter.recipient || 'The Branch Manager / Nodal Officer',
-      body: bodyText,
+      body: displayBody,
       docketRef: `BONAFIDE-${caseData?.id?.toUpperCase() || 'REP'}-4092`,
       date: currentSimulatedDate || '17th October 2026',
       citations: letter.citations,
@@ -116,10 +134,10 @@ export function LetterViewerModal() {
   };
 
   const handleApprove = async () => {
-    if (hasPlaceholders) {
-      handleAutoFillPlaceholders();
-    }
-    await approveLetter(letter.id, bodyText);
+    const finalBody = hasPlaceholders ? filledBody() : bodyText;
+    if (hasPlaceholders) setBodyText(finalBody);
+    rememberDetails();
+    await approveLetter(letter.id, finalBody);
     announceApproval();
     setViewMode('DOCUMENT');
   };
@@ -134,8 +152,8 @@ export function LetterViewerModal() {
     (!placeholderNeedsPhone || phoneInput.trim().length > 0) &&
     (!placeholderNeedsAccount || accountInput.trim().length > 0);
 
-  // Parse bodyText into structured document sections
-  const paragraphs = bodyText
+  // Parse the filled copy into structured document sections
+  const paragraphs = displayBody
     .split('\n\n')
     .map(p => p.trim())
     .filter(Boolean);
@@ -274,8 +292,12 @@ export function LetterViewerModal() {
             <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200">
               <AlertTriangle className="h-3.5 w-3.5 text-amber-600 shrink-0" />
               <span>
-                <strong>{placeholders.length} placeholder(s) to verify</strong> (e.g.{' '}
-                {placeholders.slice(0, 2).join(', ')}).
+                <strong>{placeholders.length} detail(s) to check</strong> (e.g.{' '}
+                {placeholders
+                  .slice(0, 2)
+                  .map(p => p.replace(/[{}]/g, '').replace(/^Your /, '').toLowerCase())
+                  .join(', ')}
+                ).
               </span>
             </div>
 
@@ -295,6 +317,7 @@ export function LetterViewerModal() {
                   <input
                     value={nameInput}
                     onChange={e => setNameInput(e.target.value)}
+                    onBlur={rememberDetails}
                     placeholder="Your full name *"
                     className="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm dark:border-slate-700 dark:bg-slate-950 sm:h-6 sm:w-40 sm:rounded-md sm:px-2 sm:text-[11px]"
                   />
@@ -303,6 +326,7 @@ export function LetterViewerModal() {
                   <input
                     value={phoneInput}
                     onChange={e => setPhoneInput(e.target.value)}
+                    onBlur={rememberDetails}
                     placeholder="Your phone *"
                     className="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm dark:border-slate-700 dark:bg-slate-950 sm:h-6 sm:w-32 sm:rounded-md sm:px-2 sm:text-[11px]"
                   />
@@ -311,6 +335,7 @@ export function LetterViewerModal() {
                   <input
                     value={accountInput}
                     onChange={e => setAccountInput(e.target.value)}
+                    onBlur={rememberDetails}
                     placeholder="Account number"
                     className="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm dark:border-slate-700 dark:bg-slate-950 sm:h-6 sm:w-40 sm:rounded-md sm:px-2 sm:text-[11px]"
                   />
@@ -480,57 +505,40 @@ export function LetterViewerModal() {
                 }`}
               >
                 <div className="min-w-0">
-                  {signoff ? (
-                    <div className="whitespace-pre-line text-xs font-serif leading-snug">
-                      {signoff}
-                    </div>
-                  ) : (
-                    <div>
-                      <p
-                        className={`text-xs font-serif mb-5 ${
-                          paperTone === 'WHITE'
-                            ? 'text-slate-500'
-                            : 'text-slate-500 dark:text-slate-400'
-                        }`}
-                      >
-                        Yours faithfully,
-                      </p>
-                      <div
-                        className={`border-b w-40 mb-1.5 ${
-                          paperTone === 'WHITE'
-                            ? 'border-slate-400'
-                            : 'border-slate-400 dark:border-slate-600'
-                        }`}
-                      />
-                      <p
-                        className={`text-sm font-bold font-serif ${
-                          paperTone === 'WHITE'
-                            ? 'text-slate-900'
-                            : 'text-slate-900 dark:text-slate-100'
-                        }`}
-                      >
-                        {nameInput}
-                      </p>
-                      <p
-                        className={`text-xs font-mono ${
-                          paperTone === 'WHITE'
-                            ? 'text-slate-600'
-                            : 'text-slate-600 dark:text-slate-400'
-                        }`}
-                      >
-                        {phoneInput}
-                      </p>
-                      <p
-                        className={`text-[10.5px] ${
-                          paperTone === 'WHITE'
-                            ? 'text-slate-500'
-                            : 'text-slate-500 dark:text-slate-400'
-                        }`}
-                      >
-                        Pune, Maharashtra
-                      </p>
-                    </div>
-                  )}
+                  <p
+                    className={`mb-5 text-xs font-serif ${
+                      paperTone === 'WHITE'
+                        ? 'text-slate-500'
+                        : 'text-slate-500 dark:text-slate-400'
+                    }`}
+                  >
+                    {signoff ? signoff.split('\n')[0] : 'Yours faithfully,'}
+                  </p>
+                  <div
+                    className={`mb-1.5 w-40 border-b ${
+                      paperTone === 'WHITE'
+                        ? 'border-slate-400'
+                        : 'border-slate-400 dark:border-slate-600'
+                    }`}
+                  />
+                  <p
+                    className={`text-sm font-bold font-serif ${
+                      paperTone === 'WHITE'
+                        ? 'text-slate-900'
+                        : 'text-slate-900 dark:text-slate-100'
+                    }`}
+                  >
+                    {nameInput.trim() || 'Your name'}
+                  </p>
+                  <p
+                    className={`text-xs font-mono ${
+                      paperTone === 'WHITE'
+                        ? 'text-slate-600'
+                        : 'text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    {phoneInput.trim() || 'Your phone'}
+                  </p>
                 </div>
 
                 {/* Digital Verification Stamp */}
@@ -638,7 +646,7 @@ export function LetterViewerModal() {
                 className="text-xs h-9 font-semibold gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs flex-1 sm:flex-none justify-center active:scale-[0.98]"
               >
                 {isProcessing ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Spinner className="h-4 w-4" />
                 ) : (
                   <CheckCircle2 className="h-4 w-4" />
                 )}

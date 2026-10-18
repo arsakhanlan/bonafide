@@ -1,21 +1,9 @@
 import React from 'react';
 import { useCase } from '@/context/CaseContext';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Shield, Loader2 } from 'lucide-react';
+import { Shield } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
-
-/** Plain names for the internal agent codes shown in the log. */
-const AGENT_LABEL: Record<string, string> = {
-  READER: 'Paper reader',
-  WRITER: 'Letter writer',
-  CHECKER: 'Fact checker',
-  RULES: 'Law check',
-  MONEY: 'Money check',
-  SORTER: 'Safety check',
-  CASE_BOSS: 'Case manager',
-  CLOCK: 'Deadline tracker',
-  SYSTEM: 'Bonafide',
-};
+import { agentLabel } from '@/lib/agentStatus';
 
 /** Agent steps arrive as ISO instants; show the same date · time shape as history. */
 function eventTime(iso: string): { date: string; time: string } {
@@ -35,7 +23,7 @@ export function AuditLogActivity() {
   const agentEvents = (steps || [])
     .map((s, idx) => ({
       id: `step-${s.id || idx}`,
-      source: AGENT_LABEL[s.agent] ?? (s.agent as string),
+      source: agentLabel(s.agent as string),
       ...eventTime(s.timestamp),
       text: s.message,
       level: s.level,
@@ -71,7 +59,10 @@ export function AuditLogActivity() {
           </div>
           {caseData?.busy ? (
             <span className="inline-flex items-center gap-1.5 text-[10px] font-mono text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
-              <Loader2 className="h-3 w-3 animate-spin" />
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              </span>
               AGENTS WORKING
             </span>
           ) : (
@@ -86,12 +77,12 @@ export function AuditLogActivity() {
       <CardContent className="p-4 sm:p-5 flex-1 space-y-4 overflow-y-auto max-h-[560px]">
         {caseData?.busy && (
           <div className="animate-view-in flex items-center gap-2.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-[11px] font-medium text-emerald-800 dark:text-emerald-300">
-            <span className="flex items-center gap-1">
-              {[0, 1, 2].map(i => (
+            <span className="flex h-3.5 items-end gap-0.5">
+              {[0, 1, 2, 3].map(i => (
                 <span
                   key={i}
-                  className="animate-thinking-dot h-1.5 w-1.5 rounded-full bg-emerald-500"
-                  style={{ animationDelay: `${i * 160}ms` }}
+                  className="animate-thinking-bar w-0.5 rounded-full bg-emerald-500"
+                  style={{ animationDelay: `${i * 120}ms` }}
                 />
               ))}
             </span>

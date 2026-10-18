@@ -123,7 +123,10 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
       caseLanded();
     }, caseLanded));
     unsubs.push(onSnapshot(collection(firestore, `cases/${caseId}/steps`), (snap: any) => {
-      setSteps(snap.docs.map((d: any) => liveMap.mapStep(d.id, d.data() || {})));
+      const list = snap.docs
+        .map((d: any) => liveMap.mapStep(d.id, d.data() || {}))
+        .sort((a: any, b: any) => String(a.timestamp).localeCompare(String(b.timestamp)));
+      setSteps(list);
       stepsLanded();
     }, stepsLanded));
     unsubs.push(onSnapshot(collection(firestore, `cases/${caseId}/letters`), (snap: any) => {

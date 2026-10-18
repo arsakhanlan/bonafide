@@ -1,7 +1,8 @@
 import React from 'react';
 import { useCase } from '@/context/CaseContext';
 import { Button } from '@/components/ui/button';
-import { FastForward, Clock, CalendarDays, Loader2, Sparkles } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
+import { FastForward, Clock, CalendarDays, Sparkles } from 'lucide-react';
 
 export function TimeMachineSkip() {
   const { skipTime, isProcessing, simulatedDays, currentSimulatedDate } = useCase();
@@ -41,7 +42,7 @@ export function TimeMachineSkip() {
           onClick={() => skipTime(1)}
           className="h-9 px-2 sm:px-3 text-xs justify-center bg-card hover:bg-secondary border-border active:scale-[0.98] transition-all"
         >
-          {isProcessing ? <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0 sm:mr-1" /> : <Clock className="h-3.5 w-3.5 shrink-0 sm:mr-1 text-muted-foreground" />}
+          {isProcessing ? <Spinner className="h-3.5 w-3.5 shrink-0 sm:mr-1" /> : <Clock className="h-3.5 w-3.5 shrink-0 sm:mr-1 text-muted-foreground" />}
           <span className="truncate">+1 Day</span>
         </Button>
 
@@ -52,7 +53,7 @@ export function TimeMachineSkip() {
           onClick={() => skipTime(7)}
           className="h-9 px-2 sm:px-3 text-xs justify-center bg-card hover:bg-secondary border-border active:scale-[0.98] transition-all"
         >
-          {isProcessing ? <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0 sm:mr-1" /> : <CalendarDays className="h-3.5 w-3.5 shrink-0 sm:mr-1 text-muted-foreground" />}
+          {isProcessing ? <Spinner className="h-3.5 w-3.5 shrink-0 sm:mr-1" /> : <CalendarDays className="h-3.5 w-3.5 shrink-0 sm:mr-1 text-muted-foreground" />}
           <span className="hidden lg:inline">+7 Days (Bank Clock)</span>
           <span className="lg:hidden truncate">+7 Days</span>
         </Button>
@@ -64,7 +65,7 @@ export function TimeMachineSkip() {
           onClick={() => skipTime(8)}
           className="h-9 px-2 sm:px-3 text-xs justify-center font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-xs active:scale-[0.98] transition-all"
         >
-          {isProcessing ? <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0 sm:mr-1" /> : <FastForward className="h-3.5 w-3.5 shrink-0 sm:mr-1" />}
+          {isProcessing ? <Spinner className="h-3.5 w-3.5 shrink-0 sm:mr-1" /> : <FastForward className="h-3.5 w-3.5 shrink-0 sm:mr-1" />}
           <span className="hidden lg:inline">+8 Days (Overdue Reminder)</span>
           <span className="lg:hidden truncate">+8 Days</span>
         </Button>

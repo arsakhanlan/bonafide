@@ -9,8 +9,9 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
-import { Send, Building, Mail, MessageSquare, Package, Clock, ShieldCheck, Loader2 } from 'lucide-react';
+import { Send, Building, Mail, MessageSquare, Package, Clock, ShieldCheck } from 'lucide-react';
 import { audienceOf, LetterAudience } from '@/lib/letterAudience';
 
 type DeliveryHow = 'BRANCH' | 'EMAIL' | 'WHATSAPP' | 'POST';
@@ -256,7 +257,7 @@ export function MarkSentModal() {
               className="h-11 w-full justify-center gap-1.5 text-xs font-semibold sm:h-9 sm:w-auto"
             >
               {isProcessing ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Spinner className="h-4 w-4" />
               ) : (
                 <Clock className="h-4 w-4" />
               )}

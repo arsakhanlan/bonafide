@@ -9,8 +9,9 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
-import { MessageSquare, Sparkles, Send, ShieldAlert, Loader2 } from 'lucide-react';
+import { MessageSquare, Sparkles, Send, ShieldAlert } from 'lucide-react';
 import { IS_MOCK } from '@/lib/mode';
 import { audienceOf } from '@/lib/letterAudience';
 
@@ -82,31 +83,34 @@ export function RecordReplyModal() {
           </DialogHeader>
 
           <div className="space-y-3 py-1">
-            {IS_MOCK && (
-              <div>
-                <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block mb-1.5">
-                  Choose a sample reply:
-                </span>
-                <div className="space-y-1.5">
-                  {presets.map((p, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => setReplyText(p.text)}
-                      className="w-full text-left p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs active:scale-[0.99]"
-                    >
-                      <div className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-                        <Sparkles className="h-3 w-3 text-amber-500 shrink-0" />
-                        {p.title}
-                      </div>
-                      <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
-                        "{p.text}"
-                      </p>
-                    </button>
-                  ))}
-                </div>
+            <div>
+              <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {IS_MOCK ? 'Choose a sample reply:' : 'Need a starting point?'}
+              </span>
+              {!IS_MOCK && (
+                <p className="mb-2 text-[11px] leading-relaxed text-muted-foreground">
+                  These are examples. Replace the text with the real reply before saving.
+                </p>
+              )}
+              <div className="space-y-1.5">
+                {presets.map((p, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setReplyText(p.text)}
+                    className="w-full rounded-xl border border-border bg-secondary/40 p-2.5 text-left text-xs transition-colors hover:bg-secondary active:scale-[0.99]"
+                  >
+                    <div className="flex items-center gap-1.5 font-semibold text-foreground">
+                      <Sparkles className="h-3 w-3 shrink-0 text-amber-500" />
+                      {p.title}
+                    </div>
+                    <p className="mt-0.5 line-clamp-1 text-[11px] text-muted-foreground">
+                      "{p.text}"
+                    </p>
+                  </button>
+                ))}
               </div>
-            )}
+            </div>
 
             <div>
               <label className="text-xs font-semibold text-slate-900 dark:text-slate-100 block mb-1">
@@ -141,7 +145,7 @@ export function RecordReplyModal() {
               className="text-xs h-10 sm:h-9 gap-1.5 bg-slate-900 dark:bg-white dark:text-slate-900 font-semibold shadow-sm justify-center w-full sm:w-auto"
             >
               {isProcessing ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Spinner className="h-4 w-4" />
               ) : (
                 <Send className="h-4 w-4" />
               )}

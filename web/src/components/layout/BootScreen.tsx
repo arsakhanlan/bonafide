@@ -12,6 +12,7 @@ export function BootScreen() {
       <div className="w-full max-w-sm text-center animate-view-in">
         <div className="relative mx-auto mb-6 h-16 w-16">
           <div className="absolute inset-0 rounded-2xl bg-emerald-500/25 blur-xl animate-boot-glow" />
+          <span className="absolute -inset-2 animate-spin rounded-[22px] border-2 border-transparent border-t-emerald-500/60 [animation-duration:2.2s]" />
           <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-lg shadow-emerald-500/25">
             <ShieldCheck className="h-7 w-7" />
           </div>

@@ -9,8 +9,9 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Badge } from '@/components/ui/badge';
-import { Upload, FileText, Shield, Check, Plus, Trash2, Loader2, Sparkles } from 'lucide-react';
+import { Upload, FileText, Shield, Check, Plus, Trash2, Sparkles } from 'lucide-react';
 import { DocumentKind } from '@/types/document';
 import { IS_MOCK } from '@/lib/mode';
 
@@ -270,7 +271,7 @@ export function UploadModal() {
               className="text-xs h-10 sm:h-9 gap-1.5 bg-slate-900 dark:bg-white dark:text-slate-900 font-semibold shadow-sm justify-center w-full sm:w-auto"
             >
               {isProcessing ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Spinner className="h-4 w-4" />
               ) : (
                 <Upload className="h-4 w-4" />
               )}

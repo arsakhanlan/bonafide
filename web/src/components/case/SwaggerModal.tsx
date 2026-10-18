@@ -7,6 +7,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Collapse } from '@/components/ui/collapse';
 import { Badge } from '@/components/ui/badge';
 import {
   Code,
@@ -295,8 +296,8 @@ export function SwaggerModal({ isOpen, onClose }: SwaggerModalProps) {
                   {ep.summary} — <span className="text-muted-foreground">{ep.description}</span>
                 </p>
 
-                {isExpanded && (
-                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3 accordion-animate-open">
+                <Collapse open={isExpanded}>
+                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3">
                     {ep.body && (
                       <div className="space-y-1">
                         <span className="text-[10px] uppercase font-mono text-muted-foreground font-semibold">
@@ -325,7 +326,7 @@ export function SwaggerModal({ isOpen, onClose }: SwaggerModalProps) {
                       </div>
                     </div>
                   </div>
-                )}
+                </Collapse>
               </div>
             );
           })}
