@@ -17,5 +17,11 @@ public interface RuleRepository {
     /** An exact ref lookup (the rule-map must-includes), any status. */
     Optional<RuleChunk> findByRef(String ref);
 
+    /**
+     * The library stores refs with their source prefix ("MHA SOP (2 Jan 2026), clause 10.1(a)").
+     * The letter specs name only the clause, so a suffix match keeps the must-include rule found.
+     */
+    Optional<RuleChunk> findByRefContaining(String refPart);
+
     Optional<RuleChunk> findById(String chunkId);
 }

@@ -18,14 +18,18 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
- * RuleFinder → letter loop → re-check → save (BUILD_SPEC §10.5–10.6).
+ * RuleFinder → writer/check loop → save (BUILD_SPEC §10.5–10.6).
  * If the RuleFinder fails, the must-include chunks from the spec still carry the letter.
  */
 @Service
 public class LetterService {
+
+    private static final Logger log = LoggerFactory.getLogger(LetterService.class);
 
     private final AgentFactory factory;
     private final AgentRunner runner;
@@ -94,26 +98,30 @@ public class LetterService {
         loopContext.put("spec", Map.of(
                 "title", spec.title(), "to", spec.to(), "purpose", spec.purpose(),
                 "requiredFields", spec.requiredFields(), "guidance", spec.guidance(),
-                "maxWords", spec.maxWords()));
+                "mustIncludeRefs", spec.mustIncludeRefs(), "maxWords", spec.maxWords()));
 
-        Draft draft = runLoop(caseId, loopContext, "Write the " + kind + " letter.\nContext:\n" + Json.write(loopContext));
-        Draft cleaned = removeFailingCitations(draft, context);
-        DraftChecker.CheckResult result = checker.evaluate(cleaned, context);
+        String contextJson = Json.write(loopContext);
+        LoopOutcome outcome = writeAndCheck(caseId, Map.of("context", loopContext), contextJson,
+                "Write the " + kind + " letter.\nContext:\n" + contextJson, context, 3);
+        Draft cleaned = outcome.draft();
+        DraftChecker.CheckResult result = outcome.result();
 
-        // One extra loop pass when only grounding is short: the checker's facts are the same,
+        // One extra pass when only grounding is short: the checker's facts are the same,
         // so the writer gets one clear instruction to keep every sentence inside them.
         if (!result.passed() && result.problems().stream().anyMatch(p -> p.contains("grounding"))) {
-            draft = runLoopOnce(caseId, loopContext, "The grounding score is below the minimum. Rewrite the letter "
-                    + "so that every sentence states a fact from the context or one of the required requests, "
-                    + "with nothing else. Keep the citations and amounts exact.");
-            cleaned = removeFailingCitations(draft, context);
-            result = checker.evaluate(cleaned, context);
+            outcome = writeAndCheck(caseId, outcome.state(), contextJson,
+                    "The grounding score is below the minimum. Rewrite the letter so that every sentence "
+                            + "states a fact from the context or one of the required requests, with nothing else. "
+                            + "Keep the citations and amounts exact.", context, 1);
+            cleaned = outcome.draft();
+            result = outcome.result();
         }
 
         // The safety net: when the AI draft still fails, a plain letter with verbatim quotes is used.
         if (!result.passed()) {
             Draft safe = SafeLetter.build(kind, context);
             DraftChecker.CheckResult safeResult = checker.evaluate(safe, context);
+            log.info("safe letter case={} passed={} problems={}", caseId, safeResult.passed(), safeResult.problems());
             if (safeResult.passed()) {
                 cleaned = safe;
                 result = safeResult;
@@ -126,27 +134,63 @@ public class LetterService {
         return new DraftResult(letterId, cleaned, result);
     }
 
-    private Draft runLoop(String caseId, Map<String, Object> loopContext, String message) {
-        AgentRunner.RunWithState run = runner.runWithState(
-                factory.letterLoop(), caseId, Map.of("context", loopContext),
-                List.of(Part.fromText(message)));
-        return Json.parse(asText(run.state().get("draft")), Draft.class);
+    /**
+     * Writer ⇄ checks without an LLM in the middle of the loop. The writer only writes; every
+     * pass through {@link DraftChecker} applies the same quote, field, amount and grounding
+     * gate the Checker agent used to call, so the letter cannot pass without the code checks.
+     */
+    private LoopOutcome writeAndCheck(String caseId, Map<String, Object> state, String contextJson,
+                                      String message, CheckContext context, int maxRounds) {
+        Map<String, Object> nextState = new LinkedHashMap<>(state);
+        String nextMessage = message;
+        LoopOutcome outcome = null;
+        long started = System.nanoTime();
+        for (int round = 1; round <= maxRounds; round++) {
+            AgentRunner.RunWithState run = runner.runWithState(
+                    factory.writer(), caseId, nextState, List.of(Part.fromText(nextMessage)));
+            Draft draft = Json.parse(asText(run.state().get("draft")), Draft.class);
+            Draft cleaned = removeFailingCitations(draft, context);
+            DraftChecker.CheckResult result = checker.evaluate(cleaned, context);
+            outcome = new LoopOutcome(cleaned, result, run.state(), round);
+            if (result.passed()) {
+                break;
+            }
+            log.info("letter case={} round={} problems={}", caseId, round, result.problems());
+            nextState = new LinkedHashMap<>(run.state());
+            nextMessage = "Fix this draft. Checker fixes:\n" + numbered(result.problems())
+                    + "\nContext:\n" + contextJson
+                    + "\nPrevious draft:\n" + Json.write(draft)
+                    + "\nReturn the corrected full draft.";
+        }
+        long elapsed = (System.nanoTime() - started) / 1_000_000;
+        log.info("letter case={} rounds={} passed={} ms={}", caseId,
+                outcome == null ? 0 : outcome.rounds(),
+                outcome != null && outcome.result().passed(), elapsed);
+        return outcome;
     }
 
-    private Draft runLoopOnce(String caseId, Map<String, Object> loopContext, String message) {
-        AgentRunner.RunWithState run = runner.runWithState(
-                factory.letterLoopOnce(), caseId, Map.of("context", loopContext),
-                List.of(Part.fromText(message)));
-        return Json.parse(asText(run.state().get("draft")), Draft.class);
+    private static String numbered(List<String> problems) {
+        StringBuilder text = new StringBuilder();
+        for (int i = 0; i < problems.size(); i++) {
+            text.append(i + 1).append(". ").append(problems.get(i)).append('\n');
+        }
+        return text.toString();
+    }
+
+    private record LoopOutcome(Draft draft, DraftChecker.CheckResult result,
+                               Map<String, Object> state, int rounds) {
     }
 
     private List<RuleChunk> findChunks(String caseId, LetterSpec spec, CaseData data) {
         TraceWriter.Handle finding = trace.start(caseId, "RULES", "Finding the rules that fit…");
         Map<String, RuleChunk> byId = new LinkedHashMap<>();
 
-        // Must-include refs from the letter spec, e.g. clause 10.1(a) for L1.
+        // Must-include refs from the letter spec, e.g. clause 10.1(a) for L1. The library
+        // keeps its source prefix, so fall back to a suffix match before giving up.
         for (String ref : spec.mustIncludeRefs()) {
-            rules.findByRef(ref).ifPresent(c -> byId.put(c.id(), c));
+            rules.findByRef(ref)
+                    .or(() -> rules.findByRefContaining(ref))
+                    .ifPresent(c -> byId.put(c.id(), c));
         }
 
         // The RuleFinder agent adds context-matched chunks; its failure leaves the map alone.
@@ -165,6 +209,7 @@ public class LetterService {
         }
 
         List<RuleChunk> chunks = new ArrayList<>(byId.values());
+        log.info("rules case={} refs={}", caseId, chunks.stream().map(RuleChunk::ref).toList());
         finding.done("Found " + chunks.size() + " rules that fit.");
         return chunks.size() > 8 ? chunks.subList(0, 8) : chunks;
     }

@@ -9,6 +9,8 @@ import com.google.genai.types.Part;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /** Runs an ADK agent once, in memory, and hands back the final text (BUILD_SPEC §10.1). */
@@ -16,13 +18,14 @@ import org.springframework.stereotype.Component;
 public class AgentRunner {
 
     private static final String APP_NAME = "bonafide";
+    private static final Logger log = LoggerFactory.getLogger(AgentRunner.class);
 
     public String run(BaseAgent agent, String caseId, Map<String, Object> initialState, List<Part> parts) {
         InMemoryRunner runner = new InMemoryRunner(agent, APP_NAME);
         Session session = runner.sessionService()
                 .createSession(APP_NAME, caseId, initialState, sessionId(caseId))
                 .blockingGet();
-        return runOnce(runner, session, parts);
+        return timed(agent, caseId, () -> runOnce(runner, session, parts));
     }
 
     /** Parses the final text as JSON; on a parse failure, asks once more for clean JSON. */
@@ -32,9 +35,12 @@ public class AgentRunner {
         Session session = runner.sessionService()
                 .createSession(APP_NAME, caseId, initialState, sessionId(caseId))
                 .blockingGet();
+        long started = System.nanoTime();
         try {
-            return Json.parse(runOnce(runner, session, parts), type);
+            return Json.parse(timed(agent, caseId, () -> runOnce(runner, session, parts)), type);
         } catch (IllegalArgumentException first) {
+            log.warn("agent={} case={} returned unparseable JSON after {} ms; asking once more",
+                    agent.name(), caseId, elapsedMs(started));
             String retry = runOnce(runner, session,
                     List.of(Part.fromText("Return only valid JSON matching the schema.")));
             return Json.parse(retry, type);
@@ -48,11 +54,23 @@ public class AgentRunner {
         Session session = runner.sessionService()
                 .createSession(APP_NAME, caseId, initialState, sessionId(caseId))
                 .blockingGet();
-        String text = runOnce(runner, session, parts);
+        String text = timed(agent, caseId, () -> runOnce(runner, session, parts));
         Session after = runner.sessionService()
                 .getSession(APP_NAME, caseId, session.id(), java.util.Optional.empty())
                 .blockingGet();
         return new RunWithState(text, after.state());
+    }
+
+    /** Call durations are the only reliable way to see where a slow case spends its time. */
+    private static String timed(BaseAgent agent, String caseId, java.util.function.Supplier<String> call) {
+        long started = System.nanoTime();
+        String text = call.get();
+        log.info("agent={} case={} ms={}", agent.name(), caseId, elapsedMs(started));
+        return text;
+    }
+
+    private static long elapsedMs(long startedNanos) {
+        return (System.nanoTime() - startedNanos) / 1_000_000;
     }
 
     public record RunWithState(String finalText, Map<String, Object> state) {

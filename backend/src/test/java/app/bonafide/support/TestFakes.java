@@ -198,6 +198,11 @@ public class TestFakes {
         }
 
         @Override
+        public Optional<app.bonafide.rules.RuleChunk> findByRefContaining(String refPart) {
+            return chunks.values().stream().filter(c -> c.ref().contains(refPart)).findFirst();
+        }
+
+        @Override
         public Optional<app.bonafide.rules.RuleChunk> findById(String chunkId) {
             return Optional.ofNullable(chunks.get(chunkId));
         }

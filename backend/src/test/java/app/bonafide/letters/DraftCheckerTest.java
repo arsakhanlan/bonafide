@@ -7,6 +7,7 @@ import app.bonafide.agents.outputs.Draft.Citation;
 import app.bonafide.rules.RuleChunk;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -130,6 +131,81 @@ class DraftCheckerTest {
         assertThat(result.problems()).as("problems: %s", result.problems()).isEmpty();
         assertThat(result.passed()).isTrue();
         assertThat(safe.citations()).isNotEmpty();
+    }
+
+    @Test
+    void aDraftWithoutTheRequiredCitationFails() {
+        Draft noCitation = new Draft(goodDraft().title(), goodDraft().to(), goodDraft().subject(),
+                goodDraft().body().replace(" [1]", ""), List.of(), goodDraft().attachments());
+        assertThat(checker.evaluate(noCitation, context).problems())
+                .anyMatch(p -> p.contains("must quote and cite clause 10.1(a)"));
+    }
+
+    @Test
+    void aDifferentLibraryRefStillNeedsOneCitation() {
+        RuleChunk tenTwo = new RuleChunk(
+                RULE.id(), "clause 10.2", RULE.text(), RULE.status(), RULE.date(), RULE.sourceUrl());
+        CheckContext otherRef = new CheckContext(
+                new LetterCatalog().get(LetterKind.L1_BRANCH), List.of(tenTwo),
+                new BigDecimal("2000"), new BigDecimal("180000"), new BigDecimal("178000"), 0.6,
+                context.facts(), context.evidence(), context.personNote());
+
+        Draft cited = new Draft(goodDraft().title(), goodDraft().to(), goodDraft().subject(),
+                goodDraft().body(),
+                List.of(new Citation(1, tenTwo.id(), "file the grievance within 7 days")),
+                goodDraft().attachments());
+        DraftChecker.CheckResult draftResult = checker.evaluate(cited, otherRef);
+        assertThat(draftResult.problems()).as("problems: %s", draftResult.problems()).isEmpty();
+
+        Draft noCitation = new Draft(goodDraft().title(), goodDraft().to(), goodDraft().subject(),
+                goodDraft().body().replace(" [1]", ""), List.of(), goodDraft().attachments());
+        assertThat(checker.evaluate(noCitation, otherRef).problems())
+                .anyMatch(p -> p.contains("at least one rule"));
+    }
+
+    @Test
+    void aPrefixedRuleRefStillSatisfiesTheMustIncludeAndTheSafeLetter() {
+        RuleChunk prefixed = new RuleChunk(
+                RULE.id(), "MHA SOP (2 Jan 2026), clause 10.1(a)", RULE.text(),
+                RULE.status(), RULE.date(), RULE.sourceUrl());
+        CheckContext prefixedContext = new CheckContext(
+                new LetterCatalog().get(LetterKind.L1_BRANCH), List.of(prefixed),
+                new BigDecimal("2000"), new BigDecimal("180000"), new BigDecimal("178000"), 0.6,
+                context.facts(), context.evidence(), context.personNote());
+
+        Draft safe = SafeLetter.build(LetterKind.L1_BRANCH, prefixedContext);
+
+        assertThat(safe.citations()).isNotEmpty();
+        assertThat(checker.evaluate(safe, prefixedContext).passed()).isTrue();
+    }
+
+    @Test
+    void groundingIsSkippedWhenACodeCheckAlreadyFailed() {
+        AtomicInteger calls = new AtomicInteger();
+        DraftChecker counter = new DraftChecker((answer, facts, threshold) -> {
+            calls.incrementAndGet();
+            return 0.9f;
+        }, properties(), new LetterCatalog());
+        Draft wrongAmount = new Draft(goodDraft().title(), goodDraft().to(), goodDraft().subject(),
+                goodDraft().body().replace("₹1,78,000", "₹1,79,000"), goodDraft().citations(),
+                goodDraft().attachments());
+
+        assertThat(counter.evaluate(wrongAmount, context).passed()).isFalse();
+        assertThat(calls).hasValue(0);
+    }
+
+    @Test
+    void groundingOfTheSameDraftIsCached() {
+        AtomicInteger calls = new AtomicInteger();
+        DraftChecker counter = new DraftChecker((answer, facts, threshold) -> {
+            calls.incrementAndGet();
+            return 0.9f;
+        }, properties(), new LetterCatalog());
+
+        counter.evaluate(goodDraft(), context);
+        counter.evaluate(goodDraft(), context);
+
+        assertThat(calls).hasValue(1);
     }
 
     @Test

@@ -32,8 +32,10 @@ import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -57,9 +59,17 @@ class FirstRunWorkflowTest {
     private class FakeRunner extends AgentRunner {
         private volatile SorterOutput sorterAnswer = new SorterOutput(
                 "GENUINE", List.of("The payment matches the bill and the chat."), List.of(), "SHOP_UPI", false);
+        private final ArrayDeque<String> draftQueue = new ArrayDeque<>();
+        private final AtomicInteger writerRounds = new AtomicInteger();
 
         void set(SorterOutput answer) {
             this.sorterAnswer = answer;
+        }
+
+        void queueDrafts(String... drafts) {
+            for (String draft : drafts) {
+                draftQueue.add(draft);
+            }
         }
 
         @Override
@@ -83,7 +93,9 @@ class FirstRunWorkflowTest {
         @Override
         public RunWithState runWithState(
                 BaseAgent agent, String caseId, Map<String, Object> initialState, List<Part> parts) {
-            return new RunWithState("", Map.of("draft", draftJson()));
+            writerRounds.incrementAndGet();
+            String draft = draftQueue.isEmpty() ? draftJson() : draftQueue.remove();
+            return new RunWithState("", Map.of("context", initialState.get("context"), "draft", draft));
         }
     }
 
@@ -131,6 +143,38 @@ class FirstRunWorkflowTest {
         assertThat(documents.documents).isNotEmpty();
         assertThat(steps.steps).extracting(s -> s.get("agent"))
                 .contains("READER", "SORTER", "MONEY");
+    }
+
+    @Test
+    void aFailedDraftIsRewrittenUntilTheCodeChecksPass() {
+        runner.queueDrafts(draftJson().replace("₹1,78,000", "₹1,79,000"), draftJson());
+        files.write("uploads/u1/c1/a1.txt", sms().getBytes(StandardCharsets.UTF_8), "text/plain");
+        Event event = Event.newPending("c1", EventType.UPLOAD,
+                Map.of("files", List.of(Map.of("path", "uploads/u1/c1/a1.txt", "kind", "NOTICE", "mime", "text/plain"))),
+                clock.instant());
+
+        workflow.run("c1", event);
+
+        assertThat(runner.writerRounds).hasValue(2);
+        assertThat(cases.cases.get("c1").stage()).isEqualTo(Stage.LETTER_READY);
+        assertThat(letters.letters.values()).anySatisfy(letter ->
+                assertThat((String) letter.get("body")).contains("₹1,78,000"));
+    }
+
+    @Test
+    void theWriterStopsAfterThreeRoundsAndFallsBackToTheSafeLetter() {
+        String failing = draftJson().replace("₹1,78,000", "₹1,79,000");
+        runner.queueDrafts(failing, failing, failing);
+        files.write("uploads/u1/c1/a1.txt", sms().getBytes(StandardCharsets.UTF_8), "text/plain");
+        Event event = Event.newPending("c1", EventType.UPLOAD,
+                Map.of("files", List.of(Map.of("path", "uploads/u1/c1/a1.txt", "kind", "NOTICE", "mime", "text/plain"))),
+                clock.instant());
+
+        workflow.run("c1", event);
+
+        assertThat(runner.writerRounds).hasValue(3);
+        assertThat(cases.cases.get("c1").stage()).isEqualTo(Stage.LETTER_READY);
+        assertThat(letters.letters).hasSize(1);
     }
 
     @Test

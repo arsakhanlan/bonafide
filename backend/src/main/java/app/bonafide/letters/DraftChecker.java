@@ -9,6 +9,7 @@ import app.bonafide.rules.QuoteChecker;
 import app.bonafide.rules.RuleChunk;
 import com.google.adk.tools.ToolContext;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +31,13 @@ public class DraftChecker {
             List.of("guarantee", "you will get", "legal advice", "we will take action",
                     "sue you", "incompetent", "negligent", "unprofessional");
 
+    private static final int GROUNDING_CACHE_MAX = 64;
+
     private final Grounding grounding;
     private final BonafideProperties properties;
     private final LetterCatalog catalog;
+    /** Grounding is deterministic for the same draft and facts, and the loop checks a draft twice. */
+    private final Map<String, Float> groundingCache = new LinkedHashMap<>(32, 0.75f, true);
 
     public DraftChecker(Grounding grounding, BonafideProperties properties, LetterCatalog catalog) {
         this.grounding = grounding;
@@ -93,6 +98,7 @@ public class DraftChecker {
 
         Set<Integer> markers = markersIn(draft.body());
         Set<Integer> cited = new LinkedHashSet<>();
+        Set<String> citedChunks = new LinkedHashSet<>();
         for (Citation citation : draft.citations() == null ? List.<Citation>of() : draft.citations()) {
             if (cited.contains(citation.n())) {
                 problems.add("Citation " + citation.n() + " is listed twice.");
@@ -101,9 +107,28 @@ public class DraftChecker {
             RuleChunk chunk = context.chunkById(citation.chunkId());
             if (chunk == null) {
                 problems.add("Citation " + citation.n() + " points to a rule that is not in the library.");
-            } else if (!QuoteChecker.contains(chunk.text(), citation.quote())) {
-                problems.add("The quote in citation " + citation.n() + " is not word-for-word in the rule.");
+            } else {
+                citedChunks.add(chunk.id());
+                if (!QuoteChecker.contains(chunk.text(), citation.quote())) {
+                    problems.add("The quote in citation " + citation.n() + " is not word-for-word in the rule.");
+                }
             }
+        }
+        for (String required : context.spec().mustIncludeRefs()) {
+            boolean available = context.chunks().stream().anyMatch(chunk -> chunk.ref().contains(required));
+            if (!available) {
+                // The library may hold the equivalent rule under another ref (e.g. the 7-day
+                // grievance rule for a whole-account seizure is clause 10.2, not 10.1(a)).
+                continue;
+            }
+            boolean present = context.chunks().stream().anyMatch(chunk ->
+                    citedChunks.contains(chunk.id()) && chunk.ref().contains(required));
+            if (!present) {
+                problems.add("The letter must quote and cite " + required + ".");
+            }
+        }
+        if (citedChunks.isEmpty() && !context.chunks().isEmpty()) {
+            problems.add("The letter must quote and cite at least one rule.");
         }
         for (int marker : markers) {
             if (!cited.contains(marker)) {
@@ -138,15 +163,42 @@ public class DraftChecker {
         }
 
         Float score = null;
-        if (draft.body() != null && !draft.body().isBlank()) {
+        // When a code check already failed, the draft cannot pass, so the external grounding
+        // call would only add latency; the next round checks the corrected draft.
+        if (problems.isEmpty() && draft.body() != null && !draft.body().isBlank()) {
             String candidate = MARKER.matcher(draft.body()).replaceAll("");
-            score = grounding.check(candidate, factsOf(context), 0.6);
+            score = groundingScore(candidate, factsOf(context), 0.6);
             if (score != null && score < context.groundingMin()) {
                 problems.add("The grounding score " + score + " is below " + context.groundingMin() + ".");
             }
         }
 
         return new CheckResult(problems.isEmpty(), problems, score);
+    }
+
+    private Float groundingScore(String candidate, List<String> facts, double threshold) {
+        String key = threshold + "\n<draft>\n" + candidate + "\n</draft>\n<facts>\n"
+                + String.join("\n", facts) + "\n</facts>";
+        synchronized (groundingCache) {
+            Float cached = groundingCache.get(key);
+            if (cached != null) {
+                return cached;
+            }
+        }
+        Float score = grounding.check(candidate, facts, threshold);
+        if (score != null) {
+            synchronized (groundingCache) {
+                groundingCache.put(key, score);
+                if (groundingCache.size() > GROUNDING_CACHE_MAX) {
+                    var oldest = groundingCache.keySet().iterator();
+                    if (oldest.hasNext()) {
+                        oldest.next();
+                        oldest.remove();
+                    }
+                }
+            }
+        }
+        return score;
     }
 
     private static Set<Integer> markersIn(String body) {

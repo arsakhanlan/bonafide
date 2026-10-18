@@ -47,15 +47,23 @@ public final class SafeLetter {
         }
         body.append("The frozen amount is ").append(frozen)
                 .append(" and ").append(release).append(" should be released");
-        int n = 1;
+        List<RuleChunk> cite = new ArrayList<>();
         for (RuleChunk chunk : context.chunks()) {
-            if (context.spec().mustIncludeRefs().contains(chunk.ref())) {
-                String sentence = firstSentence(chunk.text());
-                if (sentence != null) {
-                    body.append(" [").append(n).append("]");
-                    citations.add(new Citation(n, chunk.id(), sentence));
-                    n++;
-                }
+            if (context.spec().mustIncludeRefs().stream().anyMatch(chunk.ref()::contains)) {
+                cite.add(chunk);
+            }
+        }
+        if (cite.isEmpty() && !context.chunks().isEmpty()) {
+            // The exact must-include ref is absent from the library; still cite one real rule.
+            cite.add(context.chunks().getFirst());
+        }
+        int n = 1;
+        for (RuleChunk chunk : cite) {
+            String sentence = firstSentence(chunk.text());
+            if (sentence != null) {
+                body.append(" [").append(n).append("]");
+                citations.add(new Citation(n, chunk.id(), sentence));
+                n++;
             }
         }
         body.append(". ");

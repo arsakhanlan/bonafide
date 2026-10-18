@@ -111,4 +111,25 @@ public class FirestoreRuleRepository implements RuleRepository {
             throw new IllegalStateException("Ref lookup failed", e);
         }
     }
+
+    @Override
+    public Optional<RuleChunk> findByRefContaining(String refPart) {
+        try {
+            for (var snapshot : firestore.collection("rule_chunks").get().get().getDocuments()) {
+                String ref = (String) snapshot.get("ref");
+                if (ref != null && ref.contains(refPart)) {
+                    return Optional.of(new RuleChunk(
+                            (String) snapshot.get("docId"),
+                            ref,
+                            (String) snapshot.get("text"),
+                            (String) snapshot.get("status"),
+                            (String) snapshot.get("date"),
+                            (String) snapshot.get("sourceUrl")));
+                }
+            }
+            return Optional.empty();
+        } catch (Exception e) {
+            throw new IllegalStateException("Ref lookup failed", e);
+        }
+    }
 }
