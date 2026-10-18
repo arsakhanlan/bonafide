@@ -51,8 +51,8 @@ export function UploadModal() {
 
   const [filesToUpload, setFilesToUpload] = useState<UploadItem[]>([]);
   const [removingIds, setRemovingIds] = useState<Record<string, boolean>>({});
-  const [seededDemo, setSeededDemo] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const wasOpenRef = useRef(false);
 
   const isOpen = activeModal === 'UPLOAD_PAPERS';
   const awaitingPapers =
@@ -60,15 +60,16 @@ export function UploadModal() {
 
   // The guided demo arrives with the papers already attached, ready to analyse.
   useEffect(() => {
-    if (!isOpen || !IS_MOCK || seededDemo || !awaitingPapers || filesToUpload.length > 0) return;
+    const justOpened = isOpen && !wasOpenRef.current;
+    wasOpenRef.current = isOpen;
+    if (!justOpened || !IS_MOCK || !awaitingPapers || filesToUpload.length > 0) return;
     setFilesToUpload(
       DEMO_UPLOADS.map((doc, index) => ({
         id: `demo-${index}-${doc.name}`,
         ...doc,
       }))
     );
-    setSeededDemo(true);
-  }, [isOpen, seededDemo, awaitingPapers, filesToUpload.length]);
+  }, [isOpen, awaitingPapers, filesToUpload.length]);
 
   const handleAddFile = (kind: DocumentKind, defaultName: string, file?: File) => {
     const newItem: UploadItem = {
@@ -104,7 +105,6 @@ export function UploadModal() {
     if (filesToUpload.length === 0) return;
     await uploadPapers(filesToUpload.map(f => ({ name: f.name, kind: f.kind, mime: f.mime, file: f.file })));
     setFilesToUpload([]);
-    setSeededDemo(false);
   };
 
   return (
