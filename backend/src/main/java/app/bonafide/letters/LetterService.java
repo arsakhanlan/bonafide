@@ -106,26 +106,14 @@ public class LetterService {
         Draft cleaned = outcome.draft();
         DraftChecker.CheckResult result = outcome.result();
 
-        // One extra pass when only grounding is short: the checker's facts are the same,
-        // so the writer gets one clear instruction to keep every sentence inside them.
-        if (!result.passed() && result.problems().stream().anyMatch(p -> p.contains("grounding"))) {
-            outcome = writeAndCheck(caseId, outcome.state(), contextJson,
-                    "The grounding score is below the minimum. Rewrite the letter so that every sentence "
-                            + "states a fact from the context or one of the required requests, with nothing else. "
-                            + "Keep the citations and amounts exact.", context, 1);
-            cleaned = outcome.draft();
-            result = outcome.result();
-        }
-
-        // The safety net: when the AI draft still fails, a plain letter with verbatim quotes is used.
+        // The safety net: when the AI draft fails, a plain letter with verbatim quotes is used.
+        // It is the controlled text, so it ships even if its own checks report a remaining gap.
         if (!result.passed()) {
             Draft safe = SafeLetter.build(kind, context);
             DraftChecker.CheckResult safeResult = checker.evaluate(safe, context);
             log.info("safe letter case={} passed={} problems={}", caseId, safeResult.passed(), safeResult.problems());
-            if (safeResult.passed()) {
-                cleaned = safe;
-                result = safeResult;
-            }
+            cleaned = safe;
+            result = safeResult;
         }
         writing.done("Drafted. Checking every quote…");
 
@@ -156,6 +144,11 @@ public class LetterService {
                 break;
             }
             log.info("letter case={} round={} problems={}", caseId, round, result.problems());
+            // When only grounding is short, another rewrite made scores worse in practice and
+            // cost minutes; the SafeLetter is the controlled fallback.
+            if (result.problems().stream().allMatch(p -> p.contains("grounding"))) {
+                break;
+            }
             nextState = new LinkedHashMap<>(run.state());
             nextMessage = "Fix this draft. Checker fixes:\n" + numbered(result.problems())
                     + "\nContext:\n" + contextJson

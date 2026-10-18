@@ -134,6 +134,23 @@ class DraftCheckerTest {
     }
 
     @Test
+    void everyKindOfSafeLetterPassesItsOwnChecks() {
+        for (LetterKind kind : List.of(
+                LetterKind.L1_BRANCH, LetterKind.L2_OFFICER, LetterKind.L3_REVIEW,
+                LetterKind.L3_DISTRICT, LetterKind.L4_BACKSTOP, LetterKind.L5_LAWYER_NOTES)) {
+            CheckContext kindContext = new CheckContext(
+                    new LetterCatalog().get(kind), List.of(RULE),
+                    new BigDecimal("2000"), new BigDecimal("180000"), new BigDecimal("178000"), 0.6,
+                    context.facts(), context.evidence(), context.personNote());
+            Draft safe = SafeLetter.build(kind, kindContext);
+            DraftChecker.CheckResult result = checker.evaluate(safe, kindContext);
+            assertThat(result.problems()).as(kind + " problems: %s", result.problems()).isEmpty();
+            assertThat(result.passed()).as(kind + " passed").isTrue();
+            assertThat(safe.citations()).as(kind + " citations").isNotEmpty();
+        }
+    }
+
+    @Test
     void aDraftWithoutTheRequiredCitationFails() {
         Draft noCitation = new Draft(goodDraft().title(), goodDraft().to(), goodDraft().subject(),
                 goodDraft().body().replace(" [1]", ""), List.of(), goodDraft().attachments());
