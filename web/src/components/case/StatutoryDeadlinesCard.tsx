@@ -51,7 +51,7 @@ export function StatutoryDeadlinesCard() {
   const strokeDashoffset = circumference - progressRatio * circumference;
 
   return (
-    <Card id="statutory-deadlines-section" className="border-border bg-card shadow-card rounded-2xl overflow-hidden">
+    <Card id="statutory-deadlines-section" className="scroll-mt-24 border-border bg-card shadow-card rounded-2xl overflow-hidden">
       <CardHeader className="py-3 px-4 sm:px-5 border-b border-border/80 flex flex-row items-center justify-between">
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4 text-emerald-600 dark:text-emerald-400 stroke-[1.75]" />

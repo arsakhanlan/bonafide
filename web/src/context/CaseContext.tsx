@@ -4,6 +4,7 @@ import { ref as storageRef, uploadBytes } from 'firebase/storage';
 import { firestore, storage } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
 import * as liveMap from '@/lib/liveMap';
+import { createLandedGate } from '@/lib/bootGate';
 import { CaseData, AnswerSubmission } from '@/types/case';
 import { Letter } from '@/types/letter';
 import { Deadline } from '@/types/deadline';
@@ -69,7 +70,7 @@ interface CaseContextType {
 const CaseContext = createContext<CaseContextType | undefined>(undefined);
 
 export function CaseProvider({ children }: { children: React.ReactNode }) {
-  const { user, loading: authLoading, authError } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [selectedPersona, setSelectedPersona] = useState<'RAVI' | 'MEERA' | 'ARJUN' | 'SUNIL'>('RAVI');
   const [caseData, setCaseData] = useState<CaseData | null>(
     IS_MOCK ? MOCK_PERSONAS.RAVI.caseData : null
@@ -101,28 +102,43 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
 
   const unsubRef = useRef<null | (() => void)>(null);
 
-  /** Live sync: the server is the source of truth for a backend case. */
-  const subscribeLive = useCallback((caseId: string) => {
+  /**
+   * Live sync: the server is the source of truth for a backend case.
+   * onReady fires once when all five initial snapshots have landed (or errored),
+   * so the dashboard never renders half-empty while Firestore is still answering.
+   */
+  const subscribeLive = useCallback((caseId: string, onReady?: () => void) => {
     unsubRef.current?.();
     const unsubs: Array<() => void> = [];
+    const gate = createLandedGate(5, onReady);
+    const caseLanded = gate.settle();
+    const stepsLanded = gate.settle();
+    const lettersLanded = gate.settle();
+    const deadlinesLanded = gate.settle();
+    const documentsLanded = gate.settle();
+
     unsubs.push(onSnapshot(doc(firestore, 'cases', caseId), (snap: any) => {
-      if (!snap.exists()) return;
-      setCaseData(liveMap.mapCase(snap.id, snap.data() || {}));
-    }));
+      if (snap.exists()) setCaseData(liveMap.mapCase(snap.id, snap.data() || {}));
+      caseLanded();
+    }, caseLanded));
     unsubs.push(onSnapshot(collection(firestore, `cases/${caseId}/steps`), (snap: any) => {
       setSteps(snap.docs.map((d: any) => liveMap.mapStep(d.id, d.data() || {})));
-    }));
+      stepsLanded();
+    }, stepsLanded));
     unsubs.push(onSnapshot(collection(firestore, `cases/${caseId}/letters`), (snap: any) => {
       const list = snap.docs.map((d: any) => liveMap.mapLetter(d.id, d.data() || {}));
       setLetters(list);
       setSelectedLetterId((prev) => prev ?? list[0]?.id ?? null);
-    }));
+      lettersLanded();
+    }, lettersLanded));
     unsubs.push(onSnapshot(collection(firestore, `cases/${caseId}/deadlines`), (snap: any) => {
       setDeadlines(snap.docs.map((d: any) => liveMap.mapDeadline(d.id, d.data() || {})));
-    }));
+      deadlinesLanded();
+    }, deadlinesLanded));
     unsubs.push(onSnapshot(collection(firestore, `cases/${caseId}/documents`), (snap: any) => {
       setDocuments(snap.docs.map((d: any) => liveMap.mapDocument(d.id, d.data() || {})));
-    }));
+      documentsLanded();
+    }, documentsLanded));
     unsubRef.current = () => unsubs.forEach((u) => u());
   }, []);
 
@@ -132,7 +148,13 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (IS_MOCK || authLoading || bootedRef.current || !user) return;
     bootedRef.current = true;
+    // Covers a retry after a failed sign-in, when loading was already released.
+    setLoading(true);
     let cancelled = false;
+
+    const finish = () => {
+      if (!cancelled) setLoading(false);
+    };
 
     (async () => {
       try {
@@ -143,12 +165,15 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
           .map((d: any) => ({ id: d.id, createdAt: String(d.data()?.createdAt ?? '') }))
           .sort((a: any, b: any) => b.createdAt.localeCompare(a.createdAt))[0];
         if (newest) {
-          subscribeLive(newest.id);
+          // Hold the splash until the first case + subcollection snapshots are in,
+          // otherwise the start screen flashes before the dashboard.
+          subscribeLive(newest.id, finish);
+        } else {
+          finish();
         }
       } catch (e: any) {
         if (!cancelled) setError('Could not load your cases. ' + (e.message || ''));
-      } finally {
-        if (!cancelled) setLoading(false);
+        finish();
       }
     })();
 
@@ -157,14 +182,10 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
     };
   }, [user, authLoading, subscribeLive]);
 
-  // While signing in (real mode), stay on the loading screen.
+  // Auth settled but nobody is signed in (Firebase unreachable): stop waiting.
   useEffect(() => {
-    if (!IS_MOCK && !authLoading) setLoading(false);
-  }, [authLoading]);
-
-  useEffect(() => {
-    if (!IS_MOCK && authError) setError(authError);
-  }, [authError]);
+    if (!IS_MOCK && !authLoading && !user) setLoading(false);
+  }, [authLoading, user]);
 
   const resetToEmpty = useCallback(() => {
     unsubRef.current?.();
@@ -826,7 +847,6 @@ Yours faithfully,
 
   const deleteCase = async () => {
     if (!caseData) return;
-    if (!window.confirm('Delete this case, its letters and all uploaded papers? This cannot be undone.')) return;
     setIsProcessing(true);
     setError(null);
     try {

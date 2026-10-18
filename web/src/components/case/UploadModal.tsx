@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Upload, FileText, Shield, Check, Plus, Trash2 } from 'lucide-react';
+import { Upload, FileText, Shield, Check, Plus, Trash2, Loader2 } from 'lucide-react';
 import { DocumentKind } from '@/types/document';
 import { IS_MOCK } from '@/lib/mode';
 
@@ -237,8 +237,18 @@ export function UploadModal() {
               disabled={isProcessing || filesToUpload.length === 0}
               className="text-xs h-10 sm:h-9 gap-1.5 bg-slate-900 dark:bg-white dark:text-slate-900 font-semibold shadow-sm justify-center w-full sm:w-auto"
             >
-              <Upload className="h-4 w-4" />
-              {IS_MOCK ? 'Extract Evidence with Reader Agent' : 'Upload & Start Analysis'}
+              {isProcessing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+              {isProcessing
+                ? IS_MOCK
+                  ? 'Reading papers…'
+                  : 'Uploading papers…'
+                : IS_MOCK
+                ? 'Extract Evidence with Reader Agent'
+                : 'Upload & Start Analysis'}
             </Button>
           </DialogFooter>
         </form>

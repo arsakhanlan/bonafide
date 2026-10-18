@@ -32,7 +32,7 @@ export function ReferralCard() {
   const office = isCyber ? 'Report online or call 1930' : referral?.office || 'District Legal Services Authority';
 
   return (
-    <Card id="referral-section" className="border-2 border-amber-600/60 bg-amber-50/25 dark:border-amber-500/40 dark:bg-amber-950/15 shadow-sm rounded-2xl overflow-hidden">
+    <Card id="referral-section" className="scroll-mt-24 border-2 border-amber-600/60 bg-amber-50/25 dark:border-amber-500/40 dark:bg-amber-950/15 shadow-sm rounded-2xl overflow-hidden">
       <CardHeader className="bg-amber-100/60 dark:bg-amber-950/30 py-3.5 px-4 sm:px-6 border-b border-amber-200/80 dark:border-amber-900/50">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-amber-950 dark:text-amber-200">

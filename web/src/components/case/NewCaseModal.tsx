@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Shield, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Shield, CheckCircle2, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 
 export function NewCaseModal() {
   const { activeModal, setModal, createNewCase, isProcessing } = useCase();
@@ -141,8 +141,12 @@ export function NewCaseModal() {
               disabled={isProcessing}
               className="text-xs h-10 sm:h-9 gap-1.5 bg-slate-900 dark:bg-white dark:text-slate-900 font-semibold shadow-sm justify-center w-full sm:w-auto"
             >
-              <CheckCircle2 className="h-4 w-4" />
-              Create Case File
+              {isProcessing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <CheckCircle2 className="h-4 w-4" />
+              )}
+              {isProcessing ? 'Creating case…' : 'Create Case File'}
             </Button>
           </DialogFooter>
         </form>

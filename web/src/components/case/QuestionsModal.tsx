@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { HelpCircle, Sparkles, Send, CheckCircle2 } from 'lucide-react';
+import { HelpCircle, Sparkles, Send, CheckCircle2, Loader2 } from 'lucide-react';
 import { IS_MOCK } from '@/lib/mode';
 
 export function QuestionsModal() {
@@ -141,8 +141,12 @@ export function QuestionsModal() {
                 disabled={isProcessing || !allAnswered}
                 className="text-xs h-9 gap-1.5 bg-slate-900 dark:bg-white dark:text-slate-900 font-semibold flex-1 sm:flex-none justify-center"
               >
-                <CheckCircle2 className="h-4 w-4" />
-                Submit & Continue
+                {isProcessing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="h-4 w-4" />
+                )}
+                {isProcessing ? 'Saving answers…' : 'Submit & Continue'}
               </Button>
             </div>
           </DialogFooter>

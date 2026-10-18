@@ -30,6 +30,7 @@ import {
   ShieldCheck,
   Sun,
   Moon,
+  Loader2,
 } from 'lucide-react';
 
 export function LetterViewerModal() {
@@ -635,8 +636,12 @@ export function LetterViewerModal() {
                 title={!canApprove ? 'Fill your name and phone first, then fill them into the letter' : undefined}
                 className="text-xs h-9 font-semibold gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs flex-1 sm:flex-none justify-center active:scale-[0.98]"
               >
-                <CheckCircle2 className="h-4 w-4" />
-                <span>Approve & Sign</span>
+                {isProcessing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="h-4 w-4" />
+                )}
+                <span>{isProcessing ? 'Approving…' : 'Approve & Sign'}</span>
               </Button>
             )}
 

@@ -16,14 +16,23 @@
       name="description"
       content="Long-running AI case agent helping innocent citizens unfreeze wrongly blocked bank accounts in India under BNSS §106 & MHA SOP."
     />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('bonafide-theme');
+          var dark = saved === 'dark' || (saved !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.classList.toggle('dark', dark);
+        } catch (e) {}
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,600&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
       rel="stylesheet"
     />
-    <script type="module" crossorigin src="/assets/index-CGYQQOHX.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-DKt8qy8P.css">
+    <script type="module" crossorigin src="/assets/index-CGgOlBBx.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BzJ5sYnc.css">
   </head>
   <body class="h-full bg-background text-foreground font-sans selection:bg-emerald-600 selection:text-white">
     <div id="root" class="min-h-full flex flex-col"></div>

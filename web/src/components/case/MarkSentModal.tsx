@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Send, Building, Mail, MessageSquare, Package, Clock, ShieldCheck } from 'lucide-react';
+import { Send, Building, Mail, MessageSquare, Package, Clock, ShieldCheck, Loader2 } from 'lucide-react';
 
 export function MarkSentModal() {
   const {
@@ -153,8 +153,12 @@ export function MarkSentModal() {
               disabled={isProcessing}
               className="text-xs h-10 sm:h-9 gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm justify-center w-full sm:w-auto"
             >
-              <Clock className="h-4 w-4" />
-              Start 7-Day Grievance Clock
+              {isProcessing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Clock className="h-4 w-4" />
+              )}
+              {isProcessing ? 'Starting clock…' : 'Start 7-Day Grievance Clock'}
             </Button>
           </DialogFooter>
         </form>

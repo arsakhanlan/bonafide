@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Store, Briefcase, Coins, ShieldAlert, Check } from 'lucide-react';
 
 export function PersonaSelector() {
-  const { selectedPersona, selectPersona, isProcessing } = useCase();
+  const { caseData, selectedPersona, selectPersona, isProcessing } = useCase();
 
   const personas = [
     {
@@ -44,12 +44,13 @@ export function PersonaSelector() {
   return (
     <div className="space-y-1.5">
       <div className="sm:hidden flex items-center justify-between text-[11px] text-muted-foreground px-1 font-medium">
-        <span>Evaluator Personas</span>
-        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Swipe to test scenarios →</span>
+        <span>Sample scenarios</span>
+        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Swipe to explore →</span>
       </div>
       <div className="flex overflow-x-auto sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 pt-2 pb-2 sm:pt-2 sm:pb-1 scrollbar-none snap-x snap-mandatory -mx-3 px-3 sm:mx-0 sm:px-0">
         {personas.map(p => {
-          const isSelected = selectedPersona === p.id;
+          // A persona is only "selected" once its demo case actually exists.
+          const isSelected = !!caseData?.demo && selectedPersona === p.id;
           const Icon = p.icon;
           return (
             <button

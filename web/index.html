@@ -16,6 +16,15 @@
       name="description"
       content="Long-running AI case agent helping innocent citizens unfreeze wrongly blocked bank accounts in India under BNSS §106 & MHA SOP."
     />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('bonafide-theme');
+          var dark = saved === 'dark' || (saved !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.classList.toggle('dark', dark);
+        } catch (e) {}
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

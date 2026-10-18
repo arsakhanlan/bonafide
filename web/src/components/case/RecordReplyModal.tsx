@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { MessageSquare, Sparkles, Send, ShieldAlert } from 'lucide-react';
+import { MessageSquare, Sparkles, Send, ShieldAlert, Loader2 } from 'lucide-react';
 import { IS_MOCK } from '@/lib/mode';
 
 export function RecordReplyModal() {
@@ -116,8 +116,12 @@ export function RecordReplyModal() {
               disabled={isProcessing || !replyText.trim()}
               className="text-xs h-10 sm:h-9 gap-1.5 bg-slate-900 dark:bg-white dark:text-slate-900 font-semibold shadow-sm justify-center w-full sm:w-auto"
             >
-              <Send className="h-4 w-4" />
-              Process Response with AI Boss
+              {isProcessing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+              {isProcessing ? 'Reading the reply…' : 'Process Response with AI Boss'}
             </Button>
           </DialogFooter>
         </form>

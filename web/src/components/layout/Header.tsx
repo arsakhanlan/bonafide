@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCase } from '@/context/CaseContext';
 import { useTheme } from '@/context/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { IS_MOCK, isDemoCase } from '@/lib/mode';
+import { cn } from '@/lib/utils';
 import {
   Shield,
   Moon,
@@ -16,12 +17,27 @@ import {
 export function Header() {
   const { caseData, setModal } = useCase();
   const { theme, toggleTheme } = useTheme();
+  const [scrolled, setScrolled] = useState(false);
 
   // Demo chrome only in mock mode or on a judges' demo case.
   const showDemo = IS_MOCK || isDemoCase(caseData?.demo);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/85 backdrop-blur-md transition-colors">
+    <header
+      className={cn(
+        'sticky top-0 z-40 w-full border-b bg-background/85 backdrop-blur-md transition-[box-shadow,border-color] duration-200',
+        scrolled
+          ? 'border-border/80 shadow-sm shadow-slate-900/5 dark:shadow-black/25'
+          : 'border-transparent'
+      )}
+    >
       <div className="container px-3 sm:px-6 flex h-14 sm:h-16 items-center justify-between gap-2 sm:gap-4">
         {/* Brand mark */}
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
