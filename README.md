@@ -68,8 +68,10 @@ emulators and no local stand-ins for Firebase.
 - `dev.sh` needs no Google credentials: Vite proxies `/api` to the deployed Cloud Run backend,
   while Firebase Auth, Firestore live sync and Storage are the real `bonafide-cup-2026` services.
 - `dev.sh local` runs the backend on your machine. It needs Application Default Credentials
-  (`gcloud auth application-default login`) or `GOOGLE_APPLICATION_CREDENTIALS` pointing at a
-  service-account key with Firestore, Storage and Vertex AI access.
+  (`gcloud auth application-default login`) or a service-account key supplied in `backend/.env`
+  as `GOOGLE_APPLICATION_CREDENTIALS=key.json` (path) or `GOOGLE_APPLICATION_CREDENTIALS_JSON='{...}'`
+  (contents). The key needs Firestore, Storage and Vertex AI access.
+  Both modes force real services: any `*_EMULATOR_HOST` variables are cleared.
 
 Backend checks (offline, no Docker):
 

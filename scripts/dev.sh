@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Local frontend development without Docker.
 #
-#   ./scripts/dev.sh          UI on :3000, API proxied to the deployed backend (real data,
-#                             real Firebase login, no local Google credentials needed)
-#   ./scripts/dev.sh local    UI on :3000 plus Spring Boot on :8080 (needs Google ADC)
+#   ./scripts/dev.sh          UI on the first free port from :3000, API proxied to the deployed
+#                             backend (real data, real Firebase login, no credentials needed)
+#   ./scripts/dev.sh local    same UI plus Spring Boot on :8080 (needs Google credentials)
 #
-# The Vite dev server still owns :3000 and proxies /api to localhost:8080.
+# The Vite dev server owns the UI port and proxies /api to localhost:8080.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -14,6 +14,11 @@ API_URL="${BONAFIDE_API_URL:-https://bonafide-api-199277557753.asia-southeast1.r
 WEB_PORT="${BONAFIDE_WEB_PORT:-3000}"
 PROXY_PORT="${BONAFIDE_PROXY_PORT:-8080}"
 CHILD_PIDS=()
+LOCAL_KEY_FILE=""
+
+# Real services only: never let an emulator variable redirect Firestore/Auth/Storage.
+unset FIRESTORE_EMULATOR_HOST FIREBASE_AUTH_EMULATOR_HOST STORAGE_EMULATOR_HOST
+unset DATASTORE_EMULATOR_HOST PUBSUB_EMULATOR_HOST
 
 port_in_use() {
   lsof -nP -iTCP:"$1" -sTCP:LISTEN >/dev/null 2>&1
@@ -36,6 +41,10 @@ cleanup() {
   for pid in "${CHILD_PIDS[@]:-}"; do
     kill "$pid" 2>/dev/null || true
   done
+  if [ -n "$LOCAL_KEY_FILE" ]; then
+    rm -f "$LOCAL_KEY_FILE"
+  fi
+  return 0
 }
 trap cleanup EXIT INT TERM
 
@@ -51,7 +60,7 @@ backend_healthy() {
 }
 
 start_remote_proxy() {
-  if lsof -nP -iTCP:"$PROXY_PORT" -sTCP:LISTEN >/dev/null 2>&1; then
+  if port_in_use "$PROXY_PORT"; then
     if backend_healthy; then
       echo "Using the backend already listening on :$PROXY_PORT"
       return
@@ -78,8 +87,31 @@ start_local_backend() {
     exit 1
   fi
 
-  if [ -z "${GOOGLE_APPLICATION_CREDENTIALS:-}" ] \
-    && [ ! -f "$HOME/.config/gcloud/application_default_credentials.json" ]; then
+  [ -f "$ROOT/backend/.env" ] || cp "$ROOT/backend/.env.example" "$ROOT/backend/.env"
+  set -a
+  # shellcheck disable=SC1091
+  source "$ROOT/backend/.env"
+  set +a
+
+  if [ -n "${GOOGLE_APPLICATION_CREDENTIALS_JSON:-}" ]; then
+    LOCAL_KEY_FILE="$ROOT/backend/.local-key.json"
+    (umask 077; printf '%s' "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > "$LOCAL_KEY_FILE")
+    export GOOGLE_APPLICATION_CREDENTIALS="$LOCAL_KEY_FILE"
+  fi
+
+  if [ -n "${GOOGLE_APPLICATION_CREDENTIALS:-}" ]; then
+    case "$GOOGLE_APPLICATION_CREDENTIALS" in
+      /*) ;;
+      *) export GOOGLE_APPLICATION_CREDENTIALS="$ROOT/backend/$GOOGLE_APPLICATION_CREDENTIALS" ;;
+    esac
+    if [ ! -f "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
+      echo "GOOGLE_APPLICATION_CREDENTIALS is not a file: $GOOGLE_APPLICATION_CREDENTIALS" >&2
+      exit 1
+    fi
+    echo "Credentials: service account key ($GOOGLE_APPLICATION_CREDENTIALS)"
+  elif [ -f "$HOME/.config/gcloud/application_default_credentials.json" ]; then
+    echo "Credentials: gcloud Application Default Credentials"
+  else
     cat >&2 <<'MSG'
 The local backend needs Google Cloud credentials (Firestore, Storage, Gemini).
 
@@ -87,8 +119,10 @@ The local backend needs Google Cloud credentials (Firestore, Storage, Gemini).
     brew install --cask google-cloud-sdk
     gcloud auth application-default login
 
-  Option B — a service account key:
-    export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
+  Option B — a service account key, in backend/.env:
+    GOOGLE_APPLICATION_CREDENTIALS=service-account.json
+    # or the key contents:
+    GOOGLE_APPLICATION_CREDENTIALS_JSON='{"type":"service_account",...}'
 
 Then rerun: ./scripts/dev.sh local
 No credentials? Run ./scripts/dev.sh (default) — it uses the deployed backend and needs none.
@@ -96,12 +130,9 @@ MSG
     exit 2
   fi
 
-  [ -f "$ROOT/backend/.env" ] || cp "$ROOT/backend/.env.example" "$ROOT/backend/.env"
-  set -a
-  # shellcheck disable=SC1091
-  source "$ROOT/backend/.env"
-  set +a
+  export GOOGLE_GENAI_USE_VERTEXAI=true
   export BONAFIDE_SERVICE_URL="http://localhost:$PROXY_PORT"
+  export PORT="$PROXY_PORT"
 
   (cd "$ROOT/backend" && ./mvnw spring-boot:run) &
   BACKEND_PID=$!

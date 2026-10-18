@@ -9,6 +9,7 @@
 *.pem
 *-key.json
 service-account*.json
+.local-key.json
 .firebase/
 node_modules/
 web/dist/
