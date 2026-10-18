@@ -14,6 +14,17 @@ export function NextStepHero() {
   const letterId = next.letterId || letters[0]?.id;
 
   const renderActionDetails = () => {
+    if (caseData.busy) {
+      return {
+        title: 'Agents are working on your case',
+        description:
+          next.text ||
+          'Reading your papers, checking the maths and grounding every legal quote.',
+        buttonText: 'Working…',
+        onClick: () => {},
+      };
+    }
+
     switch (next.action) {
       case 'UPLOAD_PAPERS':
         return {
@@ -133,7 +144,7 @@ export function NextStepHero() {
           <Button
             size="default"
             variant="primary"
-            disabled={caseData.busy && next.action !== 'UPLOAD_PAPERS'}
+            disabled={caseData.busy}
             onClick={action.onClick}
             className="h-10 px-5 text-xs font-bold shadow-xs"
           >

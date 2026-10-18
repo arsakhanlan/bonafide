@@ -19,14 +19,13 @@ export function NewCaseModal() {
   const [title, setTitle] = useState(
     IS_MOCK ? 'Ravi Sharma — Mobile Repair Shop, Pune' : ''
   );
-  const [language, setLanguage] = useState<'en' | 'hi'>('en');
   const [showChecklist, setShowChecklist] = useState(false);
 
   const isOpen = activeModal === 'NEW_CASE';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await createNewCase(title.trim() || 'New Bank Freeze Defense', language);
+    await createNewCase(title.trim() || 'New Bank Freeze Defense', 'en');
   };
 
   return (
@@ -66,36 +65,6 @@ export function NewCaseModal() {
                 required
                 className="text-sm sm:text-xs h-10 sm:h-9"
               />
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-slate-900 dark:text-slate-100 block mb-1">
-                Preferred Legal Language:
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setLanguage('en')}
-                  className={`p-2.5 rounded-lg border text-center text-xs font-medium transition-all active:scale-[0.98] ${
-                    language === 'en'
-                      ? 'border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-slate-950 font-semibold'
-                      : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/40'
-                  }`}
-                >
-                  English
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setLanguage('hi')}
-                  className={`p-2.5 rounded-lg border text-center text-xs font-medium transition-all active:scale-[0.98] ${
-                    language === 'hi'
-                      ? 'border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-slate-950 font-semibold'
-                      : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/40'
-                  }`}
-                >
-                  हिंदी (Hindi)
-                </button>
-              </div>
             </div>
 
             {/* Accordion: Case Initiation Guidance & Statutory Checklist */}

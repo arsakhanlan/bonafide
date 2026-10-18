@@ -466,9 +466,13 @@
 @keyframes dialogContentIn {
   0% {
     opacity: 0;
-    transform: translate(-50%, -48%) scale(0.965);
+    transform: translate(
+        calc(-50% + var(--dialog-shift-x, 0px)),
+        calc(-50% + var(--dialog-shift-y, 0px))
+      )
+      scale(0.88);
   }
-  60% {
+  55% {
     opacity: 1;
   }
   100% {
@@ -484,7 +488,11 @@
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -48.5%) scale(0.975);
+    transform: translate(
+        calc(-50% + var(--dialog-shift-x, 0px)),
+        calc(-50% + var(--dialog-shift-y, 0px))
+      )
+      scale(0.88);
   }
 }
 
@@ -516,14 +524,14 @@
 }
 
 .dialog-content[data-state="open"] {
-  animation: dialogContentIn 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  transform-origin: center;
+  animation: dialogContentIn 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: var(--dialog-origin, center);
   will-change: transform, opacity;
 }
 
 .dialog-content[data-state="closed"] {
-  animation: dialogContentOut 160ms cubic-bezier(0.4, 0, 1, 1) both;
-  transform-origin: center;
+  animation: dialogContentOut 200ms cubic-bezier(0.4, 0, 1, 1) both;
+  transform-origin: var(--dialog-origin, center);
   will-change: transform, opacity;
 }
 
@@ -626,6 +634,21 @@
 
 .animate-check-pop {
   animation: checkPop 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes thinkingDot {
+  0%, 80%, 100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+.animate-thinking-dot {
+  animation: thinkingDot 1.2s ease-in-out infinite;
 }
 
 /* Accordion & Dropdown Smooth Expand & Collapse Transitions */

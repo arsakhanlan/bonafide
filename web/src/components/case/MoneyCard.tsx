@@ -9,6 +9,7 @@ export function MoneyCard() {
   if (!caseData || !caseData.money) return null;
 
   const { frozen, disputed, release, bankName } = caseData.money;
+  const resolved = caseData.stage === 'RESOLVED';
 
   return (
     <Card className="border-border bg-card shadow-card rounded-2xl overflow-hidden relative">
@@ -23,7 +24,9 @@ export function MoneyCard() {
               <AnimatedCounter value={frozen} />
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Total Frozen = {bankName || 'your bank'}
+              {resolved
+                ? 'Only the disputed amount remains held'
+                : `Total Frozen = ${bankName || 'your bank'}`}
             </p>
           </div>
 
@@ -49,7 +52,7 @@ export function MoneyCard() {
               <AnimatedCounter value={release} />
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Must Be Released
+              {resolved ? 'Released to your account' : 'Must Be Released'}
             </p>
           </div>
         </div>

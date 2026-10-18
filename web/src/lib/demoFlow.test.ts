@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { demoStepIndex, isReleaseReply } from './demoFlow';
+import { demoStepIndex, isReleaseReply, settledMoney } from './demoFlow';
 
 const at = (stage: any, busy = false) => demoStepIndex({ stage, busy });
 
@@ -38,5 +38,13 @@ describe('isReleaseReply', () => {
     expect(isReleaseReply('Your grievance has been received; internal review is pending.')).toBe(
       false
     );
+  });
+});
+
+describe('settledMoney', () => {
+  it('moves the released surplus out of the frozen and release buckets', () => {
+    expect(
+      settledMoney({ frozen: 180000, disputed: 2000, release: 178000, bankName: 'HDFC Bank' })
+    ).toEqual({ frozen: 2000, disputed: 2000, release: 0, bankName: 'HDFC Bank' });
   });
 });

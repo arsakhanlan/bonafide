@@ -6,22 +6,13 @@ import { cn } from '@/lib/utils';
 type StepStatus = 'COMPLETED' | 'ACTIVE' | 'UPCOMING';
 
 /** A hairline that fills with emerald as the journey advances. */
-function ProgressLine({
-  active,
-  align,
-  hidden = false,
-}: {
-  active: boolean;
-  align: 'left' | 'right';
-  hidden?: boolean;
-}) {
+function ProgressLine({ active, hidden = false }: { active: boolean; hidden?: boolean }) {
   if (hidden) return <div className="h-[2.5px] flex-1" />;
   return (
     <div className="relative h-[2.5px] flex-1 overflow-hidden rounded-full bg-border/60">
       <span
         className={cn(
-          'absolute inset-y-0 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/30 transition-[width] duration-700 ease-out',
-          align === 'left' ? 'left-0' : 'right-0',
+          'absolute inset-y-0 left-0 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/30 transition-[width] duration-700 ease-out',
           active ? 'w-full' : 'w-0'
         )}
       />
@@ -115,11 +106,7 @@ export function CitizenJourneyStepper() {
             >
               {/* Stepper Node row with connecting line segments */}
               <div className="flex items-center w-full relative mb-2.5">
-                <ProgressLine
-                  align="left"
-                  hidden={idx === 0}
-                  active={isDone || isCurrent}
-                />
+                <ProgressLine hidden={idx === 0} active={isDone || isCurrent} />
 
                 <div className="relative z-10 shrink-0 mx-2">
                   <div
@@ -140,7 +127,6 @@ export function CitizenJourneyStepper() {
                 </div>
 
                 <ProgressLine
-                  align="right"
                   hidden={idx === steps.length - 1}
                   active={
                     isDone &&

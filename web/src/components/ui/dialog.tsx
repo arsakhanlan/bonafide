@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { lastModalTrigger } from '@/lib/modalOrigin';
 
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
@@ -30,11 +31,37 @@ interface DialogContentProps extends React.ComponentPropsWithoutRef<typeof Dialo
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
->(({ className, children, hideDefaultClose = false, ...props }, ref) => (
+>(({ className, children, hideDefaultClose = false, ...props }, ref) => {
+  // Work out where the opening control sits so the sheet can grow out of it.
+  const setNode = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      if (typeof ref === 'function') ref(node);
+      else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      if (!node) return;
+
+      const trigger = lastModalTrigger();
+      if (!trigger) return;
+      const box = node.getBoundingClientRect();
+      const origin = trigger.getBoundingClientRect();
+      if (!box.width || !box.height) return;
+
+      const shiftX = (origin.left + origin.width / 2 - (box.left + box.width / 2)) * 0.4;
+      const shiftY = (origin.top + origin.height / 2 - (box.top + box.height / 2)) * 0.4;
+      node.style.setProperty('--dialog-shift-x', `${shiftX}px`);
+      node.style.setProperty('--dialog-shift-y', `${shiftY}px`);
+      node.style.setProperty(
+        '--dialog-origin',
+        `${origin.left + origin.width / 2 - box.left}px ${origin.top + origin.height / 2 - box.top}px`
+      );
+    },
+    [ref]
+  );
+
+  return (
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content
-      ref={ref}
+      ref={setNode}
       className={cn(
         'dialog-content fixed left-[50%] top-[50%] z-50 grid max-h-[90vh] w-[calc(100%-1.5rem)] max-w-2xl translate-x-[-50%] translate-y-[-50%] gap-4 overflow-y-auto rounded-3xl border border-border/80 bg-card p-4 shadow-[0_28px_70px_-24px_rgba(6,34,24,0.45)] ring-1 ring-black/[0.03] dark:ring-white/[0.05] sm:p-6',
         className
@@ -50,7 +77,8 @@ const DialogContent = React.forwardRef<
       )}
     </DialogPrimitive.Content>
   </DialogPortal>
-));
+  );
+});
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 const DialogHeader = ({

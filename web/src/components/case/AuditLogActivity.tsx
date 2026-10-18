@@ -71,6 +71,20 @@ export function AuditLogActivity() {
 
       {/* Main Activity Feed */}
       <CardContent className="p-4 sm:p-5 flex-1 space-y-4 overflow-y-auto max-h-[560px]">
+        {caseData?.busy && (
+          <div className="animate-view-in flex items-center gap-2.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-[11px] font-medium text-emerald-800 dark:text-emerald-300">
+            <span className="flex items-center gap-1">
+              {[0, 1, 2].map(i => (
+                <span
+                  key={i}
+                  className="animate-thinking-dot h-1.5 w-1.5 rounded-full bg-emerald-500"
+                  style={{ animationDelay: `${i * 160}ms` }}
+                />
+              ))}
+            </span>
+            Agents are thinking…
+          </div>
+        )}
         {allEvents.length === 0 ? (
           <p className="text-xs text-muted-foreground">
             No activity yet. The agents will log every step here.

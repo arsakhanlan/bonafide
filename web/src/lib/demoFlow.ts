@@ -13,3 +13,10 @@ export function demoStepIndex(c: Pick<CaseData, 'stage' | 'busy'>): number {
 export function isReleaseReply(text: string): boolean {
   return /releas|unfr|restricted to/i.test(text);
 }
+
+/** Once the surplus is released, only the disputed sum remains frozen. */
+export function settledMoney<T extends { frozen: number; disputed: number; release: number }>(
+  money: T
+): T {
+  return { ...money, frozen: money.disputed, release: 0 };
+}

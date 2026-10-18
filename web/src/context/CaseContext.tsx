@@ -5,7 +5,7 @@ import { firestore, storage } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
 import * as liveMap from '@/lib/liveMap';
 import { createLandedGate } from '@/lib/bootGate';
-import { isReleaseReply } from '@/lib/demoFlow';
+import { isReleaseReply, settledMoney } from '@/lib/demoFlow';
 import { CaseData, AnswerSubmission } from '@/types/case';
 import { Letter } from '@/types/letter';
 import { Deadline } from '@/types/deadline';
@@ -533,6 +533,8 @@ Phone: {{Your phone}}`,
                 ...prev,
                 stage: 'RESOLVED',
                 busy: false,
+                // The surplus has left the frozen bucket; only the disputed sum stays held.
+                money: prev.money ? settledMoney(prev.money) : prev.money,
                 nextStep: {
                   action: 'NONE',
                   text: 'The bank released ₹1,78,000 and restricted the lien to the ₹2,000 under investigation.',
@@ -815,6 +817,12 @@ Yours faithfully,
           ? {
               ...prev,
               busy: shouldAdvance,
+              nextStep: shouldAdvance
+                ? {
+                    action: 'UPLOAD_PAPERS',
+                    text: 'The Reader agent is reading your papers, masking PII and extracting transaction lines.',
+                  }
+                : prev.nextStep,
               history: [
                 ...(prev.history || []),
                 { on: currentSimulatedDate, text: `Added ${newDocs.length} paper(s): ${newDocs.map(d => d.name).join(', ')}.` },
@@ -835,7 +843,8 @@ Yours faithfully,
       ]);
 
       if (shouldAdvance) {
-        // The guided walkthrough waits for the agents, then lands on the finished analysis.
+        // Close the sheet first so the roadmap and activity log can be watched working.
+        setActiveModal('NONE');
         await new Promise(resolve => setTimeout(resolve, 1600));
         const ravi = MOCK_PERSONAS.RAVI;
         const letter: Letter = { ...ravi.letters[0], status: 'DRAFT' };

@@ -57,9 +57,9 @@ export function StartScreen() {
             {IS_MOCK ? 'Interactive demo · Every name, amount and paper is fake' : 'Bank freeze self-help · BNSS §106 & MHA SOP'}
           </span>
 
-          <h1 className="mt-4 text-balance text-3xl font-extrabold leading-[1.08] tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem]">
+          <h1 className="mt-4 text-balance text-3xl font-extrabold leading-[1.14] tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem]">
             {IS_MOCK ? 'Walk through a freeze case.' : 'Your account was frozen.'}
-            <span className="mt-1 block bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 bg-clip-text text-transparent dark:from-emerald-300 dark:via-emerald-400 dark:to-teal-300">
+            <span className="mt-1 block bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 bg-clip-text pb-1.5 text-transparent dark:from-emerald-300 dark:via-emerald-400 dark:to-teal-300">
               {IS_MOCK ? 'From first paper to release.' : 'Here is the way back.'}
             </span>
           </h1>
