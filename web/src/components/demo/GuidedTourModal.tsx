@@ -268,7 +268,7 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
             variant="ghost"
             disabled={currentStep === 0}
             onClick={handlePrev}
-            className="text-xs h-9 px-3 gap-1 rounded-xl text-muted-foreground hover:text-foreground active:scale-[0.98] transition-all"
+            className="text-xs h-9 px-3 gap-1 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Previous</span>
@@ -279,15 +279,16 @@ export function GuidedTourModal({ isOpen, onClose }: GuidedTourModalProps) {
               size="sm"
               variant="outline"
               onClick={onClose}
-              className="text-xs h-9 px-3.5 rounded-xl border-border bg-card hover:bg-secondary text-muted-foreground hover:text-foreground"
+              className="text-xs h-9 px-3.5 border-border bg-card hover:bg-secondary text-muted-foreground hover:text-foreground"
             >
               Skip Tour
             </Button>
 
             <Button
               size="sm"
+              variant="primary"
               onClick={handleNext}
-              className="text-xs h-9 font-semibold gap-1.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs group active:scale-[0.98] transition-all"
+              className="text-xs h-9 font-semibold gap-1.5 px-4 shadow-xs"
             >
               <span>{step.actionText}</span>
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />

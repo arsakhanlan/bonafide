@@ -5,6 +5,7 @@ import { PersonaSelector } from '@/components/demo/PersonaSelector';
 import { IS_MOCK } from '@/lib/mode';
 import {
   ArrowRight,
+  Compass,
   FileUp,
   Lock,
   ScanLine,
@@ -74,7 +75,7 @@ export function StartScreen() {
               size="lg"
               variant="primary"
               onClick={() => setModal('NEW_CASE')}
-              className="group h-12 rounded-xl px-7 text-sm font-bold shadow-md shadow-emerald-600/20"
+              className="group h-12 px-7 text-sm font-bold shadow-md shadow-emerald-600/20"
             >
               {IS_MOCK ? 'Start the guided journey' : 'Start my case'}
               <ArrowRight className="ml-1.5 h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -83,8 +84,9 @@ export function StartScreen() {
               size="lg"
               variant="outline"
               onClick={showDemo}
-              className="h-12 rounded-xl px-6 text-sm font-semibold"
+              className="h-12 px-6 text-sm font-semibold"
             >
+              <Compass className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               {IS_MOCK ? 'Jump to a scenario' : 'Explore a demo case'}
             </Button>
           </div>

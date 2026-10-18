@@ -278,6 +278,72 @@
   transform: translateX(115%);
 }
 
+/* Quiet directional fill for secondary/outline buttons. */
+.btn-sweep {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-sweep::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.11), rgba(13, 148, 136, 0.06));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.btn-sweep:hover::before,
+.btn-sweep:focus-visible::before {
+  transform: scaleX(1);
+}
+
+/* Approval seal: a single ink-stamp landing, then a soft fade. */
+@keyframes sealLife {
+  0% {
+    opacity: 0;
+    transform: rotate(-7deg) scale(1.55);
+  }
+  18% {
+    opacity: 1;
+    transform: rotate(-7deg) scale(0.95);
+  }
+  26% {
+    transform: rotate(-7deg) scale(1);
+  }
+  78% {
+    opacity: 1;
+    transform: rotate(-7deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(-7deg) scale(1.02);
+  }
+}
+
+@keyframes sealRing {
+  0% {
+    opacity: 0.55;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.75);
+  }
+}
+
+.animate-seal-in {
+  animation: sealLife 1600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-seal-ring {
+  animation: sealRing 950ms cubic-bezier(0.22, 1, 0.36, 1) 140ms both;
+}
+
 .glow-emerald {
   box-shadow: 0 0 25px -4px rgba(16, 185, 129, 0.35);
 }

@@ -58,7 +58,7 @@ export function LettersList() {
           return (
             <div
               key={letter.id}
-              className="p-3.5 rounded-xl border border-border bg-secondary/20 hover:bg-secondary/40 transition-all text-xs space-y-2.5"
+              className="animate-view-in space-y-2.5 rounded-xl border border-border bg-secondary/20 p-3.5 text-xs transition-all hover:bg-secondary/40"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                 <div className="min-w-0">

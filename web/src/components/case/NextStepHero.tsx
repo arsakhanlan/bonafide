@@ -111,7 +111,7 @@ export function NextStepHero() {
     >
       <span className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-emerald-500 to-teal-500" />
       <CardContent className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="space-y-1 min-w-0 max-w-xl">
+        <div key={next.action} className="animate-view-in space-y-1 min-w-0 max-w-xl">
           <h3 className="text-sm sm:text-base font-bold text-foreground tracking-tight flex items-center gap-2">
             {caseData.stage === 'RESOLVED' && (
               <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
@@ -132,10 +132,10 @@ export function NextStepHero() {
         <div className="shrink-0 flex items-center gap-2 self-start md:self-center">
           <Button
             size="default"
-            variant="default"
+            variant="primary"
             disabled={caseData.busy && next.action !== 'UPLOAD_PAPERS'}
             onClick={action.onClick}
-            className="h-10 px-5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs active:scale-[0.98] transition-all"
+            className="h-10 px-5 text-xs font-bold shadow-xs"
           >
             <span>{action.buttonText}</span>
             <ArrowRight className="h-3.5 w-3.5 ml-1" />

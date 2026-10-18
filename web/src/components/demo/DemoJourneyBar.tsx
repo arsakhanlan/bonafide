@@ -58,7 +58,14 @@ export function DemoJourneyBar({ onRestart }: { onRestart: () => void }) {
               >
                 {step}
               </span>
-              {index < STEPS.length - 1 && <span className="mx-0.5 h-px w-2 bg-border" />}
+              {index < STEPS.length - 1 && (
+                <span
+                  className={cn(
+                    'mx-0.5 h-px w-2 transition-colors duration-500',
+                    index < current ? 'bg-emerald-500' : 'bg-border'
+                  )}
+                />
+              )}
             </li>
           ))}
         </ol>
@@ -72,7 +79,7 @@ export function DemoJourneyBar({ onRestart }: { onRestart: () => void }) {
           variant="ghost"
           size="sm"
           onClick={onRestart}
-          className="h-7 gap-1 rounded-lg px-2 text-[11px] text-muted-foreground hover:text-foreground"
+          className="h-7 gap-1 px-2 text-[11px] text-muted-foreground hover:text-foreground"
         >
           <RotateCcw className="h-3 w-3" />
           Restart

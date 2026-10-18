@@ -10,6 +10,7 @@ import { StatutoryDeadlinesCard } from '@/components/case/StatutoryDeadlinesCard
 import { DocumentsList } from '@/components/case/DocumentsList';
 import { AuditLogActivity } from '@/components/case/AuditLogActivity';
 import { ReferralCard } from '@/components/case/ReferralCard';
+import { ApprovalSeal } from '@/components/case/ApprovalSeal';
 import { GuidedTourModal } from '@/components/demo/GuidedTourModal';
 import { DemoJourneyBar } from '@/components/demo/DemoJourneyBar';
 import { RestartDialog } from '@/components/demo/RestartDialog';
@@ -127,6 +128,7 @@ export function App() {
       <Footer />
 
       {error && <ErrorToast message={error} onDismiss={clearError} />}
+      <ApprovalSeal />
 
       {/* Global Interactive Modals */}
       {showDemo && (

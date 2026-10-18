@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { extractPlaceholders } from '@/lib/utils';
 import { printA4RepresentationLetter } from '@/lib/printA4';
-import { triggerConfetti } from '@/lib/confetti';
+import { announceApproval } from '@/lib/approvalSeal';
 import { IS_MOCK } from '@/lib/mode';
 import {
   FileText,
@@ -119,7 +119,7 @@ export function LetterViewerModal() {
       handleAutoFillPlaceholders();
     }
     await approveLetter(letter.id, bodyText);
-    triggerConfetti();
+    announceApproval();
     setViewMode('DOCUMENT');
   };
 
