@@ -12,6 +12,7 @@ service-account*.json
 .firebase/
 node_modules/
 web/dist/
+.vite/
 
 # Internal planning docs stay local; the public repo gets a README at the end
 docs/

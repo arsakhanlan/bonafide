@@ -55,17 +55,30 @@ flowchart TD
 - **Model Armor**: prompt-injection filter on everything extracted from papers
 - **Cloud Scheduler**: hourly tick that wakes the Case boss when a deadline passes
 
-## Run locally
+## Run locally (no Docker)
+
+Everything below uses the real Firebase project and real Google Cloud services. There are no
+emulators and no local stand-ins for Firebase.
+
+```bash
+./scripts/dev.sh              # frontend on the first free port from :3000, real API & data
+./scripts/dev.sh local        # same, plus Spring Boot on :8080 (needs Google credentials)
+```
+
+- `dev.sh` needs no Google credentials: Vite proxies `/api` to the deployed Cloud Run backend,
+  while Firebase Auth, Firestore live sync and Storage are the real `bonafide-cup-2026` services.
+- `dev.sh local` runs the backend on your machine. It needs Application Default Credentials
+  (`gcloud auth application-default login`) or `GOOGLE_APPLICATION_CREDENTIALS` pointing at a
+  service-account key with Firestore, Storage and Vertex AI access.
+
+Backend checks (offline, no Docker):
 
 ```bash
 cd backend
-./mvnw test                    # unit + workflow tests (offline, 93 tests)
+./mvnw test                    # unit + workflow tests (118 tests)
 ./mvnw test -Plive             # live smoke tests against real Google Cloud
-./mvnw verify -Pintegration    # Firestore emulator tests (needs Docker)
 ./mvnw test -Peval             # 12-case evaluation → eval/results.md
 ```
-
-Local runs use Application Default Credentials (`gcloud auth application-default login`).
 
 ## Test results
 
