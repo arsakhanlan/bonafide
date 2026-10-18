@@ -713,7 +713,8 @@ Yours faithfully,
         for (const f of files) {
           if (!f.file) continue;
           const path = `uploads/${user.uid}/${caseData.id}/${f.name}`;
-          await uploadBytes(storageRef(storage, path), f.file);
+          // Explicit metadata: some browsers leave File.type empty, which the storage rules reject.
+          await uploadBytes(storageRef(storage, path), f.file, { contentType: f.mime || f.file.type });
           refs.push({ path, kind: f.kind, mime: f.file.type || f.mime });
         }
         if (refs.length === 0) throw new Error('Pick at least one file to upload.');
@@ -748,7 +749,12 @@ Yours faithfully,
 
       setActiveModal('NONE');
     } catch (e: any) {
-      setError(e.message || 'Failed to upload papers');
+      const refused = e?.code === 'storage/unauthorized';
+      setError(
+        refused
+          ? 'Firebase Storage refused the upload. The storage rules may not be deployed yet — run: firebase deploy --only storage'
+          : e.message || 'Failed to upload papers'
+      );
     } finally {
       setIsProcessing(false);
     }
