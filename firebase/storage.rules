@@ -5,7 +5,7 @@ service firebase.storage {
       allow read: if request.auth.uid == uid;
       allow write: if request.auth.uid == uid
         && request.resource.size < 15 * 1024 * 1024
-        && request.resource.contentType.matches('image/(jpeg|png|webp)|application/pdf');
+        && request.resource.contentType.matches('image/(jpeg|png|webp)|application/pdf|text/plain');
     }
   }
 }
