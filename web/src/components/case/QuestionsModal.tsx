@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCase } from '@/context/CaseContext';
 import {
   Dialog,
@@ -36,6 +36,23 @@ export function QuestionsModal() {
     });
     setAnswers(filled);
   };
+
+  // Guided demo: arrive with the sample answers already filled in.
+  useEffect(() => {
+    if (!isOpen || !IS_MOCK) return;
+    const demo: Record<string, string> = {
+      q1: 'Brand identity, primary vector logo, and social media kit designed for client XYZ Ltd.',
+      q2: 'Yes, full project scope and revisions discussed via Gmail thread and final design files delivered on Google Drive with timestamped client approval.',
+      q3: 'Discussed and delivered over email; the client confirmed receipt in writing.',
+    };
+    const filled: Record<string, string> = {};
+    questions.forEach(q => {
+      filled[q.id] = demo[q.id] || 'Yes — I have written proof of the transaction.';
+    });
+    setAnswers(filled);
+    // Only when the modal opens; edits in progress must survive re-renders.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   const pickChoice = (questionId: string, choice: string) => {
     setAnswers(prev => ({ ...prev, [questionId]: choice }));

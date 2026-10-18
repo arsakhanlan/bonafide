@@ -5,6 +5,7 @@ import { firestore, storage } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
 import * as liveMap from '@/lib/liveMap';
 import { createLandedGate } from '@/lib/bootGate';
+import { isReleaseReply } from '@/lib/demoFlow';
 import { CaseData, AnswerSubmission } from '@/types/case';
 import { Letter } from '@/types/letter';
 import { Deadline } from '@/types/deadline';
@@ -64,6 +65,7 @@ interface CaseContextType {
   uploadPapers: (files: Array<{ name: string; kind: string; mime: string; file?: File }>) => Promise<void>;
   createNewCase: (title: string, language?: 'en' | 'hi') => Promise<void>;
   deleteCase: () => Promise<void>;
+  resetDemo: () => void;
   clearError: () => void;
 }
 
@@ -72,18 +74,16 @@ const CaseContext = createContext<CaseContextType | undefined>(undefined);
 export function CaseProvider({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const [selectedPersona, setSelectedPersona] = useState<'RAVI' | 'MEERA' | 'ARJUN' | 'SUNIL'>('RAVI');
-  const [caseData, setCaseData] = useState<CaseData | null>(
-    IS_MOCK ? MOCK_PERSONAS.RAVI.caseData : null
-  );
-  const [letters, setLetters] = useState<Letter[]>(IS_MOCK ? MOCK_PERSONAS.RAVI.letters : []);
-  const [deadlines, setDeadlines] = useState<Deadline[]>(IS_MOCK ? MOCK_PERSONAS.RAVI.deadlines : []);
-  const [steps, setSteps] = useState<AgentStep[]>(IS_MOCK ? MOCK_PERSONAS.RAVI.steps : []);
-  const [documents, setDocuments] = useState<CaseDocument[]>(IS_MOCK ? MOCK_DOCUMENTS : []);
+  // Both modes start at the home screen; mock mode opens the demo hub and only
+  // creates a case when the visitor starts the walkthrough or picks a scenario.
+  const [caseData, setCaseData] = useState<CaseData | null>(null);
+  const [letters, setLetters] = useState<Letter[]>([]);
+  const [deadlines, setDeadlines] = useState<Deadline[]>([]);
+  const [steps, setSteps] = useState<AgentStep[]>([]);
+  const [documents, setDocuments] = useState<CaseDocument[]>([]);
 
   const [activeModal, setActiveModal] = useState<ModalType>('NONE');
-  const [selectedLetterId, setSelectedLetterId] = useState<string | null>(
-    IS_MOCK ? 'L1_BANK_GRIEVANCE' : null
-  );
+  const [selectedLetterId, setSelectedLetterId] = useState<string | null>(null);
   const [simulatedDays, setSimulatedDays] = useState<number>(0);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -207,6 +207,13 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
   };
 
   const clearError = () => setError(null);
+
+  /** Demo only: clear the walkthrough and return to the hub. */
+  const resetDemo = useCallback(() => {
+    if (!IS_MOCK) return;
+    resetToEmpty();
+    setActiveModal('NONE');
+  }, [resetToEmpty]);
 
   // ---- Mock-mode local simulations (no backend) -------------------------------
 
@@ -515,6 +522,50 @@ Phone: {{Your phone}}`,
         return;
       }
 
+      // A release reply ends the journey; anything else escalates.
+      if (isReleaseReply(replyText) && caseData.stage !== 'RESOLVED') {
+        setDeadlines(prev =>
+          prev.map(d => (d.status === 'PENDING' ? { ...d, status: 'MET', daysRemaining: 0 } : d))
+        );
+        setCaseData(prev =>
+          prev
+            ? {
+                ...prev,
+                stage: 'RESOLVED',
+                busy: false,
+                nextStep: {
+                  action: 'NONE',
+                  text: 'The bank released ₹1,78,000 and restricted the lien to the ₹2,000 under investigation.',
+                },
+                history: [
+                  ...(prev.history || []),
+                  { on: currentSimulatedDate, text: 'Bank reply logged and checked against the statutory clock.' },
+                  { on: currentSimulatedDate, text: 'Bank released ₹1,78,000; case resolved.' },
+                ],
+              }
+            : null
+        );
+        setSteps(prev => [
+          ...prev,
+          {
+            id: 'step_' + Date.now(),
+            agent: 'READER',
+            message: 'Bank confirmed the lien is restricted to ₹2,000; ₹1,78,000 released.',
+            level: 'INFO',
+            timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }),
+          },
+          {
+            id: 'step_' + (Date.now() + 1),
+            agent: 'CASE_BOSS',
+            message: 'Surplus balance restored. Case resolved — no further letters needed.',
+            level: 'INFO',
+            timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }),
+          },
+        ]);
+        setActiveModal('NONE');
+        return;
+      }
+
       // Mock: escalate locally to an L2 letter.
       const l2Letter: Letter = {
         id: 'L2_OFFICER_ESCALATION',
@@ -745,6 +796,9 @@ Yours faithfully,
         return;
       }
 
+      const shouldAdvance =
+        caseData.stage === 'NEW' || caseData.nextStep?.action === 'UPLOAD_PAPERS';
+
       const newDocs: CaseDocument[] = files.map((f, i) => ({
         id: 'doc_' + Date.now() + '_' + i,
         name: f.name,
@@ -756,17 +810,58 @@ Yours faithfully,
       }));
 
       setDocuments(prev => [...prev, ...newDocs]);
+      setCaseData(prev =>
+        prev
+          ? {
+              ...prev,
+              busy: shouldAdvance,
+              history: [
+                ...(prev.history || []),
+                { on: currentSimulatedDate, text: `Added ${newDocs.length} paper(s): ${newDocs.map(d => d.name).join(', ')}.` },
+              ],
+            }
+          : prev
+      );
 
       setSteps(prev => [
         ...prev,
         {
           id: 'step_' + Date.now(),
           agent: 'READER',
-          message: `Uploaded ${files.length} document(s). Masking PII and extracting transaction lines...`,
+          message: `Reading ${files.length} paper(s). Masking PII and extracting transaction lines...`,
           level: 'INFO',
           timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }),
         },
       ]);
+
+      if (shouldAdvance) {
+        // The guided walkthrough waits for the agents, then lands on the finished analysis.
+        await new Promise(resolve => setTimeout(resolve, 1600));
+        const ravi = MOCK_PERSONAS.RAVI;
+        const letter: Letter = { ...ravi.letters[0], status: 'DRAFT' };
+        setLetters([letter]);
+        setSelectedLetterId(letter.id);
+        setCaseData(prev =>
+          prev
+            ? {
+                ...prev,
+                busy: false,
+                stage: 'LETTER_READY',
+                facts: ravi.caseData.facts,
+                money: ravi.caseData.money,
+                eligibility: ravi.caseData.eligibility,
+                evidence: ravi.caseData.evidence,
+                nextStep: {
+                  action: 'REVIEW_LETTER',
+                  text: 'Your papers are read. Review and approve your BNSS §106 representation letter.',
+                  letterId: letter.id,
+                },
+                history: [...(prev.history || []), ...(ravi.caseData.history?.slice(1) || [])],
+              }
+            : prev
+        );
+        setSteps(prev => [...prev, ...ravi.steps.slice(1)]);
+      }
 
       setActiveModal('NONE');
     } catch (e: any) {
@@ -887,6 +982,7 @@ Yours faithfully,
         uploadPapers,
         createNewCase,
         deleteCase,
+        resetDemo,
         clearError,
       }}
     >

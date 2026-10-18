@@ -2,7 +2,8 @@ import React from 'react';
 import { useCase } from '@/context/CaseContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function NextStepHero() {
   const { caseData, setModal, letters } = useCase();
@@ -78,10 +79,14 @@ export function NextStepHero() {
 
       case 'NONE':
         return {
-          title: caseData.stage === 'RESOLVED' ? 'Case Resolved' : 'No Action Needed Right Now',
+          title:
+            caseData.stage === 'RESOLVED'
+              ? 'Funds released — case resolved'
+              : 'No action needed right now',
           description: next.text,
-          buttonText: 'View Activity',
-          onClick: () => {},
+          buttonText: 'View activity',
+          onClick: () =>
+            document.getElementById('activity-log')?.scrollIntoView({ behavior: 'smooth' }),
         };
 
       default:
@@ -97,10 +102,19 @@ export function NextStepHero() {
   const action = renderActionDetails();
 
   return (
-    <Card className="border-border bg-card shadow-card rounded-2xl overflow-hidden">
+    <Card
+      className={cn(
+        'border-border bg-card shadow-card rounded-2xl overflow-hidden',
+        caseData.stage === 'RESOLVED' &&
+          'border-emerald-500/40 bg-emerald-50/50 dark:bg-emerald-950/20'
+      )}
+    >
       <CardContent className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1 min-w-0 max-w-xl">
           <h3 className="text-sm sm:text-base font-bold text-foreground tracking-tight flex items-center gap-2">
+            {caseData.stage === 'RESOLVED' && (
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+            )}
             {action.title}
             {caseData.busy && (
               <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">

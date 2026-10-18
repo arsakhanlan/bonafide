@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useCase, UploadItem } from '@/context/CaseContext';
 import {
   Dialog,
@@ -10,11 +10,19 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Upload, FileText, Shield, Check, Plus, Trash2, Loader2 } from 'lucide-react';
+import { Upload, FileText, Shield, Check, Plus, Trash2, Loader2, Sparkles } from 'lucide-react';
 import { DocumentKind } from '@/types/document';
 import { IS_MOCK } from '@/lib/mode';
 
 const ACCEPTED = 'image/jpeg,image/png,image/webp,application/pdf,text/plain';
+
+/** Papers pre-attached in the guided demo; no real file or upload is involved. */
+const DEMO_UPLOADS: Array<Pick<UploadItem, 'name' | 'kind' | 'mime'>> = [
+  { name: 'SMS_Notice_PatnaCyber.txt', kind: 'NOTICE', mime: 'text/plain' },
+  { name: 'HDFC_Statement_Oct2026.pdf', kind: 'STATEMENT', mime: 'application/pdf' },
+  { name: 'Tax_Invoice_Repair481.pdf', kind: 'INVOICE', mime: 'application/pdf' },
+  { name: 'Customer_WhatsApp_Receipt.txt', kind: 'CHAT', mime: 'text/plain' },
+];
 
 /** Guess a document kind from the file name, matching the evidence keys the backend matches on. */
 function guessKind(name: string): DocumentKind {
@@ -39,13 +47,28 @@ const MIME_BY_EXT = (name: string) =>
     : 'image/jpeg';
 
 export function UploadModal() {
-  const { activeModal, setModal, uploadPapers, isProcessing } = useCase();
+  const { activeModal, setModal, uploadPapers, isProcessing, caseData } = useCase();
 
   const [filesToUpload, setFilesToUpload] = useState<UploadItem[]>([]);
   const [removingIds, setRemovingIds] = useState<Record<string, boolean>>({});
+  const [seededDemo, setSeededDemo] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isOpen = activeModal === 'UPLOAD_PAPERS';
+  const awaitingPapers =
+    caseData?.stage === 'NEW' || caseData?.nextStep?.action === 'UPLOAD_PAPERS';
+
+  // The guided demo arrives with the papers already attached, ready to analyse.
+  useEffect(() => {
+    if (!isOpen || !IS_MOCK || seededDemo || !awaitingPapers || filesToUpload.length > 0) return;
+    setFilesToUpload(
+      DEMO_UPLOADS.map((doc, index) => ({
+        id: `demo-${index}-${doc.name}`,
+        ...doc,
+      }))
+    );
+    setSeededDemo(true);
+  }, [isOpen, seededDemo, awaitingPapers, filesToUpload.length]);
 
   const handleAddFile = (kind: DocumentKind, defaultName: string, file?: File) => {
     const newItem: UploadItem = {
@@ -80,6 +103,8 @@ export function UploadModal() {
     e.preventDefault();
     if (filesToUpload.length === 0) return;
     await uploadPapers(filesToUpload.map(f => ({ name: f.name, kind: f.kind, mime: f.mime, file: f.file })));
+    setFilesToUpload([]);
+    setSeededDemo(false);
   };
 
   return (
@@ -102,8 +127,15 @@ export function UploadModal() {
             {IS_MOCK ? (
               /* Quick add chips (mock showcase) */
               <div>
+                <div className="mb-2.5 flex items-start gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-2.5 text-[11px] text-emerald-900 dark:text-emerald-200">
+                  <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                  <span>
+                    Demo papers are attached below. Nothing is uploaded — the Reader agent
+                    runs on this fake data.
+                  </span>
+                </div>
                 <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block mb-1.5">
-                  Quick Document Presets:
+                  Add another sample:
                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   <Button

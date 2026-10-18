@@ -10,12 +10,15 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Shield, CheckCircle2, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import { Plus, Shield, CheckCircle2, ChevronDown, ChevronUp, Loader2, Sparkles } from 'lucide-react';
+import { IS_MOCK } from '@/lib/mode';
 
 export function NewCaseModal() {
   const { activeModal, setModal, createNewCase, isProcessing } = useCase();
 
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState(
+    IS_MOCK ? 'Ravi Sharma — Mobile Repair Shop, Pune' : ''
+  );
   const [language, setLanguage] = useState<'en' | 'hi'>('en');
   const [showChecklist, setShowChecklist] = useState(false);
 
@@ -43,6 +46,15 @@ export function NewCaseModal() {
           </DialogHeader>
 
           <div className="space-y-3 py-1">
+            {IS_MOCK && (
+              <div className="flex items-start gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-2.5 text-[11px] text-emerald-900 dark:text-emerald-200">
+                <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <span>
+                  Guided demo: the name is prefilled and every paper will be attached for you.
+                  Nothing leaves this browser.
+                </span>
+              </div>
+            )}
             <div>
               <label className="text-xs font-semibold text-slate-900 dark:text-slate-100 block mb-1">
                 Case Name or Store Name:

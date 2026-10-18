@@ -41,7 +41,10 @@ export function AuditLogActivity() {
   const allEvents = [...agentEvents, ...historyEvents];
 
   return (
-    <Card className="border-border bg-card shadow-card rounded-2xl overflow-hidden flex flex-col h-full">
+    <Card
+      id="activity-log"
+      className="scroll-mt-24 border-border bg-card shadow-card rounded-2xl overflow-hidden flex flex-col h-full"
+    >
       {/* Header */}
       <CardHeader className="py-3.5 px-4 sm:px-5 border-b border-border/80 bg-muted/20">
         <div className="flex items-center justify-between">

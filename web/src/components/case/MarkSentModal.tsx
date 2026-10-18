@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCase } from '@/context/CaseContext';
 import {
   Dialog,
@@ -30,6 +30,10 @@ export function MarkSentModal() {
   const [sentOn, setSentOn] = useState(currentSimulatedDate);
 
   const isOpen = activeModal === 'MARK_SENT' && Boolean(letter);
+
+  useEffect(() => {
+    if (isOpen) setSentOn(currentSimulatedDate);
+  }, [isOpen, currentSimulatedDate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

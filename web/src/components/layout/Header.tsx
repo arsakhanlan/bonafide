@@ -14,7 +14,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 
-export function Header() {
+export function Header({ onBrandClick }: { onBrandClick?: () => void }) {
   const { caseData, setModal } = useCase();
   const { theme, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
@@ -39,8 +39,14 @@ export function Header() {
       )}
     >
       <div className="container px-3 sm:px-6 flex h-14 sm:h-16 items-center justify-between gap-2 sm:gap-4">
-        {/* Brand mark */}
-        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        {/* Brand mark — clicking it offers a restart */}
+        <button
+          type="button"
+          onClick={onBrandClick}
+          title="Restart Bonafide"
+          aria-label="Bonafide — restart"
+          className="group flex min-w-0 items-center gap-2.5 rounded-xl text-left transition-opacity hover:opacity-90 active:scale-[0.99] sm:gap-3"
+        >
           <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-md shadow-emerald-500/20 shrink-0 animate-float">
             <Shield className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
           </div>
@@ -57,7 +63,7 @@ export function Header() {
               Autonomous Bank Account Freeze Defense
             </p>
           </div>
-        </div>
+        </button>
 
         {/* Action Controls */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">

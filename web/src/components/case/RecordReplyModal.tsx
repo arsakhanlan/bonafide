@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCase } from '@/context/CaseContext';
 import {
   Dialog,
@@ -13,12 +13,20 @@ import { Textarea } from '@/components/ui/textarea';
 import { MessageSquare, Sparkles, Send, ShieldAlert, Loader2 } from 'lucide-react';
 import { IS_MOCK } from '@/lib/mode';
 
+const DEMO_REPLY =
+  'Bank notified: "Lien restricted to disputed ₹2,000. Balance of ₹1,78,000 released for normal branch and UPI transactions."';
+
 export function RecordReplyModal() {
   const { activeModal, setModal, recordReply, isProcessing } = useCase();
 
-  const [replyText, setReplyText] = useState('');
+  const [replyText, setReplyText] = useState(IS_MOCK ? DEMO_REPLY : '');
 
   const isOpen = activeModal === 'RECORD_REPLY';
+
+  // The guided demo starts with the success reply filled in; presets can change it.
+  useEffect(() => {
+    if (isOpen && IS_MOCK) setReplyText(DEMO_REPLY);
+  }, [isOpen]);
 
   const presets = [
     {

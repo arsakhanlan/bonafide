@@ -2,6 +2,7 @@ import React from 'react';
 import { useCase } from '@/context/CaseContext';
 import { Button } from '@/components/ui/button';
 import { PersonaSelector } from '@/components/demo/PersonaSelector';
+import { IS_MOCK } from '@/lib/mode';
 import {
   ArrowRight,
   FileUp,
@@ -52,20 +53,20 @@ export function StartScreen() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
             </span>
-            Bank freeze self-help · BNSS §106 &amp; MHA SOP
+            {IS_MOCK ? 'Interactive demo · Every name, amount and paper is fake' : 'Bank freeze self-help · BNSS §106 & MHA SOP'}
           </span>
 
           <h1 className="mt-4 text-3xl font-extrabold leading-[1.08] tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem]">
-            Your account was frozen.
+            {IS_MOCK ? 'Walk through a freeze case.' : 'Your account was frozen.'}
             <span className="mt-1 block bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 bg-clip-text text-transparent dark:from-emerald-300 dark:via-emerald-400 dark:to-teal-300">
-              Here is the way back.
+              {IS_MOCK ? 'From first paper to release.' : 'Here is the way back.'}
             </span>
           </h1>
 
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Bonafide reads your bank message and statement, works out what is actually in dispute,
-            and drafts a representation under BNSS §106 — with every quote checked word-for-word.
-            You review, approve and send everything yourself.
+            {IS_MOCK
+              ? 'Start the guided walkthrough and every paper is already attached — just click the next action. Or jump straight into one of four finished scenarios and explore its timeline.'
+              : 'Bonafide reads your bank message and statement, works out what is actually in dispute, and drafts a representation under BNSS §106 — with every quote checked word-for-word. You review, approve and send everything yourself.'}
           </p>
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -75,7 +76,7 @@ export function StartScreen() {
               onClick={() => setModal('NEW_CASE')}
               className="group h-12 rounded-xl px-7 text-sm font-bold shadow-md shadow-emerald-600/20"
             >
-              Start my case
+              {IS_MOCK ? 'Start the guided journey' : 'Start my case'}
               <ArrowRight className="ml-1.5 h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
             </Button>
             <Button
@@ -84,12 +85,14 @@ export function StartScreen() {
               onClick={showDemo}
               className="h-12 rounded-xl px-6 text-sm font-semibold"
             >
-              Explore a demo case
+              {IS_MOCK ? 'Jump to a scenario' : 'Explore a demo case'}
             </Button>
           </div>
 
           <p className="mt-4 text-[11px] font-medium text-muted-foreground">
-            Free · No sign-up · Nothing is ever sent on your behalf
+            {IS_MOCK
+              ? 'Guided demo · Nothing is uploaded and nothing is ever sent'
+              : 'Free · No sign-up · Nothing is ever sent on your behalf'}
           </p>
 
           <ul className="mt-6 grid gap-2 sm:grid-cols-3">
@@ -156,10 +159,12 @@ export function StartScreen() {
         <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
           <div>
             <h2 id="demo-heading" className="text-sm font-bold tracking-tight text-foreground">
-              Just exploring?
+              {IS_MOCK ? 'Or jump straight into a case' : 'Just exploring?'}
             </h2>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
-              Open a sample scenario. Every name, amount and paper in it is fake.
+              {IS_MOCK
+                ? 'Each scenario opens a finished case with its own papers, letters and history timeline.'
+                : 'Open a sample scenario. Every name, amount and paper in it is fake.'}
             </p>
           </div>
           <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300">

@@ -11,6 +11,8 @@ import { DocumentsList } from '@/components/case/DocumentsList';
 import { AuditLogActivity } from '@/components/case/AuditLogActivity';
 import { ReferralCard } from '@/components/case/ReferralCard';
 import { GuidedTourModal } from '@/components/demo/GuidedTourModal';
+import { DemoJourneyBar } from '@/components/demo/DemoJourneyBar';
+import { RestartDialog } from '@/components/demo/RestartDialog';
 import { BootScreen } from '@/components/layout/BootScreen';
 import { ErrorToast } from '@/components/layout/ErrorToast';
 import { StartScreen } from '@/components/start/StartScreen';
@@ -29,9 +31,10 @@ import { IS_MOCK, isDemoCase } from '@/lib/mode';
 import { AlertCircle } from 'lucide-react';
 
 export function App() {
-  const { caseData, activeModal, setModal, loading, error, clearError, deleteCase, isProcessing } = useCase();
+  const { caseData, activeModal, setModal, loading, error, clearError, deleteCase, resetDemo, isProcessing } = useCase();
   const { authError, signInGuest } = useAuth();
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmRestart, setConfirmRestart] = useState(false);
 
   // Demo-only chrome (mock mode, or a real demo case created for judges).
   const showDemo = IS_MOCK || isDemoCase(caseData?.demo);
@@ -44,7 +47,7 @@ export function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors selection:bg-emerald-600 selection:text-white">
-      <Header />
+      <Header onBrandClick={() => setConfirmRestart(true)} />
 
       <a
         href="#main-content"
@@ -77,6 +80,8 @@ export function App() {
           <BootScreen />
         ) : caseData ? (
           <section aria-label="Active Case Command Center" className="animate-view-in space-y-4">
+            {IS_MOCK && <DemoJourneyBar onRestart={() => setConfirmRestart(true)} />}
+
             <SimpleHeroStatus />
 
             <CitizenJourneyStepper />
@@ -140,6 +145,16 @@ export function App() {
         onConfirm={async () => {
           await deleteCase();
           setConfirmDelete(false);
+        }}
+      />
+      <RestartDialog
+        open={confirmRestart}
+        demo={IS_MOCK}
+        onOpenChange={setConfirmRestart}
+        onConfirm={() => {
+          setConfirmRestart(false);
+          if (IS_MOCK) resetDemo();
+          else window.location.reload();
         }}
       />
       {showDemo && (
