@@ -3,19 +3,22 @@ import { useCase } from '@/context/CaseContext';
 import { useTheme } from '@/context/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { IS_MOCK, isDemoCase } from '@/lib/mode';
 import {
   Shield,
   Moon,
   Sun,
   Plus,
-  Clock,
   Play,
   ExternalLink,
 } from 'lucide-react';
 
 export function Header() {
-  const { caseData, setModal, selectedPersona, selectPersona, currentSimulatedDate, simulatedDays } = useCase();
+  const { caseData, setModal } = useCase();
   const { theme, toggleTheme } = useTheme();
+
+  // Demo chrome only in mock mode or on a judges' demo case.
+  const showDemo = IS_MOCK || isDemoCase(caseData?.demo);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/85 backdrop-blur-md transition-colors">
@@ -42,29 +45,33 @@ export function Header() {
 
         {/* Action Controls */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* 2-Min Demo Tour Button */}
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setModal('GUIDED_TOUR')}
-            className="h-8 px-2.5 sm:px-3 gap-1.5 font-semibold text-xs border-emerald-500/30 bg-card text-foreground hover:bg-secondary shadow-xs transition-all hover:border-emerald-500/60 group"
-          >
-            <Play className="h-3 w-3 fill-current text-emerald-600 dark:text-emerald-400 animate-back-and-forth" />
-            <span className="hidden sm:inline">2-Min Demo Tour</span>
-            <span className="sm:hidden">Tour</span>
-            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono animate-back-and-forth">→</span>
-          </Button>
+          {showDemo && (
+            <>
+              {/* 2-Min Demo Tour Button */}
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setModal('GUIDED_TOUR')}
+                className="h-8 px-2.5 sm:px-3 gap-1.5 font-semibold text-xs border-emerald-500/30 bg-card text-foreground hover:bg-secondary shadow-xs transition-all hover:border-emerald-500/60 group"
+              >
+                <Play className="h-3 w-3 fill-current text-emerald-600 dark:text-emerald-400 animate-back-and-forth" />
+                <span className="hidden sm:inline">2-Min Demo Tour</span>
+                <span className="sm:hidden">Tour</span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono animate-back-and-forth">→</span>
+              </Button>
 
-          {/* Swagger / API Docs button */}
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => setModal('SWAGGER')}
-            className="gap-1.5 font-medium text-xs text-slate-700 dark:text-slate-300"
-          >
-            <ExternalLink className="h-3.5 w-3.5 text-slate-500" />
-            <span className="hidden sm:inline">API Spec</span>
-          </Button>
+              {/* Swagger / API Docs button */}
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setModal('SWAGGER')}
+                className="gap-1.5 font-medium text-xs text-slate-700 dark:text-slate-300"
+              >
+                <ExternalLink className="h-3.5 w-3.5 text-slate-500" />
+                <span className="hidden sm:inline">API Spec</span>
+              </Button>
+            </>
+          )}
 
           {/* New Case Button */}
           <Button

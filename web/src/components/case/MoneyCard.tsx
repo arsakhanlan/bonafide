@@ -23,7 +23,7 @@ export function MoneyCard() {
               <AnimatedCounter value={frozen} />
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Total Frozen = {bankName || 'bank'}
+              Total Frozen = {bankName || 'your bank'}
             </p>
           </div>
 
@@ -36,7 +36,7 @@ export function MoneyCard() {
               <AnimatedCounter value={disputed} />
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Contested amount & soot enter
+              Under police dispute
             </p>
           </div>
 

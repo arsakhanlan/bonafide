@@ -1,51 +1,69 @@
 import React from 'react';
 import { useCase } from '@/context/CaseContext';
-import { Check, ShieldCheck, Clock } from 'lucide-react';
+import { Check, ShieldCheck } from 'lucide-react';
+
+type StepStatus = 'COMPLETED' | 'ACTIVE' | 'UPCOMING';
 
 export function CitizenJourneyStepper() {
-  const { caseData, letters, setModal } = useCase();
+  const { caseData, letters, documents, setModal } = useCase();
 
   if (!caseData) return null;
 
-  const isApproved = letters.some(l => l.status === 'APPROVED');
-  const isSent = letters.some(l => l.status === 'SENT');
-  const isResolved = caseData.stage === 'RESOLVED' || caseData.stage === 'PARTLY_RELEASED';
+  const stage = caseData.stage;
+  const hasPapers = documents.length > 0;
+  const hasApproved = letters.some(l => l.status === 'APPROVED' || l.status === 'SENT');
+  const hasSent = letters.some(l => l.status === 'SENT');
+  const done = stage === 'RESOLVED' || stage === 'PARTLY_RELEASED';
+  const ended = stage === 'REFERRED' || stage === 'NEEDS_LAWYER' || stage === 'FAILED';
 
-  const steps = [
-    {
-      number: 1,
-      title: 'Papers Uploaded',
-      desc: 'Bank SMS, statement & receipt received',
-      status: 'COMPLETED' as const,
-      onClick: () => setModal('UPLOAD_PAPERS'),
-    },
-    {
-      number: 2,
-      title: 'At Statutory Grounding',
-      desc: 'BNSS §106 & SOP checked',
-      status: 'COMPLETED' as const,
-      onClick: undefined,
-    },
-    {
-      number: 3,
-      title: 'Approve Letter',
-      desc: isApproved ? 'Approved by you' : 'Needs your approval',
-      status: isApproved ? ('COMPLETED' as const) : ('ACTIVE' as const),
-      onClick: () => setModal('REVIEW_LETTER', letters[0]?.id),
-    },
-    {
-      number: 4,
-      title: 'Bank 7-Day Release',
-      desc: isSent ? '7-Day timer running' : 'Starts upon delivery',
-      status: isResolved ? ('COMPLETED' as const) : isSent ? ('ACTIVE' as const) : ('UPCOMING' as const),
-      onClick: isSent
-        ? () => {
-            const el = document.getElementById('statutory-deadlines-section');
-            el?.scrollIntoView({ behavior: 'smooth' });
-          }
-        : undefined,
-    },
-  ];
+  const stepStatus = (s: StepStatus, alwaysDone = false): StepStatus => (alwaysDone || done ? 'COMPLETED' : s);
+
+  const steps: Array<{
+    number: number;
+    title: string;
+    desc: string;
+    status: StepStatus;
+    onClick?: () => void;
+  }> = ended
+    ? [
+        { number: 1, title: 'Papers Read', desc: 'The agents checked your papers', status: 'COMPLETED', onClick: () => setModal('UPLOAD_PAPERS') },
+        { number: 2, title: 'Safety Check', desc: stage === 'FAILED' ? 'Processing failed' : 'Case needs a lawyer', status: 'COMPLETED' },
+        { number: 3, title: 'Next Step', desc: stage === 'FAILED' ? 'Upload clearer papers' : 'See the referral below', status: 'ACTIVE' },
+      ]
+    : [
+        {
+          number: 1,
+          title: 'Papers Uploaded',
+          desc: hasPapers ? `${documents.length} paper(s) received` : 'Add your bank SMS and statement',
+          status: stepStatus(hasPapers || stage !== 'NEW' ? 'COMPLETED' : 'ACTIVE'),
+          onClick: () => setModal('UPLOAD_PAPERS'),
+        },
+        {
+          number: 2,
+          title: 'AI Analysis',
+          desc: caseData.busy ? 'Agents are reading your papers' : 'Money maths and rule check',
+          status: stepStatus(caseData.busy ? 'ACTIVE' : stage !== 'NEW' && stage !== 'NEEDS_ANSWERS' ? 'COMPLETED' : 'UPCOMING'),
+        },
+        {
+          number: 3,
+          title: 'Approve Letter',
+          desc: hasApproved ? 'Approved by you' : 'Review and approve',
+          status: stepStatus(hasApproved ? 'COMPLETED' : stage === 'LETTER_READY' ? 'ACTIVE' : 'UPCOMING'),
+          onClick: () => letters[0] && setModal('REVIEW_LETTER', letters[0].id),
+        },
+        {
+          number: 4,
+          title: 'Statutory Clock',
+          desc: done ? 'Funds released' : hasSent ? 'Timer running' : 'Starts when you deliver',
+          status: stepStatus(hasSent || done ? (done ? 'COMPLETED' : 'ACTIVE') : 'UPCOMING'),
+          onClick: hasSent
+            ? () => {
+                const el = document.getElementById('statutory-deadlines-section');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }
+            : undefined,
+        },
+      ];
 
   return (
     <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-card transition-all">
@@ -53,18 +71,12 @@ export function CitizenJourneyStepper() {
       <div className="flex items-center justify-between mb-4">
         <span className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
           <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 stroke-[1.75]" />
-          STATUTORY UNFREEZE ROADMAP
+          Statutory Unfreeze Roadmap
         </span>
-
-        {/* Small Timer pill in top right corner matching reference */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary/80 text-muted-foreground border border-border/60 text-xs font-mono">
-          <Clock className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-          <span>Timer 7:56</span>
-        </div>
       </div>
 
-      {/* Clean Stepper: Numbers on a line with descriptions underneath, matching reference image */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-2">
+      {/* Clean Stepper: Numbers on a line with descriptions underneath */}
+      <div className={`grid grid-cols-1 gap-4 sm:gap-2 ${steps.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-4'}`}>
         {steps.map((s, idx) => {
           const isDone = s.status === 'COMPLETED';
           const isCurrent = s.status === 'ACTIVE';
@@ -78,7 +90,6 @@ export function CitizenJourneyStepper() {
             >
               {/* Stepper Node row with connecting line segments */}
               <div className="flex items-center w-full relative mb-2.5">
-                {/* Connecting track line to previous node */}
                 <div
                   className={`h-[2.5px] flex-1 ${
                     idx === 0
@@ -89,7 +100,6 @@ export function CitizenJourneyStepper() {
                   }`}
                 />
 
-                {/* Node Circle */}
                 <div className="relative z-10 shrink-0 mx-2">
                   <div
                     className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
@@ -108,7 +118,6 @@ export function CitizenJourneyStepper() {
                   </div>
                 </div>
 
-                {/* Connecting track line to next node */}
                 <div
                   className={`h-[2.5px] flex-1 ${
                     idx === steps.length - 1

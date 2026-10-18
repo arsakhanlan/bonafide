@@ -4,7 +4,28 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { FileText, Send, Printer } from 'lucide-react';
-import { formatDate } from '@/lib/utils';
+
+/** Human labels for the backend letter kinds. */
+export function letterKindLabel(kind: string): string {
+  switch (kind) {
+    case 'L1_BRANCH':
+      return 'Letter to Bank';
+    case 'L2_OFFICER':
+      return 'Letter to Officer';
+    case 'L3_REVIEW':
+      return 'Review Request';
+    case 'L3_DISTRICT':
+      return 'Letter to District Officer';
+    case 'L4_BACKSTOP':
+      return 'Backstop Letter';
+    case 'L5_LAWYER_NOTES':
+      return 'Notes for Your Lawyer';
+    case 'REMINDER':
+      return 'Overdue Reminder';
+    default:
+      return kind || 'Letter';
+  }
+}
 
 export function LettersList() {
   const { letters, setModal } = useCase();
@@ -41,11 +62,18 @@ export function LettersList() {
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <h4 className="font-bold text-foreground text-xs sm:text-sm leading-snug">
-                    {letter.title}
-                  </h4>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <h4 className="font-bold text-foreground text-xs sm:text-sm leading-snug">
+                      {letter.title}
+                    </h4>
+                    {letter.reminder && (
+                      <Badge variant="outline" className="text-[9px] font-mono py-0 h-4 border-rose-500/40 text-rose-700 dark:text-rose-300 bg-rose-500/10">
+                        REMINDER
+                      </Badge>
+                    )}
+                  </div>
                   <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">
-                    {letter.recipient || 'The Branch Manager / Nodal Desk, Scheduled Commercial Bank'}
+                    {letter.recipient || letterKindLabel(letter.kind)}
                   </p>
                 </div>
 

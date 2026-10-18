@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { extractPlaceholders } from '@/lib/utils';
 import { printA4RepresentationLetter } from '@/lib/printA4';
 import { triggerConfetti } from '@/lib/confetti';
+import { IS_MOCK } from '@/lib/mode';
 import {
   FileText,
   Printer,
@@ -49,9 +50,9 @@ export function LetterViewerModal() {
   const [viewMode, setViewMode] = useState<'DOCUMENT' | 'EDIT'>('DOCUMENT');
   const [paperTone, setPaperTone] = useState<'AUTO' | 'WHITE'>('AUTO');
   const [isCopied, setIsCopied] = useState(false);
-  const [nameInput, setNameInput] = useState('Ravi Sharma');
-  const [phoneInput, setPhoneInput] = useState('+91 98201 44092');
-  const [accountInput, setAccountInput] = useState('501004829104092');
+  const [nameInput, setNameInput] = useState(IS_MOCK ? 'Ravi Sharma' : '');
+  const [phoneInput, setPhoneInput] = useState(IS_MOCK ? '+91 98201 44092' : '');
+  const [accountInput, setAccountInput] = useState(IS_MOCK ? '501004829104092' : '');
 
   useEffect(() => {
     if (letter) {
@@ -60,20 +61,20 @@ export function LetterViewerModal() {
   }, [letter]);
 
   useEffect(() => {
-    if (caseData?.facts) {
-      if (caseData.id.includes('ravi') || caseData.title.includes('Ravi')) {
-        setNameInput('Ravi Sharma');
-        setPhoneInput('+91 98201 44092');
-        setAccountInput('501004829104092');
-      } else if (caseData.id.includes('meera') || caseData.title.includes('Meera')) {
-        setNameInput('Meera Sen');
-        setPhoneInput('+91 98112 34567');
-        setAccountInput('501007823901234');
-      } else if (caseData.id.includes('arjun') || caseData.title.includes('Arjun')) {
-        setNameInput('Arjun Verma');
-        setPhoneInput('+91 98765 43210');
-        setAccountInput('501009182371928');
-      }
+    // Mock personas carry matching sample details for a one-click demo letter.
+    if (!IS_MOCK || !caseData?.facts) return;
+    if (caseData.id.includes('ravi') || caseData.title.includes('Ravi')) {
+      setNameInput('Ravi Sharma');
+      setPhoneInput('+91 98201 44092');
+      setAccountInput('501004829104092');
+    } else if (caseData.id.includes('meera') || caseData.title.includes('Meera')) {
+      setNameInput('Meera Sen');
+      setPhoneInput('+91 98112 34567');
+      setAccountInput('501007823901234');
+    } else if (caseData.id.includes('arjun') || caseData.title.includes('Arjun')) {
+      setNameInput('Arjun Verma');
+      setPhoneInput('+91 98765 43210');
+      setAccountInput('501009182371928');
     }
   }, [caseData]);
 
@@ -120,6 +121,16 @@ export function LetterViewerModal() {
     triggerConfetti();
     setViewMode('DOCUMENT');
   };
+
+  // Real mode: the person's name and phone fill the letter's gaps; both are required.
+  const placeholderNeedsName = placeholders.some(p => p.includes('name'));
+  const placeholderNeedsPhone = placeholders.some(p => p.includes('phone'));
+  const placeholderNeedsAccount = placeholders.some(p => p.includes('Account'));
+  const canApprove =
+    !hasPlaceholders ||
+    (!placeholderNeedsName || nameInput.trim().length > 0) &&
+    (!placeholderNeedsPhone || phoneInput.trim().length > 0) &&
+    (!placeholderNeedsAccount || accountInput.trim().length > 0);
 
   // Parse bodyText into structured document sections
   const paragraphs = bodyText
@@ -266,15 +277,53 @@ export function LetterViewerModal() {
               </span>
             </div>
 
-            <Button
-              size="sm"
-              variant="default"
-              onClick={handleAutoFillPlaceholders}
-              className="h-6 text-[11px] bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 font-medium px-2.5"
-            >
-              <Sparkles className="h-3 w-3 mr-1" />
-              1-Click Auto Fill
-            </Button>
+            {IS_MOCK ? (
+              <Button
+                size="sm"
+                variant="default"
+                onClick={handleAutoFillPlaceholders}
+                className="h-6 text-[11px] bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 font-medium px-2.5"
+              >
+                <Sparkles className="h-3 w-3 mr-1" />
+                1-Click Auto Fill
+              </Button>
+            ) : (
+              <div className="flex flex-wrap items-center gap-1.5">
+                {placeholderNeedsName && (
+                  <input
+                    value={nameInput}
+                    onChange={e => setNameInput(e.target.value)}
+                    placeholder="Your full name *"
+                    className="h-6 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-2 text-[11px] w-40"
+                  />
+                )}
+                {placeholderNeedsPhone && (
+                  <input
+                    value={phoneInput}
+                    onChange={e => setPhoneInput(e.target.value)}
+                    placeholder="Your phone *"
+                    className="h-6 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-2 text-[11px] w-32"
+                  />
+                )}
+                {placeholderNeedsAccount && (
+                  <input
+                    value={accountInput}
+                    onChange={e => setAccountInput(e.target.value)}
+                    placeholder="Account number"
+                    className="h-6 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-2 text-[11px] w-40"
+                  />
+                )}
+                <Button
+                  size="sm"
+                  variant="default"
+                  onClick={handleAutoFillPlaceholders}
+                  className="h-6 text-[11px] bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 font-medium px-2.5"
+                >
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  Fill Into Letter
+                </Button>
+              </div>
+            )}
           </div>
         )}
 
@@ -581,8 +630,9 @@ export function LetterViewerModal() {
             {letter.status === 'DRAFT' && (
               <Button
                 size="sm"
-                disabled={isProcessing}
+                disabled={isProcessing || !canApprove}
                 onClick={handleApprove}
+                title={!canApprove ? 'Fill your name and phone first, then fill them into the letter' : undefined}
                 className="text-xs h-9 font-semibold gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs flex-1 sm:flex-none justify-center active:scale-[0.98]"
               >
                 <CheckCircle2 className="h-4 w-4" />
@@ -597,8 +647,12 @@ export function LetterViewerModal() {
                 className="text-xs h-9 font-semibold gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs flex-1 sm:flex-none justify-center active:scale-[0.98]"
               >
                 <Send className="h-4 w-4" />
-                <span className="hidden sm:inline">Deliver to Bank (Start 7-Day Clock)</span>
-                <span className="sm:hidden">Deliver to Bank</span>
+                <span className="hidden sm:inline">
+                  {letter.kind === 'L5_LAWYER_NOTES' ? 'Mark Handed to Lawyer' : 'Deliver to Bank (Start Clock)'}
+                </span>
+                <span className="sm:hidden">
+                  {letter.kind === 'L5_LAWYER_NOTES' ? 'Mark Sent' : 'Deliver to Bank'}
+                </span>
               </Button>
             )}
           </div>

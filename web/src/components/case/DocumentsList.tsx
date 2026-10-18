@@ -12,6 +12,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { FileText, FileCheck, Shield, Upload, Eye, CheckCircle2, Scale } from 'lucide-react';
+import { IS_MOCK } from '@/lib/mode';
 
 interface DocumentsListProps {
   embedded?: boolean;
@@ -21,7 +22,11 @@ export function DocumentsList({ embedded = false }: DocumentsListProps) {
   const { documents, setModal } = useCase();
   const [inspectDoc, setInspectDoc] = useState<any | null>(null);
 
+  // Mock mode shows canned excerpts; real cases show the Reader's actual summary.
   const getDocExcerpt = (doc: any) => {
+    if (!IS_MOCK) {
+      return doc.summary || 'The agents are reading this paper.';
+    }
     if (doc.name.includes('Notice') || doc.kind === 'NOTICE') {
       return 'Patna Cyber Crime Cell requisition memo CY/2026/891. Requisition specifies contested transaction ₹2,000. Statutory requirement under BNSS §106: lien restricted solely to ₹2,000.';
     }
@@ -109,7 +114,7 @@ export function DocumentsList({ embedded = false }: DocumentsListProps) {
                   variant="outline"
                   className="text-[9px] font-mono shrink-0 border-emerald-500/30 text-emerald-700 dark:text-emerald-300 bg-emerald-500/10"
                 >
-                  GROUNDED
+                  {IS_MOCK ? 'GROUNDED' : doc.readOk === false ? 'UNREADABLE' : doc.summary ? 'READ' : 'PROCESSING'}
                 </Badge>
               </div>
             </div>
@@ -150,7 +155,15 @@ export function DocumentsList({ embedded = false }: DocumentsListProps) {
             <div className="flex items-center gap-2 p-2.5 rounded-lg border border-emerald-500/20 bg-emerald-500/5 text-emerald-800 dark:text-emerald-300 text-[11px]">
               <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
               <span>
-                <strong>Bona Fide Proof Validated:</strong> Demonstrates consideration and lack of nexus to unlawful conduct.
+                {IS_MOCK ? (
+                  <>
+                    <strong>Bona Fide Proof Validated:</strong> Demonstrates consideration and lack of nexus to unlawful conduct.
+                  </>
+                ) : (
+                  <>
+                    <strong>Read by the Reader agent.</strong> Only facts it found are used in your letters.
+                  </>
+                )}
               </span>
             </div>
 

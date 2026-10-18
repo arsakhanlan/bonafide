@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { MessageSquare, Sparkles, Send, ShieldAlert } from 'lucide-react';
+import { IS_MOCK } from '@/lib/mode';
 
 export function RecordReplyModal() {
   const { activeModal, setModal, recordReply, isProcessing } = useCase();
@@ -57,29 +58,31 @@ export function RecordReplyModal() {
           </DialogHeader>
 
           <div className="space-y-3 py-1">
-            <div>
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block mb-1.5">
-                Quick Evaluator Presets:
-              </span>
-              <div className="space-y-1.5">
-                {presets.map((p, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => setReplyText(p.text)}
-                    className="w-full text-left p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs active:scale-[0.99]"
-                  >
-                    <div className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-                      <Sparkles className="h-3 w-3 text-amber-500 shrink-0" />
-                      {p.title}
-                    </div>
-                    <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
-                      "{p.text}"
-                    </p>
-                  </button>
-                ))}
+            {IS_MOCK && (
+              <div>
+                <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block mb-1.5">
+                  Quick Evaluator Presets:
+                </span>
+                <div className="space-y-1.5">
+                  {presets.map((p, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setReplyText(p.text)}
+                      className="w-full text-left p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs active:scale-[0.99]"
+                    >
+                      <div className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                        <Sparkles className="h-3 w-3 text-amber-500 shrink-0" />
+                        {p.title}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
+                        "{p.text}"
+                      </p>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             <div>
               <label className="text-xs font-semibold text-slate-900 dark:text-slate-100 block mb-1">
