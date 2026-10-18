@@ -6,6 +6,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/** Today's date in Asia/Kolkata (the backend's zone), as YYYY-MM-DD. */
+export function todayInIndia(): string {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+}
+
 /**
  * Format an amount in Indian Rupees (INR) with standard Lakh/Crore grouping.
  * e.g. 180000 -> ₹1,80,000

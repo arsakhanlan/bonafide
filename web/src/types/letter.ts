@@ -1,8 +1,19 @@
 export type LetterStatus = 'DRAFT' | 'APPROVED' | 'SENT';
 
+/** Backend letter kinds (LetterKind.java). */
+export type LetterKind =
+  | 'L1_BRANCH'
+  | 'L2_OFFICER'
+  | 'L3_REVIEW'
+  | 'L3_DISTRICT'
+  | 'L4_BACKSTOP'
+  | 'L5_LAWYER_NOTES'
+  | 'REMINDER'
+  | string;
+
 export interface Letter {
   id: string;
-  kind: 'L1_BANK_GRIEVANCE' | 'L2_OFFICER' | 'REMINDER' | string;
+  kind: LetterKind;
   title: string;
   recipient?: string;
   body: string;

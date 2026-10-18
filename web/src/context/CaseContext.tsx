@@ -1,14 +1,18 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { doc, collection, onSnapshot } from 'firebase/firestore';
-import { firestore } from '@/lib/firebase';
+import { doc, collection, onSnapshot, query, where, getDocs } from 'firebase/firestore';
+import { ref as storageRef, uploadBytes } from 'firebase/storage';
+import { firestore, storage } from '@/lib/firebase';
+import { useAuth } from '@/context/AuthContext';
 import * as liveMap from '@/lib/liveMap';
-import { CaseData, AnswerSubmission, Stage } from '@/types/case';
+import { CaseData, AnswerSubmission } from '@/types/case';
 import { Letter } from '@/types/letter';
 import { Deadline } from '@/types/deadline';
 import { AgentStep } from '@/types/agentStep';
 import { CaseDocument } from '@/types/document';
 import { MOCK_PERSONAS } from '@/lib/mockData';
 import { api } from '@/lib/api';
+import { IS_MOCK, isDemoCase } from '@/lib/mode';
+import { todayInIndia } from '@/lib/utils';
 
 type ModalType =
   | 'NONE'
@@ -20,6 +24,14 @@ type ModalType =
   | 'NEW_CASE'
   | 'SWAGGER'
   | 'GUIDED_TOUR';
+
+export interface UploadItem {
+  id: string;
+  name: string;
+  kind: string;
+  mime: string;
+  file?: File;
+}
 
 interface CaseContextType {
   caseData: CaseData | null;
@@ -33,6 +45,7 @@ interface CaseContextType {
   simulatedDays: number;
   currentSimulatedDate: string;
   isProcessing: boolean;
+  loading: boolean;
   error: string | null;
 
   // Actions
@@ -47,41 +60,48 @@ interface CaseContextType {
   submitAnswers: (answers: AnswerSubmission[]) => Promise<void>;
   recordReply: (replyText: string) => Promise<void>;
   skipTime: (days: number) => Promise<void>;
-  uploadPapers: (files: { name: string; kind: any; size?: number }[]) => Promise<void>;
+  uploadPapers: (files: Array<{ name: string; kind: string; mime: string; file?: File }>) => Promise<void>;
   createNewCase: (title: string, language?: 'en' | 'hi') => Promise<void>;
+  deleteCase: () => Promise<void>;
   clearError: () => void;
 }
 
 const CaseContext = createContext<CaseContextType | undefined>(undefined);
 
 export function CaseProvider({ children }: { children: React.ReactNode }) {
+  const { user, loading: authLoading, authError } = useAuth();
   const [selectedPersona, setSelectedPersona] = useState<'RAVI' | 'MEERA' | 'ARJUN' | 'SUNIL'>('RAVI');
-  const [caseData, setCaseData] = useState<CaseData | null>(MOCK_PERSONAS.RAVI.caseData);
-  const [letters, setLetters] = useState<Letter[]>(MOCK_PERSONAS.RAVI.letters);
-  const [deadlines, setDeadlines] = useState<Deadline[]>(MOCK_PERSONAS.RAVI.deadlines);
-  const [steps, setSteps] = useState<AgentStep[]>(MOCK_PERSONAS.RAVI.steps);
-  const [documents, setDocuments] = useState<CaseDocument[]>([
-    { id: 'd1', name: 'SMS_Notice_PatnaCyber.txt', kind: 'NOTICE', path: '/uploads/a1.txt', mime: 'text/plain', size: 1024 },
-    { id: 'd2', name: 'HDFC_Statement_Oct2026.pdf', kind: 'STATEMENT', path: '/uploads/a2.pdf', mime: 'application/pdf', size: 34200 },
-    { id: 'd3', name: 'Tax_Invoice_Repair481.pdf', kind: 'INVOICE', path: '/uploads/a3.pdf', mime: 'application/pdf', size: 18400 },
-    { id: 'd4', name: 'Customer_WhatsApp_Receipt.txt', kind: 'CHAT', path: '/uploads/a4.txt', mime: 'text/plain', size: 850 },
-  ]);
+  const [caseData, setCaseData] = useState<CaseData | null>(
+    IS_MOCK ? MOCK_PERSONAS.RAVI.caseData : null
+  );
+  const [letters, setLetters] = useState<Letter[]>(IS_MOCK ? MOCK_PERSONAS.RAVI.letters : []);
+  const [deadlines, setDeadlines] = useState<Deadline[]>(IS_MOCK ? MOCK_PERSONAS.RAVI.deadlines : []);
+  const [steps, setSteps] = useState<AgentStep[]>(IS_MOCK ? MOCK_PERSONAS.RAVI.steps : []);
+  const [documents, setDocuments] = useState<CaseDocument[]>(IS_MOCK ? MOCK_DOCUMENTS : []);
 
   const [activeModal, setActiveModal] = useState<ModalType>('NONE');
-  const [selectedLetterId, setSelectedLetterId] = useState<string | null>('L1_BANK_GRIEVANCE');
+  const [selectedLetterId, setSelectedLetterId] = useState<string | null>(
+    IS_MOCK ? 'L1_BANK_GRIEVANCE' : null
+  );
   const [simulatedDays, setSimulatedDays] = useState<number>(0);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(!IS_MOCK);
+  const bootedRef = useRef(false);
 
-  // Compute current simulated date from base date
+  // The date the app displays. A demo case lives on a pretend date (case.demo.today);
+  // the mock app advances a local counter; a real case shows the real date.
   const baseDate = new Date('2026-10-17');
-  const simulatedDateObj = new Date(baseDate.getTime() + simulatedDays * 86400000);
-  const currentSimulatedDate = simulatedDateObj.toISOString().split('T')[0];
+  const demoToday = caseData?.demo?.today;
+  const currentSimulatedDate = demoToday
+    ? demoToday
+    : IS_MOCK
+    ? new Date(baseDate.getTime() + simulatedDays * 86400000).toISOString().split('T')[0]
+    : todayInIndia();
 
-  // Switch persona
   const unsubRef = useRef<null | (() => void)>(null);
 
-  /** Live sync: the server is the source of truth for a backend-created demo case. */
+  /** Live sync: the server is the source of truth for a backend case. */
   const subscribeLive = useCallback((caseId: string) => {
     unsubRef.current?.();
     const unsubs: Array<() => void> = [];
@@ -108,64 +128,55 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => () => unsubRef.current?.(), []);
 
-  const selectPersona = useCallback(async (persona: 'RAVI' | 'MEERA' | 'ARJUN' | 'SUNIL') => {
-    setSelectedPersona(persona);
-    setSimulatedDays(0);
-    setError(null);
+  // Real mode: once signed in, pick up the person's most recent case (if any).
+  useEffect(() => {
+    if (IS_MOCK || authLoading || bootedRef.current || !user) return;
+    bootedRef.current = true;
+    let cancelled = false;
 
-    // Real backend demo case; the mock data is only the offline fallback.
-    try {
-      const res = await api.createDemoCase(persona);
-      if (res.caseId) {
-        unsubRef.current?.();
-        setLetters([]);
-        setDeadlines([]);
-        setDocuments([]);
-        setSteps([{ id: 'step_start', agent: 'SYSTEM', message: 'Starting the agents…', level: 'INFO', timestamp: new Date().toLocaleTimeString() }]);
-        setCaseData({
-          id: res.caseId, uid: 'live', language: 'en', stage: 'NEW', busy: true,
-          title: 'Starting your case…', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-          demo: { persona, today: undefined }, history: [],
-        });
-        subscribeLive(res.caseId);
-        return;
+    (async () => {
+      try {
+        const q = query(collection(firestore, 'cases'), where('uid', '==', user.uid));
+        const snap = await getDocs(q);
+        if (cancelled) return;
+        const newest = snap.docs
+          .map((d: any) => ({ id: d.id, createdAt: String(d.data()?.createdAt ?? '') }))
+          .sort((a: any, b: any) => b.createdAt.localeCompare(a.createdAt))[0];
+        if (newest) {
+          subscribeLive(newest.id);
+        }
+      } catch (e: any) {
+        if (!cancelled) setError('Could not load your cases. ' + (e.message || ''));
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    } catch (err) {
-      console.warn('Backend demo case unavailable; using mock data', err);
-    }
+    })();
 
-    const data = MOCK_PERSONAS[persona];
-    setCaseData(data.caseData);
-    setLetters(data.letters);
-    setDeadlines(data.deadlines);
-    setSteps(data.steps);
-    setSelectedLetterId(data.letters[0]?.id || null);
+    return () => {
+      cancelled = true;
+    };
+  }, [user, authLoading, subscribeLive]);
 
-    // Set demo documents according to persona
-    if (persona === 'RAVI') {
-      setDocuments([
-        { id: 'd1', name: 'SMS_Notice_PatnaCyber.txt', kind: 'NOTICE', path: '/uploads/a1.txt', mime: 'text/plain' },
-        { id: 'd2', name: 'HDFC_Statement_Oct2026.pdf', kind: 'STATEMENT', path: '/uploads/a2.pdf', mime: 'application/pdf' },
-        { id: 'd3', name: 'Tax_Invoice_Repair481.pdf', kind: 'INVOICE', path: '/uploads/a3.pdf', mime: 'application/pdf' },
-        { id: 'd4', name: 'WhatsApp_Receipt.txt', kind: 'CHAT', path: '/uploads/a4.txt', mime: 'text/plain' },
-      ]);
-    } else if (persona === 'MEERA') {
-      setDocuments([
-        { id: 'd1', name: 'ICICI_Hold_Email.txt', kind: 'NOTICE', path: '/uploads/m1.txt', mime: 'text/plain' },
-        { id: 'd2', name: 'ICICI_Bank_Statement.pdf', kind: 'STATEMENT', path: '/uploads/m2.pdf', mime: 'application/pdf' },
-      ]);
-    } else if (persona === 'ARJUN') {
-      setDocuments([
-        { id: 'd1', name: 'SBI_Lien_Alert.txt', kind: 'NOTICE', path: '/uploads/ar1.txt', mime: 'text/plain' },
-        { id: 'd2', name: 'SBI_Account_Statement.pdf', kind: 'STATEMENT', path: '/uploads/ar2.pdf', mime: 'application/pdf' },
-        { id: 'd3', name: 'P2P_Escrow_Receipt_8912.txt', kind: 'CHAT', path: '/uploads/ar3.txt', mime: 'text/plain' },
-      ]);
-    } else {
-      setDocuments([
-        { id: 'd1', name: 'Kotak_Account_Freeze_SMS.txt', kind: 'NOTICE', path: '/uploads/s1.txt', mime: 'text/plain' },
-      ]);
-    }
-  }, [subscribeLive]);
+  // While signing in (real mode), stay on the loading screen.
+  useEffect(() => {
+    if (!IS_MOCK && !authLoading) setLoading(false);
+  }, [authLoading]);
+
+  useEffect(() => {
+    if (!IS_MOCK && authError) setError(authError);
+  }, [authError]);
+
+  const resetToEmpty = useCallback(() => {
+    unsubRef.current?.();
+    setCaseData(null);
+    setLetters([]);
+    setDeadlines([]);
+    setSteps([]);
+    setDocuments([]);
+    setSelectedLetterId(null);
+    setSimulatedDays(0);
+    setSelectedPersona('RAVI');
+  }, []);
 
   const setModal = (modal: ModalType, letterId: string | null = null) => {
     setActiveModal(modal);
@@ -176,16 +187,64 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
 
   const clearError = () => setError(null);
 
-  // Approve letter
+  // ---- Mock-mode local simulations (no backend) -------------------------------
+
+  const applyMockPersona = (persona: 'RAVI' | 'MEERA' | 'ARJUN' | 'SUNIL') => {
+    const data = MOCK_PERSONAS[persona];
+    setCaseData(data.caseData);
+    setLetters(data.letters);
+    setDeadlines(data.deadlines);
+    setSteps(data.steps);
+    setSelectedLetterId(data.letters[0]?.id || null);
+    setDocuments(MOCK_DOCUMENTS);
+  };
+
+  const selectPersona = useCallback(
+    async (persona: 'RAVI' | 'MEERA' | 'ARJUN' | 'SUNIL') => {
+      setSelectedPersona(persona);
+      setSimulatedDays(0);
+      setError(null);
+
+      if (IS_MOCK) {
+        applyMockPersona(persona);
+        return;
+      }
+
+      setIsProcessing(true);
+      try {
+        const res = await api.createDemoCase(persona);
+        unsubRef.current?.();
+        setLetters([]);
+        setDeadlines([]);
+        setDocuments([]);
+        setSteps([]);
+        setCaseData({
+          id: res.caseId, uid: user?.uid ?? '', language: 'en', stage: 'NEW', busy: true,
+          title: 'Starting your case…', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+          demo: { persona, today: undefined }, history: [],
+        });
+        subscribeLive(res.caseId);
+      } catch (e: any) {
+        setError(e.message || 'Could not create the demo case');
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [subscribeLive, user]
+  );
+
+  // ---- Approve letter -----------------------------------------------------------
+
   const approveLetter = async (letterId: string, body?: string) => {
     if (!caseData) return;
     setIsProcessing(true);
     setError(null);
     try {
-      try {
+      if (!IS_MOCK) {
         await api.approveLetter(caseData.id, letterId, body);
-      } catch (err) {
-        console.warn('Backend approve call failed; simulating in local state', err);
+        // Live sync updates the letter status and next step.
+        setActiveModal('NONE');
+        return;
       }
 
       setLetters(prev =>
@@ -238,7 +297,8 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Mark letter sent
+  // ---- Mark letter sent -----------------------------------------------------------
+
   const markLetterSent = async (
     letterId: string,
     sentOn: string,
@@ -248,10 +308,11 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
     setIsProcessing(true);
     setError(null);
     try {
-      try {
+      if (!IS_MOCK) {
         await api.markLetterSent(caseData.id, letterId, { sentOn, how });
-      } catch (err) {
-        console.warn('Backend markLetterSent call failed; simulating in local state', err);
+        // Live sync updates the letter, the clocks and the stage.
+        setActiveModal('NONE');
+        return;
       }
 
       const sentDateObj = new Date(sentOn);
@@ -269,12 +330,12 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
       const newDeadline: Deadline = {
         id: 'BANK_FILE_GRIEVANCE',
         clock: 'BANK_FILE_GRIEVANCE',
-        title: 'Bank 7-Day Grievance & Release Window',
-        description: 'Bank branch has 7 calendar days to record representation and restrict lien to disputed amount.',
+        title: 'Bank Grievance Lodgement & Lien Restriction',
+        description: 'Under MHA SOP, the bank has 7 calendar days from receipt of representation to record the grievance and release undisputed surplus funds.',
         status: 'PENDING',
         dueOn,
         daysRemaining: 7,
-        statuteRef: 'BNSS §106 / MHA Cyber SOP',
+        statuteRef: 'MHA SOP Cl. 4.2 & BNSS §106',
       };
 
       setDeadlines(prev => {
@@ -319,25 +380,23 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Submit clarifying answers (Meera's flow)
+  // ---- Submit clarifying answers ---------------------------------------------------
+
   const submitAnswers = async (answers: AnswerSubmission[]) => {
     if (!caseData) return;
     setIsProcessing(true);
     setError(null);
     try {
-      try {
-        await api.sendEvent(caseData.id, {
-          type: 'ANSWERS',
-          answers,
-        });
-      } catch (err) {
-        console.warn('Backend send answers failed; simulating transition locally', err);
+      if (!IS_MOCK) {
+        await api.sendEvent(caseData.id, { type: 'ANSWERS', answers });
+        setActiveModal('NONE');
+        return;
       }
 
-      // Transition to LETTER_READY and create L1 letter
+      // Mock: create the letter locally (Meera's flow).
       const l1Letter: Letter = {
         id: 'L1_MEERA_FREELANCE',
-        kind: 'L1_BANK_GRIEVANCE',
+        kind: 'L1_BRANCH',
         title: 'Representation under BNSS §106 — Freelance Design Consideration',
         recipient: 'The Branch Manager, ICICI Bank, Regional Office',
         body: `To,
@@ -421,22 +480,21 @@ Phone: {{Your phone}}`,
     }
   };
 
-  // Record bank or police reply (Triggers L2 escalation or resolution)
+  // ---- Record bank or police reply ---------------------------------------------------
+
   const recordReply = async (replyText: string) => {
     if (!caseData) return;
     setIsProcessing(true);
     setError(null);
     try {
-      try {
-        await api.sendEvent(caseData.id, {
-          type: 'REPLY',
-          text: replyText,
-        });
-      } catch (err) {
-        console.warn('Backend reply event failed; updating state locally', err);
+      if (!IS_MOCK) {
+        await api.sendEvent(caseData.id, { type: 'REPLY', text: replyText });
+        // Live sync: the Case boss writes the milestone, clocks and next letter.
+        setActiveModal('NONE');
+        return;
       }
 
-      // Check if reply indicates bank has not complied or filed grievance -> triggers L2 Escalation Letter to Police IO
+      // Mock: escalate locally to an L2 letter.
       const l2Letter: Letter = {
         id: 'L2_OFFICER_ESCALATION',
         kind: 'L2_OFFICER',
@@ -518,22 +576,28 @@ Phone: {{Your phone}}`,
     }
   };
 
-  // Fast-Forward Time (Judge feature)
+  // ---- Fast-forward time (demo cases only) ---------------------------------------------------
+
   const skipTime = async (days: number) => {
     if (!caseData) return;
     setIsProcessing(true);
+    setError(null);
     try {
-      try {
+      if (!IS_MOCK) {
+        if (!isDemoCase(caseData.demo)) {
+          setError('Time skip works only on demo cases.');
+          return;
+        }
         await api.skipAhead(caseData.id, days);
-      } catch (err) {
-        console.warn('Backend skip call failed; simulating time shift locally', err);
+        // Live sync: demo.today advances and any crossed deadlines wake the agents.
+        return;
       }
 
       setSimulatedDays(prev => prev + days);
       const newTotalDays = simulatedDays + days;
       const newDate = new Date(baseDate.getTime() + newTotalDays * 86400000).toISOString().split('T')[0];
 
-      // Check if deadlines expired
+      // Mock: expire pending clocks and draft a reminder.
       let reminderGenerated = false;
       setDeadlines(prev =>
         prev.map(d => {
@@ -629,23 +693,43 @@ Yours faithfully,
             : null
         );
       }
+    } catch (e: any) {
+      setError(e.message || 'Failed to skip time');
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // Upload papers
-  const uploadPapers = async (files: { name: string; kind: any; size?: number }[]) => {
+  // ---- Upload papers -----------------------------------------------------------
+
+  const uploadPapers = async (files: Array<{ name: string; kind: string; mime: string; file?: File }>) => {
     if (!caseData) return;
     setIsProcessing(true);
+    setError(null);
     try {
+      if (!IS_MOCK) {
+        if (!user) throw new Error('Not signed in.');
+        const refs: Array<{ path: string; kind: string; mime: string }> = [];
+        for (const f of files) {
+          if (!f.file) continue;
+          const path = `uploads/${user.uid}/${caseData.id}/${f.name}`;
+          await uploadBytes(storageRef(storage, path), f.file);
+          refs.push({ path, kind: f.kind, mime: f.file.type || f.mime });
+        }
+        if (refs.length === 0) throw new Error('Pick at least one file to upload.');
+        await api.sendEvent(caseData.id, { type: 'UPLOAD', files: refs });
+        // Live sync: the documents list and agent steps update as the workflow runs.
+        setActiveModal('NONE');
+        return;
+      }
+
       const newDocs: CaseDocument[] = files.map((f, i) => ({
         id: 'doc_' + Date.now() + '_' + i,
         name: f.name,
-        kind: f.kind,
+        kind: f.kind as CaseDocument['kind'],
         path: `/uploads/${f.name}`,
-        mime: f.name.endsWith('.pdf') ? 'application/pdf' : 'text/plain',
-        size: f.size || 15000,
+        mime: f.mime,
+        size: f.file?.size ?? 15000,
         uploadedAt: currentSimulatedDate,
       }));
 
@@ -663,61 +747,89 @@ Yours faithfully,
       ]);
 
       setActiveModal('NONE');
+    } catch (e: any) {
+      setError(e.message || 'Failed to upload papers');
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // Create brand new case
+  // ---- Create brand new case -----------------------------------------------------------
+
   const createNewCase = async (title: string, language: 'en' | 'hi' = 'en') => {
     setIsProcessing(true);
+    setError(null);
     try {
-      let caseId = 'c_' + Math.random().toString(36).substring(2, 9);
-      try {
-        const res = await api.createCase(language);
-        if (res.caseId) caseId = res.caseId;
-      } catch (err) {
-        console.warn('Backend case creation failed; creating local session', err);
+      if (IS_MOCK) {
+        const newCase: CaseData = {
+          id: 'c_' + Math.random().toString(36).substring(2, 9),
+          uid: 'user_active',
+          language,
+          stage: 'NEW',
+          busy: false,
+          title: title || 'New Bank Account Freeze Defense',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          money: { frozen: 0, disputed: 0, release: 0, currency: 'INR' },
+          nextStep: {
+            action: 'UPLOAD_PAPERS',
+            text: 'Upload your bank freeze notice and bank account statement to begin AI defense extraction.',
+          },
+          history: [{ on: currentSimulatedDate, text: 'You created a new case.' }],
+        };
+
+        setCaseData(newCase);
+        setLetters([]);
+        setDeadlines([]);
+        setDocuments([]);
+        setSteps([
+          {
+            id: 'step_init',
+            agent: 'SYSTEM',
+            message: `Case ${newCase.id} initialized. Upload notice or statement to run agent analysis.`,
+            level: 'INFO',
+            timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }),
+          },
+        ]);
+        setActiveModal('NONE');
+        return;
       }
 
-      const newCase: CaseData = {
-        id: caseId,
-        uid: 'user_active',
-        language,
-        stage: 'NEW',
-        busy: false,
-        title: title || 'New Bank Account Freeze Defense',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        money: {
-          frozen: 0,
-          disputed: 0,
-          release: 0,
-          currency: 'INR',
-        },
-        nextStep: {
-          action: 'UPLOAD_PAPERS',
-          text: 'Upload your bank freeze notice and bank account statement to begin AI defense extraction.',
-        },
-        history: [
-          { on: currentSimulatedDate, text: 'You created a new case.' },
-        ],
-      };
-
-      setCaseData(newCase);
+      const res = await api.createCase(language);
+      unsubRef.current?.();
       setLetters([]);
       setDeadlines([]);
       setDocuments([]);
-      setSteps([
-        {
-          id: 'step_init',
-          agent: 'SYSTEM',
-          message: `Case ${caseId} initialized. Upload notice or statement to run agent analysis.`,
-          level: 'INFO',
-          timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }),
-        },
-      ]);
+      setSteps([]);
+      setCaseData({
+        id: res.caseId, uid: user?.uid ?? '', language, stage: 'NEW', busy: false,
+        title: title || 'New case',
+        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+        history: [],
+      });
+      subscribeLive(res.caseId);
       setActiveModal('NONE');
+    } catch (e: any) {
+      setError(e.message || 'Could not create the case');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // ---- Delete the case -----------------------------------------------------------
+
+  const deleteCase = async () => {
+    if (!caseData) return;
+    if (!window.confirm('Delete this case, its letters and all uploaded papers? This cannot be undone.')) return;
+    setIsProcessing(true);
+    setError(null);
+    try {
+      if (!IS_MOCK) {
+        await api.deleteCase(caseData.id);
+      }
+      resetToEmpty();
+    } catch (e: any) {
+      setError(e.message || 'Could not delete the case');
     } finally {
       setIsProcessing(false);
     }
@@ -737,6 +849,7 @@ Yours faithfully,
         simulatedDays,
         currentSimulatedDate,
         isProcessing,
+        loading,
         error,
         selectPersona,
         setModal,
@@ -747,6 +860,7 @@ Yours faithfully,
         skipTime,
         uploadPapers,
         createNewCase,
+        deleteCase,
         clearError,
       }}
     >
@@ -763,3 +877,9 @@ export function useCase() {
   return context;
 }
 
+const MOCK_DOCUMENTS: CaseDocument[] = [
+  { id: 'd1', name: 'SMS_Notice_PatnaCyber.txt', kind: 'NOTICE', path: '/uploads/a1.txt', mime: 'text/plain', size: 1024 },
+  { id: 'd2', name: 'HDFC_Statement_Oct2026.pdf', kind: 'STATEMENT', path: '/uploads/a2.pdf', mime: 'application/pdf', size: 34200 },
+  { id: 'd3', name: 'Tax_Invoice_Repair481.pdf', kind: 'INVOICE', path: '/uploads/a3.pdf', mime: 'application/pdf', size: 18400 },
+  { id: 'd4', name: 'Customer_WhatsApp_Receipt.txt', kind: 'CHAT', path: '/uploads/a4.txt', mime: 'text/plain', size: 850 },
+];

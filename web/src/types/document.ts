@@ -15,5 +15,8 @@ export interface CaseDocument {
   size?: number;
   uploadedAt?: string;
   masked?: boolean;
+  /** One-line summary the Reader extracted from this paper (real cases). */
+  summary?: string;
+  readOk?: boolean;
 }
 

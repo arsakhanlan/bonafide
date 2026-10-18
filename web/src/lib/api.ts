@@ -19,7 +19,12 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     let errorDetail = '';
     try {
       const errorJson = await response.json();
-      errorDetail = errorJson.message || errorJson.error || JSON.stringify(errorJson);
+      // Backend errors are {error: {code, message}} (ApiExceptionHandler).
+      errorDetail =
+        errorJson.error?.message ||
+        errorJson.message ||
+        errorJson.error ||
+        JSON.stringify(errorJson);
     } catch {
       errorDetail = await response.text();
     }

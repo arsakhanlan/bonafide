@@ -26,6 +26,22 @@ export interface MoneyBreakdown {
   currency?: string;
   bankName?: string;
   accountMasked?: string;
+  problems?: Array<{ code: string; text: string; ruleRef?: string }>;
+}
+
+/** Facts the Reader extracted from the papers (backend contract). */
+export interface CaseFacts {
+  bank?: string;
+  branch?: string;
+  accountLast4?: string;
+  freezeType?: 'WHOLE_ACCOUNT' | 'AMOUNT_HOLD' | 'DIGITAL_BLOCK' | 'UNKNOWN';
+  freezeOn?: string;
+  complaintNo?: string;
+  policeStation?: string;
+  officer?: string;
+  state?: string;
+  disputedPayments?: Array<{ utr?: string; on?: string; amount?: number; from?: string }>;
+  [key: string]: unknown;
 }
 
 export interface NextStep {
@@ -61,6 +77,10 @@ export interface LegalReferral {
   office: string;
   freeLegalAidAct: string;
   guidanceNotes: string[];
+  title?: string;
+  link?: string;
+  to?: string;
+  text?: string;
 }
 
 export interface CaseData {
