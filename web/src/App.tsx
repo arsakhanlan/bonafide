@@ -88,7 +88,7 @@ export function App() {
 
             <ReferralCard />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+            <div className="animate-view-in [animation-delay:120ms] grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
               <div className="lg:col-span-8 space-y-4">
                 <MoneyCard />
 

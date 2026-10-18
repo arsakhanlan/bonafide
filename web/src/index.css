@@ -5,66 +5,66 @@
 @layer base {
   :root {
     color-scheme: light;
-    --background: 45 20% 98%;
-    --foreground: 155 35% 10%;
+    --background: 44 33% 98%;
+    --foreground: 160 32% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 155 35% 10%;
+    --card-foreground: 160 32% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 155 35% 10%;
+    --popover-foreground: 160 32% 9%;
 
-    --primary: 158 84% 30%;
-    --primary-foreground: 45 20% 98%;
+    --primary: 160 84% 27%;
+    --primary-foreground: 45 40% 98%;
 
-    --secondary: 150 15% 94%;
-    --secondary-foreground: 155 35% 12%;
+    --secondary: 152 26% 94%;
+    --secondary-foreground: 160 32% 12%;
 
-    --muted: 150 15% 94%;
-    --muted-foreground: 150 12% 44%;
+    --muted: 152 26% 94%;
+    --muted-foreground: 155 12% 40%;
 
-    --accent: 158 80% 95%;
-    --accent-foreground: 158 84% 28%;
+    --accent: 158 70% 94%;
+    --accent-foreground: 160 80% 24%;
 
-    --destructive: 347 77% 50%;
+    --destructive: 347 77% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 150 14% 88%;
-    --input: 150 14% 88%;
-    --ring: 158 84% 30%;
+    --border: 152 18% 87%;
+    --input: 152 18% 87%;
+    --ring: 160 84% 30%;
 
-    --radius: 1.125rem;
+    --radius: 1rem;
   }
 
   .dark {
     color-scheme: dark;
-    --background: 155 38% 5%;
-    --foreground: 145 20% 96%;
+    --background: 159 42% 4.5%;
+    --foreground: 145 22% 96%;
 
-    --card: 155 28% 9%;
-    --card-foreground: 145 20% 96%;
+    --card: 158 30% 8.5%;
+    --card-foreground: 145 22% 96%;
 
-    --popover: 155 28% 9%;
-    --popover-foreground: 145 20% 96%;
+    --popover: 158 30% 8.5%;
+    --popover-foreground: 145 22% 96%;
 
-    --primary: 156 75% 48%;
-    --primary-foreground: 155 45% 6%;
+    --primary: 156 72% 46%;
+    --primary-foreground: 159 45% 5%;
 
-    --secondary: 155 20% 15%;
-    --secondary-foreground: 145 20% 96%;
+    --secondary: 158 22% 14%;
+    --secondary-foreground: 145 22% 96%;
 
-    --muted: 155 20% 15%;
-    --muted-foreground: 150 15% 65%;
+    --muted: 158 22% 14%;
+    --muted-foreground: 150 13% 64%;
 
-    --accent: 155 40% 14%;
-    --accent-foreground: 156 75% 55%;
+    --accent: 158 38% 13%;
+    --accent-foreground: 156 72% 56%;
 
-    --destructive: 347 77% 60%;
-    --destructive-foreground: 145 20% 96%;
+    --destructive: 347 77% 58%;
+    --destructive-foreground: 145 22% 96%;
 
-    --border: 155 20% 16%;
-    --input: 155 20% 16%;
-    --ring: 156 75% 48%;
+    --border: 158 20% 15.5%;
+    --input: 158 20% 15.5%;
+    --ring: 156 72% 48%;
   }
 
   * {
@@ -74,6 +74,7 @@
 
   html {
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -83,10 +84,10 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     overscroll-behavior-y: none;
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.06) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.05) 0px, transparent 50%),
-      radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.04) 0px, transparent 50%);
+    background-image:
+      radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.075) 0px, transparent 52%),
+      radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.055) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 52%);
     background-attachment: fixed;
   }
 
@@ -196,17 +197,85 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Sophisticated Elevation Shadows */
+/* Sophisticated Elevation Shadows — tinted with the deep-forest ink, not neutral grey. */
 .shadow-subtle {
-  box-shadow: 0 1px 2px 0 rgba(7, 14, 10, 0.04), 0 1px 1px -1px rgba(7, 14, 10, 0.02);
+  box-shadow: 0 1px 2px 0 rgba(6, 34, 24, 0.05), 0 1px 1px -1px rgba(6, 34, 24, 0.03);
 }
 
 .shadow-card {
-  box-shadow: 0 2px 8px -2px rgba(7, 14, 10, 0.06), 0 1px 3px -1px rgba(7, 14, 10, 0.04);
+  box-shadow: 0 2px 10px -2px rgba(6, 34, 24, 0.07), 0 1px 3px -1px rgba(6, 34, 24, 0.05);
 }
 
 .shadow-lifted {
-  box-shadow: 0 10px 25px -4px rgba(7, 14, 10, 0.1), 0 4px 10px -3px rgba(7, 14, 10, 0.05);
+  box-shadow: 0 14px 32px -8px rgba(6, 34, 24, 0.14), 0 6px 14px -4px rgba(6, 34, 24, 0.07);
+}
+
+.dark .shadow-subtle,
+.dark .shadow-card,
+.dark .shadow-lifted {
+  box-shadow: 0 2px 14px -4px rgba(0, 0, 0, 0.45), 0 1px 3px -1px rgba(0, 0, 0, 0.35);
+}
+
+/* Small, reusable hover lift for interactive cards. */
+.hover-lift {
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* Button texture: a quiet inner highlight plus a tinted glow, then a single sheen sweep. */
+.btn-raised {
+  --btn-glow: 5 150 105;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 5px 14px -6px rgb(var(--btn-glow) / 0.38);
+  transition:
+    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 180ms ease;
+}
+
+.btn-raised:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 10px 22px -8px rgb(var(--btn-glow) / 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-raised:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.btn-raised-rose {
+  --btn-glow: 225 29 72;
+}
+
+.btn-sheen {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-sheen::after {
+  content: '';
+  position: absolute;
+  inset: -40% -70%;
+  background: linear-gradient(
+    100deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 58%
+  );
+  transform: translateX(-115%);
+  transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.btn-sheen:hover::after,
+.btn-sheen:focus-visible::after {
+  transform: translateX(115%);
 }
 
 .glow-emerald {
@@ -445,7 +514,9 @@
 }
 
 .animate-view-in {
-  animation: viewIn 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* `backwards` holds the start state through the delay, then releases the
+     transform so hover lifts and other motion can take over. */
+  animation: viewIn 320ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
 .animate-toast-in {
@@ -458,6 +529,37 @@
 
 .animate-boot-glow {
   animation: bootGlow 2.4s ease-in-out infinite;
+}
+
+@keyframes nodeBreathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+.roadmap-node-active {
+  animation: nodeBreathe 2.6s ease-in-out infinite;
+}
+
+@keyframes checkPop {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.5);
+  }
+  70% {
+    transform: scale(1.12);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-check-pop {
+  animation: checkPop 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Accordion & Dropdown Smooth Expand & Collapse Transitions */
@@ -557,6 +659,7 @@
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }

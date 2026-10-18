@@ -66,7 +66,7 @@ export function CitizenJourneyStepper() {
       ];
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-card transition-all">
+    <div className="animate-view-in [animation-delay:80ms] rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-card transition-all">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <span className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
@@ -106,12 +106,12 @@ export function CitizenJourneyStepper() {
                       isDone
                         ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/30'
                         : isCurrent
-                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/50 ring-4 ring-emerald-500/25 ring-offset-2 ring-offset-card'
+                        ? 'roadmap-node-active bg-emerald-500 text-white shadow-lg shadow-emerald-500/50 ring-4 ring-emerald-500/25 ring-offset-2 ring-offset-card'
                         : 'bg-secondary border border-border/80 text-muted-foreground'
                     }`}
                   >
                     {isDone ? (
-                      <Check className="h-4 w-4 stroke-[3]" />
+                      <Check className="animate-check-pop h-4 w-4 stroke-[3]" />
                     ) : (
                       <span>{s.number}</span>
                     )}

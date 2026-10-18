@@ -56,14 +56,14 @@ export function StartScreen() {
             {IS_MOCK ? 'Interactive demo · Every name, amount and paper is fake' : 'Bank freeze self-help · BNSS §106 & MHA SOP'}
           </span>
 
-          <h1 className="mt-4 text-3xl font-extrabold leading-[1.08] tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem]">
+          <h1 className="mt-4 text-balance text-3xl font-extrabold leading-[1.08] tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem]">
             {IS_MOCK ? 'Walk through a freeze case.' : 'Your account was frozen.'}
             <span className="mt-1 block bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 bg-clip-text text-transparent dark:from-emerald-300 dark:via-emerald-400 dark:to-teal-300">
               {IS_MOCK ? 'From first paper to release.' : 'Here is the way back.'}
             </span>
           </h1>
 
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+          <p className="mt-4 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
             {IS_MOCK
               ? 'Start the guided walkthrough and every paper is already attached — just click the next action. Or jump straight into one of four finished scenarios and explore its timeline.'
               : 'Bonafide reads your bank message and statement, works out what is actually in dispute, and drafts a representation under BNSS §106 — with every quote checked word-for-word. You review, approve and send everything yourself.'}
@@ -95,7 +95,7 @@ export function StartScreen() {
               : 'Free · No sign-up · Nothing is ever sent on your behalf'}
           </p>
 
-          <ul className="mt-6 grid gap-2 sm:grid-cols-3">
+          <ul className="animate-view-in [animation-delay:130ms] mt-6 grid gap-2 sm:grid-cols-3">
             {TRUST.map(item => (
               <li
                 key={item.label}
@@ -109,7 +109,7 @@ export function StartScreen() {
         </div>
 
         <div className="lg:col-span-5">
-          <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-5 shadow-card sm:p-6">
+          <div className="animate-view-in [animation-delay:90ms] relative overflow-hidden rounded-3xl border border-border bg-card p-5 shadow-card sm:p-6">
             <div className="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full bg-emerald-500/10 blur-3xl" />
             <div className="relative flex items-center justify-between gap-3">
               <h2 className="text-sm font-bold tracking-tight text-foreground">
@@ -154,7 +154,7 @@ export function StartScreen() {
       <section
         id="demo-scenarios"
         aria-labelledby="demo-heading"
-        className="scroll-mt-24 rounded-3xl border border-dashed border-border bg-card/40 p-4 sm:p-6"
+        className="animate-view-in [animation-delay:170ms] scroll-mt-24 rounded-3xl border border-dashed border-border bg-card/40 p-4 sm:p-6"
       >
         <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
           <div>

@@ -48,7 +48,7 @@ export function PersonaSelector() {
         <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Swipe to explore →</span>
       </div>
       <div className="flex overflow-x-auto sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 pt-2 pb-2 sm:pt-2 sm:pb-1 scrollbar-none snap-x snap-mandatory -mx-3 px-3 sm:mx-0 sm:px-0">
-        {personas.map(p => {
+        {personas.map((p, index) => {
           // A persona is only "selected" once its demo case actually exists.
           const isSelected = !!caseData?.demo && selectedPersona === p.id;
           const Icon = p.icon;
@@ -57,13 +57,15 @@ export function PersonaSelector() {
               key={p.id}
               disabled={isProcessing}
               onClick={() => selectPersona(p.id)}
-              className={`group text-left p-3.5 rounded-2xl border transition-all text-xs relative flex flex-col justify-between card-hover-micro hover:z-20 min-w-[250px] max-w-[280px] sm:min-w-0 sm:max-w-none flex-1 snap-start shrink-0 sm:shrink ${
+              style={{ animationDelay: `${100 + index * 55}ms` }}
+              className={`group animate-view-in relative flex min-w-[250px] max-w-[280px] flex-1 snap-start shrink-0 flex-col justify-between overflow-hidden rounded-2xl border p-4 text-left text-xs transition-all hover:z-20 hover-lift sm:min-w-0 sm:max-w-none sm:shrink ${
                 isSelected
                   ? 'border-emerald-600 bg-emerald-50/70 text-foreground ring-2 ring-emerald-600/25 dark:border-emerald-500 dark:bg-emerald-950/40 dark:ring-emerald-500/25 shadow-md shadow-emerald-500/10 z-10'
-                  : 'border-border bg-card/90 hover:border-emerald-500/50 hover:bg-card shadow-subtle text-foreground'
+                  : 'border-border bg-card shadow-subtle hover:border-emerald-500/50 hover:shadow-card text-foreground'
               }`}
             >
-            <div>
+            <span className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-emerald-500/0 blur-2xl transition-colors duration-300 group-hover:bg-emerald-500/10" />
+            <div className="relative">
               <div className="flex items-center justify-between gap-1 mb-2">
                 <div className="flex items-center gap-2">
                   <div
@@ -75,13 +77,13 @@ export function PersonaSelector() {
                   >
                     <Icon className="h-4 w-4 stroke-[1.75]" />
                   </div>
-                  <span className="font-bold text-xs leading-tight">
+                  <span className="font-bold text-[13px] leading-tight">
                     {p.name}
                   </span>
                 </div>
                 {isSelected && (
                   <span className="h-4 w-4 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                    <Check className="h-3 w-3 stroke-[3]" />
+                    <Check className="animate-check-pop h-3 w-3 stroke-[3]" />
                   </span>
                 )}
               </div>
@@ -100,10 +102,10 @@ export function PersonaSelector() {
               </div>
 
               <p
-                className={`text-[11px] leading-relaxed line-clamp-2 ${
+                className={`text-[11px] leading-relaxed line-clamp-2 transition-colors ${
                   isSelected
                     ? 'text-foreground/90 font-medium'
-                    : 'text-muted-foreground'
+                    : 'text-muted-foreground group-hover:text-foreground/75'
                 }`}
               >
                 {p.desc}

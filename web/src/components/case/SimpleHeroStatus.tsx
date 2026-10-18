@@ -37,7 +37,7 @@ export function SimpleHeroStatus() {
   ];
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-card transition-all space-y-3 relative overflow-hidden">
+    <div className="animate-view-in [animation-delay:40ms] rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-card transition-all space-y-3 relative overflow-hidden">
       {/* Ambient subtle sovereign accent glow */}
       <div className="pointer-events-none absolute -right-16 -top-16 h-36 w-36 rounded-full bg-emerald-500/10 blur-3xl" />
 

@@ -193,7 +193,7 @@ export function DocumentsList({ embedded = false }: DocumentsListProps) {
   }
 
   return (
-    <Card className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-card">
+    <Card className="border-border bg-card shadow-card">
       <CardHeader className="py-4 px-6 border-b border-slate-100 dark:border-slate-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

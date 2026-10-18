@@ -4,37 +4,36 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-[color,background-color,border-color,box-shadow,transform,opacity] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 select-none active:scale-[0.98]',
+  'inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold tracking-[-0.01em] transition-[color,background-color,border-color,box-shadow,transform,opacity] duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97] [&_svg]:shrink-0',
   {
     variants: {
       variant: {
-        default:
-          'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 font-semibold active:scale-[0.98]',
+        default: 'btn-raised btn-sheen bg-primary text-primary-foreground hover:bg-primary/92',
         primary:
-          'bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-slate-950 font-semibold active:scale-[0.98]',
+          'btn-raised btn-sheen bg-emerald-600 text-white hover:bg-emerald-500 dark:bg-emerald-500 dark:text-slate-950 dark:hover:bg-emerald-400',
         destructive:
-          'bg-rose-600 text-white shadow-sm hover:bg-rose-700 dark:bg-rose-700 dark:hover:bg-rose-800 font-semibold active:scale-[0.98]',
+          'btn-raised btn-raised-rose btn-sheen bg-rose-600 text-white hover:bg-rose-500 dark:bg-rose-600 dark:hover:bg-rose-500',
         outline:
-          'border border-border bg-card shadow-xs hover:bg-secondary hover:text-foreground active:scale-[0.98]',
+          'border border-border bg-card/90 shadow-xs hover:-translate-y-px hover:border-border hover:bg-secondary hover:text-foreground hover:shadow-sm',
         secondary:
-          'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 active:scale-[0.98]',
-        ghost: 'hover:bg-secondary hover:text-foreground active:scale-[0.98]',
-        link: 'text-primary underline-offset-4 hover:underline',
+          'bg-secondary text-secondary-foreground shadow-xs hover:-translate-y-px hover:bg-secondary/80',
+        ghost: 'hover:bg-secondary hover:text-foreground',
+        link: 'h-auto rounded-none p-0 text-primary underline-offset-4 hover:underline',
         success:
-          'bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-slate-950 font-semibold active:scale-[0.98]',
+          'btn-raised btn-sheen bg-emerald-600 text-white hover:bg-emerald-500 dark:bg-emerald-500 dark:text-slate-950 dark:hover:bg-emerald-400',
         sovereign:
-          'bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-700 text-white shadow-md hover:shadow-emerald-500/20 dark:from-emerald-400 dark:via-emerald-500 dark:to-teal-400 dark:text-slate-950 font-bold active:scale-[0.98]',
+          'btn-raised btn-sheen bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-700 text-white hover:from-emerald-600 hover:via-emerald-500 hover:to-teal-600 dark:from-emerald-400 dark:via-emerald-500 dark:to-teal-400 dark:text-slate-950',
       },
       size: {
         default: 'h-10 px-4 py-2',
-        sm: 'h-9 rounded-md px-3 text-xs',
-        lg: 'h-11 rounded-lg px-8 text-base font-semibold',
-        icon: 'h-10 w-10 min-w-10 min-h-10',
+        sm: 'h-9 px-3.5 text-xs',
+        lg: 'h-12 px-7 text-sm font-bold',
+        icon: 'h-10 w-10 min-h-10 min-w-10 p-0',
       },
-    },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
+      defaultVariants: {
+        variant: 'default',
+        size: 'default',
+      },
     },
   }
 );
@@ -60,4 +59,3 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = 'Button';
 
 export { Button, buttonVariants };
-

@@ -104,11 +104,12 @@ export function NextStepHero() {
   return (
     <Card
       className={cn(
-        'border-border bg-card shadow-card rounded-2xl overflow-hidden',
+        'relative border-border bg-card shadow-card rounded-2xl overflow-hidden',
         caseData.stage === 'RESOLVED' &&
           'border-emerald-500/40 bg-emerald-50/50 dark:bg-emerald-950/20'
       )}
     >
+      <span className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-emerald-500 to-teal-500" />
       <CardContent className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1 min-w-0 max-w-xl">
           <h3 className="text-sm sm:text-base font-bold text-foreground tracking-tight flex items-center gap-2">

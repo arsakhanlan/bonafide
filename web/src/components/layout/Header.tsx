@@ -112,7 +112,7 @@ export function Header({ onBrandClick }: { onBrandClick?: () => void }) {
             variant="ghost"
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="rounded-lg h-8 w-8 text-muted-foreground hover:text-foreground"
+            className="h-8 w-8 rounded-lg text-muted-foreground hover:rotate-12 hover:text-foreground"
           >
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>

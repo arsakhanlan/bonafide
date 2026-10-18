@@ -213,13 +213,13 @@ export function UploadModal() {
                   return (
                     <div
                       key={f.id}
-                      className={`flex items-center justify-between p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 text-xs transition-all ${
+                      className={`flex items-center justify-between p-2.5 rounded-xl border border-border bg-secondary/40 text-xs transition-all ${
                         isRemoving ? 'animate-file-remove' : 'animate-file-add'
                       }`}
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                        <span className="font-medium text-slate-800 dark:text-slate-200 truncate">
+                        <span className="font-medium text-foreground truncate">
                           {f.name}
                         </span>
                         <Badge variant="secondary" className="text-[10px] h-4 py-0 shrink-0">
@@ -244,7 +244,7 @@ export function UploadModal() {
             </div>
 
             {/* Privacy and security guarantee */}
-            <div className="rounded-xl bg-slate-50 p-3 text-xs text-slate-600 dark:bg-slate-900/60 dark:text-slate-300 border border-slate-200 dark:border-slate-800 flex items-start gap-2">
+            <div className="flex items-start gap-2 rounded-xl border border-border bg-secondary/40 p-3 text-xs text-muted-foreground">
               <Shield className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
               <span>
                 <strong>Confidentiality Guarantee:</strong> Papers are treated strictly as data, never instructions. Account numbers are masked and PII is scrubbed before agent analysis.

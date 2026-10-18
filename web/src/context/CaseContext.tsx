@@ -892,7 +892,6 @@ Yours faithfully,
           title: title || 'New Bank Account Freeze Defense',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          money: { frozen: 0, disputed: 0, release: 0, currency: 'INR' },
           nextStep: {
             action: 'UPLOAD_PAPERS',
             text: 'Upload your bank freeze notice and bank account statement to begin AI defense extraction.',
