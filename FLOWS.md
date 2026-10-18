@@ -11,18 +11,32 @@ The person's journey through the system, in plain words.
 
 ## Flow 2: Approve, send, and the clocks start
 
-1. The person fills in their name, approves the letter, and marks it sent (branch, email, WhatsApp, post — their choice, with the date).
-2. The server starts the official deadlines in plain code: bank files the grievance within 7 days, officer decides within 15, backstop at 75/90 days, plus the person's own 15-day deadlines. All appear on the timeline.
+1. The person fills in their name, approves the letter, and records sending it to the right
+   recipient with the date: bank (branch, email, WhatsApp or post), police (post or email),
+   District Grievance Officer (email or post), or a lawyer (in person or email).
+2. The server starts the official deadlines in plain code: bank files the grievance within
+   7 days, police/district decide within 15, backstop at 75/90 days, plus the person's own
+   15-day deadlines. All appear on the timeline.
 
 ## Flow 3: A deadline passes, the agents wake up
 
 1. Every hour, Cloud Scheduler calls the server: "any deadline passed?"
-2. For each missed deadline, the **Case boss** (AI) reads the case and prepares the next step — a reminder to the branch, an escalation to the district officer, or notes for a lawyer.
+2. For each missed deadline, the **Case boss** (AI) reads the case and prepares the next step — a reminder to the branch, an escalation to the district officer, or notes for a lawyer. When the district officer also misses their 15 days, the self-help path ends and the case moves to the court step.
 
 ## Flow 4: A reply arrives
 
 1. The person uploads the bank's or police's reply (photo, PDF or typed text).
 2. The **Reader** extracts the milestone (grievance filed, hold limited, fully released, refused…), and the **Case boss** moves the case on: starts or meets the right clocks, drafts the next letter, or marks the case partly/fully released.
+
+## Flow 6: When the police fail — the court step
+
+1. If the police do not release the surplus within their 15-day clock (or reply without
+   releasing it), the next escalation is the District Grievance Officer; if that also
+   fails, the self-help path ends.
+2. Bonafide prepares **L5 notes for a lawyer** — never a petition — cancels the remaining
+   self-help clocks and moves the case to `NEEDS_LAWYER`.
+3. The app shows free legal aid (DLSA/NALSA, 15100) and the notes under "Your letters".
+   The person takes them to a lawyer; Bonafide files nothing.
 
 ## Flow 5: Demo mode for judges
 

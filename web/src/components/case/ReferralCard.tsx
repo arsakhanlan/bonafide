@@ -16,13 +16,13 @@ export function ReferralCard() {
   const title = isCyber
     ? 'Report the Fraud — We Cannot Send Letters for This Case'
     : isLawyer
-    ? 'This Case Needs a Lawyer — Free Legal Aid May Be Available'
+    ? 'Court step: free legal aid can take it from here'
     : 'Safety Protection: Free Legal Aid Referral';
 
   const body = isCyber
     ? 'Bonafide only writes self-help letters for people whose own money was frozen after they received a payment in good faith. Because this case looks like you may have lost money to a fraud, the right step is to report it so the police can act.'
     : isLawyer
-    ? 'The papers suggest a formal court step that self-help letters cannot cover. Under the Legal Services Authorities Act, 1987, you are entitled to free legal counsel appointed by the government.'
+    ? 'The police did not release the money, so the next step needs a lawyer or free legal aid. Take the notes we prepared with you. These are notes, not a court petition. Under the Legal Services Authorities Act, 1987, you can get free legal counsel from the government.'
     : 'For your safety, the system cannot draft letters for this case. Free government legal aid can advise you properly.';
 
   const helpline = referral?.helpline || (isCyber ? '1930' : '15100');
@@ -42,7 +42,7 @@ export function ReferralCard() {
             </CardTitle>
           </div>
           <Badge variant="destructive" className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold">
-            Zero Letters Policy
+            {isCyber ? 'Report the fraud' : isLawyer ? 'Court step' : 'Safety protection'}
           </Badge>
         </div>
       </CardHeader>
@@ -51,7 +51,12 @@ export function ReferralCard() {
         <div className="rounded-xl bg-card p-3.5 sm:p-4 border border-amber-200/80 dark:border-amber-900/50 text-xs space-y-2">
           <div className="flex items-center gap-1.5 font-bold text-foreground text-sm">
             <ShieldAlert className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
-            {referral?.title || (isCyber ? 'Why no letters here?' : "Why can't self-help letters be generated for this case?")}
+            {referral?.title ||
+              (isCyber
+                ? 'Why no letters here?'
+                : isLawyer
+                ? 'What happens at the court step?'
+                : "Why can't self-help letters be generated for this case?")}
           </div>
           {referral?.reason && <p className="text-muted-foreground leading-relaxed">{referral.reason}</p>}
           <p className="text-foreground/90 font-medium font-legal text-xs sm:text-[13px]">

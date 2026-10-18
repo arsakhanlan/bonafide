@@ -12,23 +12,39 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { MessageSquare, Sparkles, Send, ShieldAlert, Loader2 } from 'lucide-react';
 import { IS_MOCK } from '@/lib/mode';
+import { audienceOf } from '@/lib/letterAudience';
 
 const DEMO_REPLY =
   'Bank notified: "Lien restricted to disputed ₹2,000. Balance of ₹1,78,000 released for normal branch and UPI transactions."';
 
+const POLICE_FAIL_REPLY =
+  'The police have not released the surplus balance and have not given a written decision. I need to take the next step.';
+
 export function RecordReplyModal() {
-  const { activeModal, setModal, recordReply, isProcessing } = useCase();
+  const { activeModal, setModal, recordReply, isProcessing, letters } = useCase();
+
+  const lastSent = [...letters].reverse().find(l => l.status === 'SENT');
+  const waitingOnAuthority = ['police', 'district'].includes(audienceOf(lastSent?.kind));
 
   const [replyText, setReplyText] = useState(IS_MOCK ? DEMO_REPLY : '');
 
   const isOpen = activeModal === 'RECORD_REPLY';
 
-  // The guided demo starts with the success reply filled in; presets can change it.
+  // After a police/district letter, the demo opens on the failure path so the
+  // court step can be shown; otherwise it opens on the bank's release reply.
   useEffect(() => {
-    if (isOpen && IS_MOCK) setReplyText(DEMO_REPLY);
-  }, [isOpen]);
+    if (isOpen && IS_MOCK) setReplyText(waitingOnAuthority ? POLICE_FAIL_REPLY : DEMO_REPLY);
+  }, [isOpen, waitingOnAuthority]);
 
   const presets = [
+    ...(waitingOnAuthority
+      ? [
+          {
+            title: 'Police did not release the money',
+            text: POLICE_FAIL_REPLY,
+          },
+        ]
+      : []),
     {
       title: 'Bank Refuses Unfreeze (Requires L2 to Police)',
       text: 'Bank responded: "We received your grievance. However, as per Cyber Crime Police Station Patna instructions, total debit hold cannot be altered without police NOC."',
@@ -69,7 +85,7 @@ export function RecordReplyModal() {
             {IS_MOCK && (
               <div>
                 <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block mb-1.5">
-                  Quick Evaluator Presets:
+                  Choose a sample reply:
                 </span>
                 <div className="space-y-1.5">
                   {presets.map((p, i) => (

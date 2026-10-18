@@ -38,6 +38,10 @@ describe('isReleaseReply', () => {
     expect(isReleaseReply('Your grievance has been received; internal review is pending.')).toBe(
       false
     );
+    expect(
+      isReleaseReply('The police have not released the surplus balance.')
+    ).toBe(false);
+    expect(isReleaseReply('The bank refused to release the funds.')).toBe(false);
   });
 });
 

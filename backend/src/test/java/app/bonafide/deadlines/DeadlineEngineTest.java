@@ -82,6 +82,22 @@ class DeadlineEngineTest {
     }
 
     @Test
+    void aPoliceLetterAlsoStartsTheOfficerClock() {
+        engine.start("c8", "u1", "letter:L2_OFFICER", LocalDate.of(2026, 10, 19), false);
+        assertThat(store.findAll("c8"))
+                .extracting(d -> d.clock() + "=" + d.dueOn())
+                .containsExactly("OFFICER_DECIDE=" + LocalDate.of(2026, 11, 3));
+    }
+
+    @Test
+    void aDistrictReviewStartsTheDistrictClock() {
+        engine.start("c9", "u1", "letter:L3_REVIEW", LocalDate.of(2026, 10, 19), false);
+        assertThat(store.findAll("c9"))
+                .extracting(d -> d.clock() + "=" + d.dueOn())
+                .containsExactly("DISTRICT_OFFICER_DECIDE=" + LocalDate.of(2026, 11, 3));
+    }
+
+    @Test
     void bankFiledStartsTheOfficerAndBackstopClocks() {
         engine.apply("c1", "BANK_FILED", LocalDate.of(2026, 10, 23));
 

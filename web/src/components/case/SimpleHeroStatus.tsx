@@ -17,16 +17,25 @@ import {
   Users,
 } from 'lucide-react';
 import { getStageMetadata } from '@/lib/utils';
+import { audienceOf } from '@/lib/letterAudience';
 import { IS_MOCK, isDemoCase } from '@/lib/mode';
 
 export function SimpleHeroStatus() {
-  const { caseData, skipTime, isProcessing, currentSimulatedDate, simulatedDays, selectedPersona, selectPersona } = useCase();
+  const { caseData, letters, skipTime, isProcessing, currentSimulatedDate, simulatedDays, selectedPersona, selectPersona } = useCase();
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
   const [showPersonaPicker, setShowPersonaPicker] = useState(false);
 
   if (!caseData) return null;
 
   const stageMeta = getStageMetadata(caseData.stage);
+  const lastSent = [...letters].reverse().find(l => l.status === 'SENT');
+  const waitingOn = audienceOf(lastSent?.kind);
+  const stageLabel =
+    caseData.stage === 'WAITING' && waitingOn === 'police'
+      ? 'Waiting for the police'
+      : caseData.stage === 'WAITING' && waitingOn === 'district'
+      ? 'Waiting for the district officer'
+      : stageMeta.label;
   const showDemo = IS_MOCK || isDemoCase(caseData.demo);
 
   const personaList = [
@@ -79,7 +88,7 @@ export function SimpleHeroStatus() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
               </span>
-              {stageMeta.label}
+              {stageLabel}
             </Badge>
           </div>
         </div>

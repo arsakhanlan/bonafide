@@ -2,6 +2,7 @@ import React from 'react';
 import { useCase } from '@/context/CaseContext';
 import { Check, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { audienceOf } from '@/lib/letterAudience';
 
 type StepStatus = 'COMPLETED' | 'ACTIVE' | 'UPCOMING';
 
@@ -31,6 +32,20 @@ export function CitizenJourneyStepper() {
   const hasSent = letters.some(l => l.status === 'SENT');
   const done = stage === 'RESOLVED' || stage === 'PARTLY_RELEASED';
   const ended = stage === 'REFERRED' || stage === 'NEEDS_LAWYER' || stage === 'FAILED';
+  const lastSent = [...letters].reverse().find(l => l.status === 'SENT');
+  const waitingOn = audienceOf(lastSent?.kind);
+  const clockTitle =
+    waitingOn === 'police'
+      ? 'Police deadline'
+      : waitingOn === 'district'
+      ? 'District deadline'
+      : 'Bank deadline';
+  const waitingLabel =
+    waitingOn === 'police'
+      ? 'Waiting for the police'
+      : waitingOn === 'district'
+      ? 'Waiting for the district officer'
+      : 'Waiting for the bank';
 
   const stepStatus = (s: StepStatus, alwaysDone = false): StepStatus => (alwaysDone || done ? 'COMPLETED' : s);
 
@@ -69,8 +84,8 @@ export function CitizenJourneyStepper() {
         },
         {
           number: 4,
-          title: 'Bank deadline',
-          desc: done ? 'Funds released' : hasSent ? 'Waiting for the bank' : 'Starts when you deliver',
+          title: clockTitle,
+          desc: done ? 'Funds released' : hasSent ? waitingLabel : 'Starts when you deliver',
           status: stepStatus(hasSent || done ? (done ? 'COMPLETED' : 'ACTIVE') : 'UPCOMING'),
           onClick: hasSent
             ? () => {

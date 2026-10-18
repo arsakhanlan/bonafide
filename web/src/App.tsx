@@ -87,7 +87,8 @@ export function App() {
 
             <ReferralCard />
 
-            {caseData.nextStep?.action !== 'SEE_LEGAL_AID' && <NextStepHero />}
+            {(caseData.nextStep?.action !== 'SEE_LEGAL_AID' ||
+              caseData.stage === 'NEEDS_LAWYER') && <NextStepHero />}
 
             <CitizenJourneyStepper />
 

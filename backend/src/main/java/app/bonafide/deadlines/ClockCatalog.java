@@ -1,6 +1,7 @@
 package app.bonafide.deadlines;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -22,10 +23,17 @@ public class ClockCatalog {
         }
     }
 
-    /** All in-force clocks that start on the given trigger, e.g. "milestone:BANK_FILED". */
+    /**
+     * All in-force clocks that start on the given trigger, e.g. "milestone:BANK_FILED".
+     * A clock may declare several comma-separated triggers (a bank milestone or the
+     * person sending the police letter), so both routes start the same deadline.
+     */
     public List<ClockRule> byTrigger(String trigger) {
         return rules.stream()
-                .filter(r -> r.inForce() && trigger.equals(r.startedBy()))
+                .filter(r -> r.inForce()
+                        && Arrays.stream(r.startedBy().split(","))
+                                .map(String::trim)
+                                .anyMatch(trigger::equals))
                 .toList();
     }
 

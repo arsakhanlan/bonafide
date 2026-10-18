@@ -99,16 +99,62 @@ public class LetterController {
 
         boolean demo = case_.demo() != null;
         String kind = (String) letter.get("kind");
-        deadlines.start(caseId, case_.uid(), "letter:" + kind, sentOn, demo);
+        var started = deadlines.start(caseId, case_.uid(), "letter:" + kind, sentOn, demo);
+        String audience = audienceOf(kind);
 
-        String earliest = earliestDueOn(caseId);
+        if ("L5_LAWYER_NOTES".equals(kind)) {
+            caseRepository.update(caseId, Map.of(
+                    "stage", "NEEDS_LAWYER",
+                    "nextStep", Map.of("action", "SEE_LEGAL_AID",
+                            "text", "Take these notes to a lawyer or free legal aid. "
+                                    + "This is a court step; Bonafide cannot file a petition.")));
+            caseRepository.appendHistory(caseId, Map.of("on", sentOn.toString(),
+                    "text", "You gave the notes to your lawyer"));
+            steps.write(caseId, "SYSTEM",
+                    "Notes handed to a lawyer. Next step: court, with a lawyer.", "INFO");
+            return Map.of("status", "SENT");
+        }
+
+        String dueOn = started.stream()
+                .map(d -> d.dueOn())
+                .min(LocalDate::compareTo)
+                .map(LocalDate::toString)
+                .orElseGet(() -> earliestDueOn(caseId));
+
         caseRepository.update(caseId, Map.of(
                 "stage", "WAITING",
-                "nextStep", Map.of("action", "WAIT", "text", "Waiting for the bank to file your grievance.",
-                        "dueOn", earliest == null ? "" : earliest)));
-        caseRepository.appendHistory(caseId, Map.of("on", sentOn.toString(), "text", "You sent the letter"));
-        steps.write(caseId, "CLOCK", "The bank's 7-day clock started: due " + earliest, "INFO");
+                "nextStep", Map.of("action", "WAIT", "text", waitingText(kind),
+                        "dueOn", dueOn == null ? "" : dueOn)));
+        caseRepository.appendHistory(caseId, Map.of("on", sentOn.toString(),
+                "text", "You sent the letter to " + audience));
+        steps.write(caseId, "CLOCK", started.isEmpty()
+                ? "Letter sent to " + audience + ". We will update the next step here."
+                : "Letter sent to " + audience + ". Deadline: " + dueOn, "INFO");
         return Map.of("status", "SENT");
+    }
+
+    private static String audienceOf(String kind) {
+        if (kind == null) {
+            return "the bank";
+        }
+        return switch (kind) {
+            case "L2_OFFICER" -> "the police";
+            case "L3_REVIEW", "L3_DISTRICT" -> "the District Grievance Officer";
+            case "L5_LAWYER_NOTES" -> "your lawyer";
+            default -> "the bank";
+        };
+    }
+
+    private static String waitingText(String kind) {
+        if (kind == null) {
+            return "Waiting for the bank to file your grievance.";
+        }
+        return switch (kind) {
+            case "L2_OFFICER" -> "Waiting for the police to respond.";
+            case "L3_REVIEW", "L3_DISTRICT" -> "Waiting for the District Grievance Officer to decide.";
+            case "L4_BACKSTOP" -> "Waiting for the bank to remove the hold.";
+            default -> "Waiting for the bank to file your grievance.";
+        };
     }
 
     private String earliestDueOn(String caseId) {

@@ -15,7 +15,7 @@
     "title": "Officer decides on your case",
     "ruleRef": "MHA SOP, clause 10.1(d)-(f)",
     "status": "IN_FORCE",
-    "startedBy": "milestone:BANK_FILED"
+    "startedBy": "milestone:BANK_FILED,letter:L2_OFFICER"
   },
   {
     "clock": "BACKSTOP_NOTIFY",
@@ -60,7 +60,7 @@
     "title": "District officer decides",
     "ruleRef": "MHA SOP, clause 10.1(f)",
     "status": "IN_FORCE",
-    "startedBy": "milestone:OFFICER_SILENT"
+    "startedBy": "milestone:OFFICER_SILENT,letter:L3_REVIEW,letter:L3_DISTRICT"
   },
   {
     "clock": "PERSON_CONTEST_REFUND",

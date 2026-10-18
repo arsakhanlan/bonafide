@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import * as liveMap from '@/lib/liveMap';
 import { createLandedGate } from '@/lib/bootGate';
 import { isReleaseReply, settledMoney } from '@/lib/demoFlow';
+import { AUDIENCE_LABEL, audienceOf, LetterAudience } from '@/lib/letterAudience';
 import { CaseData, AnswerSubmission } from '@/types/case';
 import { Letter } from '@/types/letter';
 import { Deadline } from '@/types/deadline';
@@ -215,6 +216,45 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
     setActiveModal('NONE');
   }, [resetToEmpty]);
 
+  /** The self-help path ended: prepare lawyer notes and point to free legal aid / court. */
+  const applyCourtStep = (reason: string, on: string) => {
+    if (!caseData) return;
+    const notes = lawyerNotesLetter(caseData);
+    setLetters(prev => (prev.some(l => l.id === notes.id) ? prev : [...prev, notes]));
+    setSelectedLetterId(notes.id);
+    setDeadlines(prev =>
+      prev.map(d => (d.status === 'PENDING' ? { ...d, status: 'CANCELLED' } : d))
+    );
+    setCaseData(prev =>
+      prev
+        ? {
+            ...prev,
+            stage: 'NEEDS_LAWYER',
+            busy: false,
+            nextStep: {
+              action: 'SEE_LEGAL_AID',
+              text: 'The police did not act. This now needs a court step. Take the notes to a lawyer or free legal aid — Bonafide cannot file a petition.',
+            },
+            history: [
+              ...(prev.history || []),
+              { on, text: reason },
+              { on, text: 'Prepared notes for a lawyer. Next step: court.' },
+            ],
+          }
+        : null
+    );
+    setSteps(prev => [
+      ...prev,
+      {
+        id: 'step_' + Date.now(),
+        agent: 'CASE_BOSS',
+        message: 'Self-help path ended. Prepared notes for a lawyer; next step is court.',
+        level: 'WARN',
+        timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }),
+      },
+    ]);
+  };
+
   // ---- Mock-mode local simulations (no backend) -------------------------------
 
   const applyMockPersona = (persona: 'RAVI' | 'MEERA' | 'ARJUN' | 'SUNIL') => {
@@ -343,33 +383,63 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const sentDateObj = new Date(sentOn);
-      const dueDateObj = new Date(sentDateObj.getTime() + 7 * 86400000);
-      const dueOn = dueDateObj.toISOString().split('T')[0];
+      const sentLetter = letters.find(l => l.id === letterId);
+      const kind = sentLetter?.kind;
+      const audience = audienceOf(kind);
+      const recipient = AUDIENCE_LABEL[audience];
 
       setLetters(prev =>
-        prev.map(l =>
-          l.id === letterId
-            ? { ...l, status: 'SENT', sentOn, sentHow: how }
-            : l
-        )
+        prev.map(l => (l.id === letterId ? { ...l, status: 'SENT', sentOn, sentHow: how } : l))
       );
 
-      const newDeadline: Deadline = {
-        id: 'BANK_FILE_GRIEVANCE',
-        clock: 'BANK_FILE_GRIEVANCE',
-        title: 'Bank Grievance Lodgement & Lien Restriction',
-        description: 'Under MHA SOP, the bank has 7 calendar days from receipt of representation to record the grievance and release undisputed surplus funds.',
-        status: 'PENDING',
-        dueOn,
-        daysRemaining: 7,
-        statuteRef: 'MHA SOP Cl. 4.2 & BNSS §106',
-      };
+      if (audience === 'lawyer') {
+        setDeadlines(prev =>
+          prev.map(d => (d.status === 'PENDING' ? { ...d, status: 'CANCELLED' } : d))
+        );
+        setCaseData(prev =>
+          prev
+            ? {
+                ...prev,
+                stage: 'NEEDS_LAWYER',
+                nextStep: {
+                  action: 'SEE_LEGAL_AID',
+                  text: 'Take these notes to a lawyer or free legal aid. This is a court step — Bonafide cannot file a petition.',
+                },
+                history: [
+                  ...(prev.history || []),
+                  { on: sentOn, text: 'You gave the notes to your lawyer.' },
+                ],
+              }
+            : null
+        );
+        setSteps(prev => [
+          ...prev,
+          {
+            id: 'step_' + Date.now(),
+            agent: 'SYSTEM',
+            message: 'Notes handed to a lawyer. Next step: court, with a lawyer.',
+            level: 'INFO',
+            timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }),
+          },
+        ]);
+        setActiveModal('NONE');
+        return;
+      }
 
-      setDeadlines(prev => {
-        const filtered = prev.filter(d => d.id !== 'BANK_FILE_GRIEVANCE');
-        return [...filtered, newDeadline];
-      });
+      const newDeadline =
+        kind === 'L4_BACKSTOP' ? null : deadlineForLetter(audience, sentOn);
+      const existingDue = deadlines
+        .filter(d => d.status === 'PENDING')
+        .map(d => d.dueOn)
+        .sort()[0];
+      const dueOn = newDeadline?.dueOn || existingDue;
+
+      if (newDeadline) {
+        setDeadlines(prev => [
+          ...prev.filter(d => d.id !== newDeadline.id),
+          newDeadline,
+        ]);
+      }
 
       setCaseData(prev =>
         prev
@@ -378,12 +448,15 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
               stage: 'WAITING',
               nextStep: {
                 action: 'WAIT',
-                text: 'Waiting for the bank to process grievance and restrict lien.',
+                text: waitingText(kind, audience),
                 dueOn,
               },
               history: [
                 ...(prev.history || []),
-                { on: sentOn, text: `Representation sent via ${how}` },
+                {
+                  on: sentOn,
+                  text: `Letter sent to ${recipient} ${HOW_LABEL[how] || how}.`,
+                },
               ],
             }
           : null
@@ -394,7 +467,9 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
         {
           id: 'step_' + Date.now(),
           agent: 'CLOCK',
-          message: `Statutory 7-day compliance clock started (Due ${dueOn}). Method: ${how}`,
+          message: newDeadline
+            ? `Letter sent to ${recipient}. Deadline: ${newDeadline.dueOn}.`
+            : `Letter sent to ${recipient}. We will update the next step here.`,
           level: 'INFO',
           timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }),
         },
@@ -568,6 +643,27 @@ Phone: {{Your phone}}`,
         return;
       }
 
+      // After the police or district officer, a non-release reply becomes a court step.
+      const lastSent = [...letters].reverse().find(l => l.status === 'SENT');
+      const lastAudience = audienceOf(lastSent?.kind);
+      if (lastAudience === 'police' || lastAudience === 'district') {
+        applyCourtStep(
+          `The ${lastAudience === 'police' ? 'police' : 'District Grievance Officer'} did not release the surplus balance.`,
+          currentSimulatedDate
+        );
+        setActiveModal('NONE');
+        return;
+      }
+
+      // The bank replying means its own filing clock is met; the police clock now matters.
+      setDeadlines(prev =>
+        prev.map(d =>
+          d.clock === 'BANK_FILE_GRIEVANCE' && d.status === 'PENDING'
+            ? { ...d, status: 'MET', daysRemaining: 0 }
+            : d
+        )
+      );
+
       // Mock: escalate locally to an L2 letter.
       const l2Letter: Letter = {
         id: 'L2_OFFICER_ESCALATION',
@@ -671,23 +767,40 @@ Phone: {{Your phone}}`,
       const newTotalDays = simulatedDays + days;
       const newDate = new Date(baseDate.getTime() + newTotalDays * 86400000).toISOString().split('T')[0];
 
-      // Mock: expire pending clocks and draft a reminder.
-      let reminderGenerated = false;
+      // Mock: expire pending clocks. A missed police/district clock becomes a court step;
+      // a missed bank clock drafts a reminder.
+      const nowMs = new Date(newDate).getTime();
+      const expiredNow = deadlines.filter(
+        d => d.status === 'PENDING' && nowMs >= new Date(d.dueOn).getTime()
+      );
+      const officerExpired = expiredNow.some(d =>
+        ['OFFICER_DECIDE', 'DISTRICT_OFFICER_DECIDE'].includes(d.clock)
+      );
+      const reminderGenerated = expiredNow.some(
+        d => !['OFFICER_DECIDE', 'DISTRICT_OFFICER_DECIDE'].includes(d.clock)
+      );
+
       setDeadlines(prev =>
         prev.map(d => {
           if (d.status === 'PENDING') {
             const due = new Date(d.dueOn).getTime();
-            const curr = new Date(newDate).getTime();
-            if (curr >= due) {
-              reminderGenerated = true;
+            if (nowMs >= due) {
               return { ...d, status: 'EXPIRED', daysRemaining: 0 };
             }
-            const diffDays = Math.max(0, Math.ceil((due - curr) / 86400000));
+            const diffDays = Math.max(0, Math.ceil((due - nowMs) / 86400000));
             return { ...d, daysRemaining: diffDays };
           }
           return d;
         })
       );
+
+      if (officerExpired && caseData.stage === 'WAITING') {
+        applyCourtStep(
+          'The police or District Grievance Officer did not decide within 15 days.',
+          newDate
+        );
+        return;
+      }
 
       if (reminderGenerated && caseData.stage === 'WAITING') {
         const reminderLetter: Letter = {
@@ -702,7 +815,7 @@ Reference is made to our formal representation dated ${caseData.history?.find(h 
 
 More than 7 calendar days have elapsed since delivery. Under MHA Standard Operating Procedure Cl. 4.2, your branch is under statutory obligation to confine the lien to the disputed amount and release surplus funds.
 
-Failure to resolve this within 48 hours will compel an escalation to the Banking Ombudsman and the High Court under Article 226 for arbitrary restraint of commercial funds.
+Failure to resolve this within 48 hours will leave me no choice but to escalate to the Banking Ombudsman and seek advice from a lawyer or free legal aid.
 
 Yours faithfully,
 {{Your name}}`,
@@ -1013,3 +1126,101 @@ const MOCK_DOCUMENTS: CaseDocument[] = [
   { id: 'd3', name: 'Tax_Invoice_Repair481.pdf', kind: 'INVOICE', path: '/uploads/a3.pdf', mime: 'application/pdf', size: 18400 },
   { id: 'd4', name: 'Customer_WhatsApp_Receipt.txt', kind: 'CHAT', path: '/uploads/a4.txt', mime: 'text/plain', size: 850 },
 ];
+
+const HOW_LABEL: Record<string, string> = {
+  BRANCH: 'in person',
+  EMAIL: 'by email',
+  WHATSAPP: 'by WhatsApp',
+  POST: 'by post',
+};
+
+function plusDays(iso: string, days: number): string {
+  return new Date(new Date(iso + 'T00:00:00Z').getTime() + days * 86400000)
+    .toISOString()
+    .slice(0, 10);
+}
+
+/** The deadline a sent letter starts: 7 days for the bank, 15 for police/district. */
+function deadlineForLetter(audience: LetterAudience, sentOn: string): Deadline | null {
+  if (audience === 'police') {
+    return {
+      id: 'OFFICER_DECIDE',
+      clock: 'OFFICER_DECIDE',
+      title: 'Police officer decides on your case',
+      description: 'The police should decide within 15 days of receiving your letter.',
+      status: 'PENDING',
+      dueOn: plusDays(sentOn, 15),
+      daysRemaining: 15,
+      statuteRef: 'MHA SOP, clause 10.1(d)-(f)',
+    };
+  }
+  if (audience === 'district') {
+    return {
+      id: 'DISTRICT_OFFICER_DECIDE',
+      clock: 'DISTRICT_OFFICER_DECIDE',
+      title: 'District officer decides on your review',
+      description: 'The District Grievance Officer should decide within 15 days.',
+      status: 'PENDING',
+      dueOn: plusDays(sentOn, 15),
+      daysRemaining: 15,
+      statuteRef: 'MHA SOP, clause 10.1(f)',
+    };
+  }
+  if (audience === 'bank') {
+    return {
+      id: 'BANK_FILE_GRIEVANCE',
+      clock: 'BANK_FILE_GRIEVANCE',
+      title: 'Bank Grievance Lodgement & Lien Restriction',
+      description:
+        'Under MHA SOP, the bank has 7 calendar days from receipt of representation to record the grievance and release undisputed surplus funds.',
+      status: 'PENDING',
+      dueOn: plusDays(sentOn, 7),
+      daysRemaining: 7,
+      statuteRef: 'MHA SOP Cl. 4.2 & BNSS §106',
+    };
+  }
+  return null;
+}
+
+function waitingText(kind: string | undefined, audience: LetterAudience): string {
+  if (audience === 'police') return 'Waiting for the police to respond.';
+  if (audience === 'district') return 'Waiting for the District Grievance Officer to decide.';
+  if (kind === 'L4_BACKSTOP') return 'Waiting for the bank to remove the hold.';
+  return 'Waiting for the bank to file your grievance.';
+}
+
+function lawyerNotesLetter(case_: CaseData): Letter {
+  const money = case_.money;
+  const amount = (n?: number) =>
+    n == null ? 'not known' : `Rs. ${n.toLocaleString('en-IN')}`;
+
+  return {
+    id: 'L5_LAWYER_NOTES',
+    kind: 'L5_LAWYER_NOTES',
+    title: 'Notes for your lawyer — court step',
+    recipient: 'Your lawyer or free legal aid office',
+    body: `To,
+My lawyer or free legal aid office.
+
+Subject: Notes on my frozen bank account — possible court step.
+
+These are notes, not a petition.
+
+1. Case: ${case_.title}.
+2. Money: ${amount(money?.frozen)} was frozen by ${money?.bankName || 'my bank'}. Only ${amount(money?.disputed)} is under police dispute, and ${amount(money?.release)} should be released to me.
+3. Account: ${money?.accountMasked || 'not recorded'}.
+4. What has been tried: I sent written requests to the bank and then to the police. The surplus balance was not released within the time given by the MHA SOP.
+5. What I need: advice on the court step and whether free legal aid can represent me.
+
+Yours sincerely,
+{{Your name}}
+Phone: {{Your phone}}`,
+    status: 'DRAFT',
+    citations: [
+      'Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 — Section 106',
+      'Ministry of Home Affairs (MHA) Cyber SOP Cl. 4.2 & 10.1',
+      'Legal Services Authorities Act, 1987 — Section 12',
+    ],
+    checks: { passed: true, reasons: ['Notes for a lawyer; no petition filed'] },
+  };
+}

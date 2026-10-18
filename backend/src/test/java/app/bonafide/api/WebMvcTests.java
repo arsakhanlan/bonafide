@@ -1,5 +1,6 @@
 package app.bonafide.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -10,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import app.bonafide.auth.FirebaseAuthFilter;
 import app.bonafide.cases.Case;
 import app.bonafide.cases.CaseService;
+import app.bonafide.cases.Stage;
 import app.bonafide.config.BonafideProperties;
 import app.bonafide.deadlines.ClockCatalog;
 import app.bonafide.deadlines.DeadlineEngine;
@@ -24,6 +26,7 @@ import app.bonafide.support.TestFakes;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
 import java.time.Clock;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,6 +70,8 @@ class WebMvcTests {
     @Autowired private FirebaseAuth firebaseAuth;
     @Autowired private TestFakes.InMemoryCaseRepository cases;
     @Autowired private TestFakes.InMemoryEventRepository events;
+    @Autowired private TestFakes.InMemoryLetterRepository letters;
+    @Autowired private TestFakes.InMemoryDeadlineStore deadlineStore;
     @MockitoBean private EventDispatcher dispatcher;
 
     @BeforeEach
@@ -197,6 +202,41 @@ class WebMvcTests {
                         .content("{\"sentOn\":\"19-10-2026\",\"how\":\"BRANCH\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error.code").value("BAD_REQUEST"));
+    }
+
+    @Test
+    void aPoliceLetterStartsTheOfficerClockAndUsesPoliceWording() throws Exception {
+        cases.save(Case.newCase("police1", "u1", "en", Instant.now(), null));
+        letters.save("police1", "l2",
+                new HashMap<>(Map.of("kind", "L2_OFFICER", "status", "APPROVED")));
+
+        mvc.perform(post("/api/cases/police1/letters/l2/sent").header("Authorization", bearer())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"sentOn\":\"2026-10-19\",\"how\":\"EMAIL\"}"))
+                .andExpect(status().isOk());
+
+        Case updated = cases.find("police1").orElseThrow();
+        assertThat(updated.stage()).isEqualTo(Stage.WAITING);
+        assertThat(updated.nextStep().get("text")).isEqualTo("Waiting for the police to respond.");
+        assertThat(deadlineStore.findAll("police1"))
+                .extracting(d -> d.clock())
+                .contains("OFFICER_DECIDE");
+    }
+
+    @Test
+    void handingLawyerNotesMovesTheCaseToTheCourtStep() throws Exception {
+        cases.save(Case.newCase("lawyer1", "u1", "en", Instant.now(), null));
+        letters.save("lawyer1", "l5",
+                new HashMap<>(Map.of("kind", "L5_LAWYER_NOTES", "status", "APPROVED")));
+
+        mvc.perform(post("/api/cases/lawyer1/letters/l5/sent").header("Authorization", bearer())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"sentOn\":\"2026-10-19\",\"how\":\"EMAIL\"}"))
+                .andExpect(status().isOk());
+
+        Case updated = cases.find("lawyer1").orElseThrow();
+        assertThat(updated.stage()).isEqualTo(Stage.NEEDS_LAWYER);
+        assertThat(updated.nextStep().get("action")).isEqualTo("SEE_LEGAL_AID");
     }
 
     @Test

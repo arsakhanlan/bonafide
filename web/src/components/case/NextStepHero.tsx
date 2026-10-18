@@ -17,6 +17,7 @@ import {
   LucideIcon,
 } from 'lucide-react';
 import { cn, formatDate, formatINR } from '@/lib/utils';
+import { audienceOf } from '@/lib/letterAudience';
 import { NextStepAction } from '@/types/case';
 
 type Tone = 'action' | 'wait' | 'done';
@@ -43,6 +44,9 @@ export function NextStepHero() {
   const letterId = next.letterId || letters[0]?.id;
   const resolved = caseData.stage === 'RESOLVED';
   const disputed = formatINR(caseData.money?.disputed ?? 0);
+  const lastSent = [...letters].reverse().find(l => l.status === 'SENT');
+  const waitingOn = audienceOf(lastSent?.kind);
+  const lawyerNotes = letters.find(l => l.kind === 'L5_LAWYER_NOTES');
 
   const viewActivity = () =>
     document.getElementById('activity-log')?.scrollIntoView({ behavior: 'smooth' });
@@ -93,49 +97,92 @@ export function NextStepHero() {
           trust: 'Only the agent uses these answers — nothing is sent.',
         };
 
-      case 'REVIEW_LETTER':
+      case 'REVIEW_LETTER': {
+        const target = letters.find(l => l.id === letterId) || letters[0];
+        const reviewTo = audienceOf(target?.kind);
+        const who =
+          reviewTo === 'police'
+            ? 'the police officer'
+            : reviewTo === 'district'
+            ? 'the District Grievance Officer'
+            : reviewTo === 'lawyer'
+            ? 'your lawyer'
+            : 'your bank';
         return {
           eyebrow: 'Your next step',
           step: 'Step 3 of 4',
-          title: 'Check your letter',
+          title:
+            reviewTo === 'lawyer'
+              ? 'Check the notes for your lawyer'
+              : `Check your letter to ${who === 'your bank' ? 'the bank' : who}`,
           description:
-            'We have prepared a letter to your bank. Read it, add your details if needed, and approve it so you can send it yourself.',
-          buttonText: 'Review my letter',
+            reviewTo === 'lawyer'
+              ? 'We have prepared notes for a lawyer. Read them, add your details if needed, and approve them before you hand them over.'
+              : `We have prepared a letter to ${who}. Read it, add your details if needed, and approve it so you can send it yourself.`,
+          buttonText: reviewTo === 'lawyer' ? 'Review my notes' : 'Review my letter',
           onClick: () => setModal('REVIEW_LETTER', letterId),
           icon: FileSearch,
           tone: 'action',
           trust: 'You approve the letter before anything else happens.',
         };
+      }
 
-      case 'SEND_LETTER':
+      case 'SEND_LETTER': {
+        const approved =
+          letters.find(l => l.id === letterId) || letters.find(l => l.status === 'APPROVED');
+        const sendTo = audienceOf(approved?.kind);
+        const who =
+          sendTo === 'police'
+            ? 'the police'
+            : sendTo === 'district'
+            ? 'the District Grievance Officer'
+            : sendTo === 'lawyer'
+            ? 'your lawyer or free legal aid'
+            : 'your bank';
         return {
           eyebrow: 'Your next step',
           step: 'Step 3 of 4',
-          title: 'Send your letter',
+          title: sendTo === 'lawyer' ? 'Give the notes to your lawyer' : 'Send your letter',
           description:
-            'Print or email the approved letter to your bank. Then tell us when you sent it, so we can keep track of their deadline.',
-          buttonText: 'I sent it',
+            sendTo === 'lawyer'
+              ? 'Print the notes or email them to your lawyer or free legal aid. Then save the date you handed them over.'
+              : `Print or email the approved letter to ${who}. Then tell us when you sent it, so we can keep track of their deadline.`,
+          buttonText: sendTo === 'lawyer' ? 'I gave it to them' : 'I sent it',
           onClick: () => setModal('MARK_SENT', letterId),
           icon: Send,
           tone: 'action',
           trust: 'You deliver it yourself — Bonafide never sends it.',
         };
+      }
 
-      case 'WAIT':
+      case 'WAIT': {
+        const who =
+          waitingOn === 'police'
+            ? 'the police'
+            : waitingOn === 'district'
+            ? 'the District Grievance Officer'
+            : 'the bank';
+        const title =
+          waitingOn === 'police'
+            ? 'Waiting for the police'
+            : waitingOn === 'district'
+            ? 'Waiting for the District Officer'
+            : 'Waiting for the bank';
         return {
           eyebrow: 'No action needed',
           step: 'Step 4 of 4',
-          title: 'Waiting for the bank',
+          title,
           description: next.dueOn
-            ? `Your letter is with the bank. They should reply by ${formatDate(next.dueOn)}. When you hear from them, come back and add their reply.`
-            : 'Your letter is with the bank. When you hear from them, come back and add their reply.',
+            ? `Your letter is with ${who}. They should reply by ${formatDate(next.dueOn)}. When you hear from them, come back and add their reply.`
+            : `Your letter is with ${who}. When you hear from them, come back and add their reply.`,
           buttonText: 'See the deadline',
           onClick: viewDeadline,
           icon: Clock,
           tone: 'wait',
-          trust: "We'll show the next step here when the bank replies.",
+          trust: `We'll show the next step here when ${who} replies.`,
           secondary: { label: 'They replied', onClick: () => setModal('RECORD_REPLY') },
         };
+      }
 
       case 'UPLOAD_REPLY':
         return {
@@ -152,19 +199,37 @@ export function NextStepHero() {
         };
 
       case 'SEE_LEGAL_AID':
-        return {
-          eyebrow: 'Free help available',
-          title: 'This case needs a lawyer',
-          description:
-            'A lawyer should look at this case. Government legal aid is free, and we will not write self-help letters for it.',
-          buttonText: 'See free legal aid',
-          onClick: () => {
-            document.getElementById('referral-section')?.scrollIntoView({ behavior: 'smooth' });
-          },
-          icon: Scale,
-          tone: 'wait',
-          trust: 'Self-help letters are stopped for this case.',
-        };
+        return lawyerNotes
+          ? {
+              eyebrow: 'Court step',
+              title: 'Take the notes to a lawyer',
+              description:
+                'The police did not release the money, so this now needs a court step. Bonafide cannot file a petition. Review the notes we prepared with a lawyer or free legal aid.',
+              buttonText: 'See free legal aid',
+              onClick: () => {
+                document.getElementById('referral-section')?.scrollIntoView({ behavior: 'smooth' });
+              },
+              icon: Scale,
+              tone: 'wait',
+              trust: 'These are notes for a lawyer, not a court petition.',
+              secondary: {
+                label: 'Open lawyer notes',
+                onClick: () => setModal('REVIEW_LETTER', lawyerNotes.id),
+              },
+            }
+          : {
+              eyebrow: 'Free help available',
+              title: 'This case needs a lawyer',
+              description:
+                'A lawyer should look at this case. Government legal aid is free, and we will not write self-help letters for it.',
+              buttonText: 'See free legal aid',
+              onClick: () => {
+                document.getElementById('referral-section')?.scrollIntoView({ behavior: 'smooth' });
+              },
+              icon: Scale,
+              tone: 'wait',
+              trust: 'Self-help letters are stopped for this case.',
+            };
 
       case 'NONE':
         return resolved

@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { extractPlaceholders } from '@/lib/utils';
 import { printA4RepresentationLetter } from '@/lib/printA4';
 import { announceApproval } from '@/lib/approvalSeal';
+import { audienceOf } from '@/lib/letterAudience';
 import { IS_MOCK } from '@/lib/mode';
 import {
   FileText,
@@ -653,10 +654,17 @@ export function LetterViewerModal() {
               >
                 <Send className="h-4 w-4" />
                 <span className="hidden sm:inline">
-                  {letter.kind === 'L5_LAWYER_NOTES' ? 'Mark Handed to Lawyer' : 'Deliver to Bank (Start Clock)'}
+                  {
+                    {
+                      bank: 'I sent it to the bank',
+                      police: 'I sent it to the police',
+                      district: 'I sent it to the District Officer',
+                      lawyer: 'Handed to my lawyer',
+                    }[audienceOf(letter.kind)]
+                  }
                 </span>
                 <span className="sm:hidden">
-                  {letter.kind === 'L5_LAWYER_NOTES' ? 'Mark Sent' : 'Deliver to Bank'}
+                  {audienceOf(letter.kind) === 'lawyer' ? 'Handed over' : 'I sent it'}
                 </span>
               </Button>
             )}

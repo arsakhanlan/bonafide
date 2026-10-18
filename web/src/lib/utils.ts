@@ -99,8 +99,8 @@ export function getStageMetadata(stage: Stage) {
       };
     case 'NEEDS_LAWYER':
       return {
-        label: 'High Court / Magistrate Advised',
-        description: 'Complex FIR requires formal court petition with counsel.',
+        label: 'Court step — lawyer needed',
+        description: 'This needs a lawyer. Bonafide prepares notes, not a court petition.',
         color: 'bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900/60',
         dot: 'bg-amber-600',
       };

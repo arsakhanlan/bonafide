@@ -11,6 +11,14 @@ export function demoStepIndex(c: Pick<CaseData, 'stage' | 'busy'>): number {
 
 /** A reply that restores the surplus balance ends the guided demo. */
 export function isReleaseReply(text: string): boolean {
+  // Negations and refusals mention "release" too; they must not end the case.
+  if (
+    /not\s+(?:been\s+)?released|no\s+releas|refus|denied|rejected|without\s+(?:a\s+)?(?:police\s+)?noc/i.test(
+      text
+    )
+  ) {
+    return false;
+  }
   return /releas|unfr|restricted to/i.test(text);
 }
 
