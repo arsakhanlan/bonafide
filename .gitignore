@@ -5,6 +5,7 @@
 .DS_Store
 .env
 .env.*
+!.env.example
 *.pem
 *-key.json
 service-account*.json
