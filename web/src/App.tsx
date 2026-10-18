@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { SimpleHeroStatus } from '@/components/case/SimpleHeroStatus';
@@ -35,6 +35,12 @@ export function App() {
 
   // Demo-only chrome (mock mode, or a real demo case created for judges).
   const showDemo = IS_MOCK || isDemoCase(caseData?.demo);
+
+  // A new case replaces the whole view; start it at the top, not at the old scroll offset.
+  const caseId = caseData?.id;
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [caseId]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors selection:bg-emerald-600 selection:text-white">

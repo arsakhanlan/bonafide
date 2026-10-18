@@ -4,6 +4,17 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Shield, Loader2 } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 
+/** Agent steps arrive as ISO instants; show the same date · time shape as history. */
+function eventTime(iso: string): { date: string; time: string } {
+  if (!iso) return { date: '', time: '' };
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return { date: '', time: iso };
+  return {
+    date: d.toISOString().slice(0, 10),
+    time: d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false }),
+  };
+}
+
 export function AuditLogActivity() {
   const { caseData, steps } = useCase();
 
@@ -12,8 +23,7 @@ export function AuditLogActivity() {
     .map((s, idx) => ({
       id: `step-${s.id || idx}`,
       source: s.agent as string,
-      time: s.timestamp,
-      date: '',
+      ...eventTime(s.timestamp),
       text: s.message,
       level: s.level,
     }))
@@ -70,7 +80,8 @@ export function AuditLogActivity() {
                   {ev.source}
                 </span>
                 <span className="text-[10px] text-muted-foreground font-mono">
-                  {ev.date && `${formatDate(ev.date)} · `}
+                  {ev.date && formatDate(ev.date)}
+                  {ev.date && ev.time && ' · '}
                   {ev.time}
                 </span>
               </div>

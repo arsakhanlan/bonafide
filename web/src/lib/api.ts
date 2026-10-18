@@ -16,19 +16,24 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   });
 
   if (!response.ok) {
-    let errorDetail = '';
+    // Read the body once: json() and text() share the same stream.
+    const raw = await response.text();
+    let errorDetail = raw;
     try {
-      const errorJson = await response.json();
+      const errorJson = JSON.parse(raw);
       // Backend errors are {error: {code, message}} (ApiExceptionHandler).
-      errorDetail =
-        errorJson.error?.message ||
-        errorJson.message ||
-        errorJson.error ||
-        JSON.stringify(errorJson);
+      const message = errorJson?.error?.message ?? errorJson?.message;
+      if (typeof message === 'string' && message) {
+        errorDetail = message;
+      } else if (typeof errorJson?.error === 'string' && errorJson.error) {
+        errorDetail = errorJson.error;
+      }
     } catch {
-      errorDetail = await response.text();
+      // A proxy or HTML error page: keep the raw text.
     }
-    throw new Error(errorDetail || `HTTP error ${response.status}: ${response.statusText}`);
+    throw new Error(
+      errorDetail || `HTTP error ${response.status}: ${response.statusText}`
+    );
   }
 
   if (response.status === 204) {
