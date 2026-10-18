@@ -56,4 +56,20 @@ class CaseBossToolsTest {
 
         assertThat(cases.findRaw("c1").orElseThrow()).doesNotContainKeys("closedAt", "expireAt");
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void theCourtStepUsesTheCourtReferralReason() {
+        ToolContext context = mock(ToolContext.class);
+        org.mockito.Mockito.when(context.state()).thenReturn(new State(Map.of("caseId", "c1")));
+
+        tools.refer("LAWYER", "The District Grievance Officer missed the deadline", context);
+
+        Map<String, Object> raw = cases.findRaw("c1").orElseThrow();
+        Map<String, Object> referral = (Map<String, Object>) raw.get("referral");
+        assertThat(raw.get("stage")).isEqualTo("NEEDS_LAWYER");
+        assertThat(referral).containsEntry("to", "LAWYER");
+        assertThat(String.valueOf(referral.get("text"))).doesNotContain("someone else used your account");
+        assertThat(String.valueOf(referral.get("text"))).contains("police and the District Grievance Officer");
+    }
 }

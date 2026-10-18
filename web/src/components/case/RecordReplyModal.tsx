@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { MessageSquare, Sparkles, Send, ShieldAlert } from 'lucide-react';
 import { IS_MOCK } from '@/lib/mode';
 import { audienceOf } from '@/lib/letterAudience';
+import { latestSent } from '@/lib/letters';
 
 const DEMO_REPLY =
   'Bank notified: "Lien restricted to disputed ₹2,000. Balance of ₹1,78,000 released for normal branch and UPI transactions."';
@@ -24,7 +25,7 @@ const POLICE_FAIL_REPLY =
 export function RecordReplyModal() {
   const { activeModal, setModal, recordReply, isProcessing, letters } = useCase();
 
-  const lastSent = [...letters].reverse().find(l => l.status === 'SENT');
+  const lastSent = latestSent(letters);
   const waitingOnAuthority = ['police', 'district'].includes(audienceOf(lastSent?.kind));
 
   const [replyText, setReplyText] = useState(IS_MOCK ? DEMO_REPLY : '');

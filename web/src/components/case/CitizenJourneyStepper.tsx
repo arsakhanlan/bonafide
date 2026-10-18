@@ -3,7 +3,7 @@ import { useCase } from '@/context/CaseContext';
 import { Check, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { audienceOf } from '@/lib/letterAudience';
-import { Letter } from '@/types/letter';
+import { latestLetter, latestSent } from '@/lib/letters';
 
 type StepStatus = 'COMPLETED' | 'ACTIVE' | 'UPCOMING';
 
@@ -44,10 +44,6 @@ function ProgressLine({
   );
 }
 
-function latestSent(letters: Letter[]): Letter | undefined {
-  return [...letters].reverse().find(l => l.status === 'SENT');
-}
-
 export function CitizenJourneyStepper() {
   const { caseData, letters, documents, deadlines, setModal } = useCase();
 
@@ -63,8 +59,8 @@ export function CitizenJourneyStepper() {
   const policeLetters = letters.filter(l => l.kind === 'L2_OFFICER');
   const courtNotes = letters.filter(l => l.kind === 'L5_LAWYER_NOTES');
 
-  const latestBank = bankLetters[bankLetters.length - 1];
-  const latestEnforcement = enforcementLetters[enforcementLetters.length - 1];
+  const latestBank = latestLetter(bankLetters);
+  const latestEnforcement = latestLetter(enforcementLetters);
   const courtStage = stage === 'NEEDS_LAWYER' && (courtNotes.length > 0 || policeLetters.length > 0);
   const safetyEnding =
     stage === 'REFERRED' || stage === 'FAILED' || (stage === 'NEEDS_LAWYER' && !courtStage);
@@ -186,7 +182,7 @@ export function CitizenJourneyStepper() {
         title: letterTitle,
         desc: enforcementSent
           ? `Sent to the ${enforcementIsDistrict ? 'District Officer' : 'police'}`
-          : latestEnforcement.status === 'APPROVED'
+          : latestEnforcement?.status === 'APPROVED'
           ? 'Approved — send it'
           : 'Review and send',
         status: at(enforcementSent ? 'COMPLETED' : 'ACTIVE'),

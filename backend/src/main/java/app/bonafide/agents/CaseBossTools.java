@@ -143,7 +143,7 @@ public class CaseBossTools {
         String caseId = caseId(toolContext);
         boolean lawyer = "LAWYER".equals(to);
         cases.update(caseId, Map.of(
-                "referral", SorterPolicy.DLSA_REFERRAL,
+                "referral", lawyer ? SorterPolicy.COURT_REFERRAL : SorterPolicy.DLSA_REFERRAL,
                 "stage", lawyer ? Stage.NEEDS_LAWYER.name() : Stage.REFERRED.name(),
                 "nextStep", Map.of("action", "SEE_LEGAL_AID", "text",
                         "This needs a lawyer. Free legal aid may be available to you.")));

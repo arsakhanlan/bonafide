@@ -58,7 +58,9 @@ export function ReferralCard() {
                 ? 'What happens at the court step?'
                 : "Why can't self-help letters be generated for this case?")}
           </div>
-          {referral?.reason && <p className="text-muted-foreground leading-relaxed">{referral.reason}</p>}
+          {referral?.reason && !isLawyer && (
+            <p className="text-muted-foreground leading-relaxed">{referral.reason}</p>
+          )}
           <p className="text-foreground/90 font-medium font-legal text-xs sm:text-[13px]">
             {body}
           </p>

@@ -7,6 +7,7 @@ import * as liveMap from '@/lib/liveMap';
 import { createLandedGate } from '@/lib/bootGate';
 import { isReleaseReply, settledMoney } from '@/lib/demoFlow';
 import { AUDIENCE_LABEL, audienceOf, LetterAudience } from '@/lib/letterAudience';
+import { latestSent } from '@/lib/letters';
 import { CaseData, AnswerSubmission } from '@/types/case';
 import { Letter } from '@/types/letter';
 import { Deadline } from '@/types/deadline';
@@ -647,7 +648,7 @@ Phone: {{Your phone}}`,
       }
 
       // After the police or district officer, a non-release reply becomes a court step.
-      const lastSent = [...letters].reverse().find(l => l.status === 'SENT');
+      const lastSent = latestSent(letters);
       const lastAudience = audienceOf(lastSent?.kind);
       if (lastAudience === 'police' || lastAudience === 'district') {
         applyCourtStep(

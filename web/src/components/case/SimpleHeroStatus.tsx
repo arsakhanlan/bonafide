@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { getStageMetadata } from '@/lib/utils';
 import { audienceOf } from '@/lib/letterAudience';
+import { latestSent } from '@/lib/letters';
 import { useProfile } from '@/lib/profile';
 import { formatElapsed, useElapsed } from '@/lib/useElapsed';
 import { IS_MOCK, isDemoCase } from '@/lib/mode';
@@ -34,7 +35,7 @@ export function SimpleHeroStatus() {
   if (!caseData) return null;
 
   const stageMeta = getStageMetadata(caseData.stage);
-  const lastSent = [...letters].reverse().find(l => l.status === 'SENT');
+  const lastSent = latestSent(letters);
   const waitingOn = audienceOf(lastSent?.kind);
   const stageLabel = caseData.busy
     ? 'Analysing'

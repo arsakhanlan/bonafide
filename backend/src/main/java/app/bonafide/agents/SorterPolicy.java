@@ -19,6 +19,15 @@ public final class SorterPolicy {
                     + "You can apply online or at your district court.",
             "link", "https://nalsa.gov.in/legal-aid/");
 
+    public static final Map<String, Object> COURT_REFERRAL = Map.of(
+            "to", "LAWYER",
+            "title", "Free legal aid at the court step",
+            "text", "The police and the District Grievance Officer did not release the money, so the next step "
+                    + "needs a lawyer or free legal aid. Take the notes we prepared with you. These are notes, "
+                    + "not a court petition. Under the Legal Services Authorities Act, 1987, you can get free "
+                    + "legal counsel from the government.",
+            "link", "https://nalsa.gov.in/legal-aid/");
+
     public static final Map<String, Object> VICTIM_REFERRAL = Map.of(
             "to", "CYBER_HELPLINE",
             "title", "Report the fraud",

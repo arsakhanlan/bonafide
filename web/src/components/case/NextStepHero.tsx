@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { cn, formatDate, formatINR } from '@/lib/utils';
 import { audienceOf } from '@/lib/letterAudience';
+import { latestSent } from '@/lib/letters';
 import { agentLabel } from '@/lib/agentStatus';
 import { NextStepAction } from '@/types/case';
 
@@ -48,7 +49,7 @@ export function NextStepHero() {
   const letterId = next.letterId || letters[0]?.id;
   const resolved = caseData.stage === 'RESOLVED';
   const disputed = formatINR(caseData.money?.disputed ?? 0);
-  const lastSent = [...letters].reverse().find(l => l.status === 'SENT');
+  const lastSent = latestSent(letters);
   const waitingOn = audienceOf(lastSent?.kind);
   const lawyerNotes = letters.find(l => l.kind === 'L5_LAWYER_NOTES');
 

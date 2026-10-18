@@ -24,6 +24,7 @@ export interface Letter {
     reasons?: string[];
   };
   reminder?: boolean;
+  createdAt?: string;
   approvedAt?: string;
   sentOn?: string;
   sentHow?: 'BRANCH' | 'EMAIL' | 'WHATSAPP' | 'POST';

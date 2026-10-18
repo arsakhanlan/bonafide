@@ -99,6 +99,7 @@ export function mapLetter(id: string, l: Record<string, any>): Letter {
       ? { passed: Boolean(l.checks.passed), reasons: l.checks.notes ?? [] }
       : undefined,
     reminder: Boolean(l.reminder),
+    createdAt: l.createdAt ? ts(l.createdAt) : undefined,
     approvedAt: l.approvedAt ? ts(l.approvedAt) : undefined,
     sentOn: l.sentOn,
     sentHow: l.sentHow,
