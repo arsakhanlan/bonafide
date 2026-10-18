@@ -31,9 +31,7 @@
     ],
     "deny": [
       "Bash(gcloud projects delete:*)",
-      "Bash(git push:*)",
-      "Edit(web/**)",
-      "Write(web/**)"
+      "Bash(git push:*)"
     ]
   }
 }
