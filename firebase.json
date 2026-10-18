@@ -5,5 +5,18 @@
   },
   "storage": {
     "rules": "firebase/storage.rules"
+  },
+  "hosting": {
+    "public": "firebase/hosting",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "bonafide-api",
+          "region": "asia-southeast1"
+        }
+      }
+    ]
   }
 }
