@@ -283,7 +283,7 @@ export function LetterViewerModal() {
                 size="sm"
                 variant="default"
                 onClick={handleAutoFillPlaceholders}
-                className="h-6 text-[11px] bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 font-medium px-2.5"
+                className="h-10 text-xs bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 font-medium px-3 sm:h-6 sm:text-[11px] sm:px-2.5"
               >
                 <Sparkles className="h-3 w-3 mr-1" />
                 1-Click Auto Fill
@@ -295,7 +295,7 @@ export function LetterViewerModal() {
                     value={nameInput}
                     onChange={e => setNameInput(e.target.value)}
                     placeholder="Your full name *"
-                    className="h-6 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-2 text-[11px] w-40"
+                    className="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm dark:border-slate-700 dark:bg-slate-950 sm:h-6 sm:w-40 sm:rounded-md sm:px-2 sm:text-[11px]"
                   />
                 )}
                 {placeholderNeedsPhone && (
@@ -303,7 +303,7 @@ export function LetterViewerModal() {
                     value={phoneInput}
                     onChange={e => setPhoneInput(e.target.value)}
                     placeholder="Your phone *"
-                    className="h-6 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-2 text-[11px] w-32"
+                    className="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm dark:border-slate-700 dark:bg-slate-950 sm:h-6 sm:w-32 sm:rounded-md sm:px-2 sm:text-[11px]"
                   />
                 )}
                 {placeholderNeedsAccount && (
@@ -311,14 +311,14 @@ export function LetterViewerModal() {
                     value={accountInput}
                     onChange={e => setAccountInput(e.target.value)}
                     placeholder="Account number"
-                    className="h-6 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-2 text-[11px] w-40"
+                    className="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm dark:border-slate-700 dark:bg-slate-950 sm:h-6 sm:w-40 sm:rounded-md sm:px-2 sm:text-[11px]"
                   />
                 )}
                 <Button
                   size="sm"
                   variant="default"
                   onClick={handleAutoFillPlaceholders}
-                  className="h-6 text-[11px] bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 font-medium px-2.5"
+                  className="h-10 text-xs bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 font-medium px-3 sm:h-6 sm:text-[11px] sm:px-2.5"
                 >
                   <Sparkles className="h-3 w-3 mr-1" />
                   Fill Into Letter

@@ -25,10 +25,10 @@ const buttonVariants = cva(
           'btn-raised btn-sheen bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-700 text-white hover:from-emerald-600 hover:via-emerald-500 hover:to-teal-600 dark:from-emerald-400 dark:via-emerald-500 dark:to-teal-400 dark:text-slate-950',
       },
       size: {
-        default: 'h-10 px-4 py-2',
-        sm: 'h-9 px-3.5 text-xs',
+        default: 'h-11 px-4 py-2 sm:h-10',
+        sm: 'h-10 px-4 text-[13px] sm:h-9 sm:px-3.5 sm:text-xs',
         lg: 'h-12 px-7 text-sm font-bold',
-        icon: 'h-10 w-10 min-h-10 min-w-10 p-0',
+        icon: 'h-11 w-11 min-h-11 min-w-11 p-0 sm:h-10 sm:w-10',
       },
       defaultVariants: {
         variant: 'default',

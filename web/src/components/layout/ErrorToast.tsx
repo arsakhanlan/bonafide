@@ -9,7 +9,7 @@ interface ErrorToastProps {
 /** Sits above dialog overlays so a failed action is never hidden behind the modal. */
 export function ErrorToast({ message, onDismiss }: ErrorToastProps) {
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-[60] flex justify-center px-4 print:hidden">
+    <div className="pointer-events-none fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-[60] flex justify-center px-4 print:hidden">
       <div
         role="alert"
         className="animate-toast-in pointer-events-auto flex w-full max-w-md items-start justify-between gap-3 rounded-2xl border border-rose-500/30 bg-rose-50 p-3.5 text-xs text-rose-900 shadow-xl shadow-rose-950/15 dark:bg-rose-950 dark:text-rose-100"

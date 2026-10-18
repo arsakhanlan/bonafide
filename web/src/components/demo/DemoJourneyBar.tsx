@@ -79,7 +79,7 @@ export function DemoJourneyBar({ onRestart }: { onRestart: () => void }) {
           variant="ghost"
           size="sm"
           onClick={onRestart}
-          className="h-7 gap-1 px-2 text-[11px] text-muted-foreground hover:text-foreground"
+          className="h-9 px-2.5 text-[11px] text-muted-foreground hover:text-foreground sm:h-7 sm:px-2"
         >
           <RotateCcw className="h-3 w-3" />
           Restart

@@ -36,11 +36,11 @@ export function NewCaseModal() {
             <div className="flex items-center gap-2">
               <Plus className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
-                Start a New Freeze Defense Case
+                Start a new case
               </DialogTitle>
             </div>
             <DialogDescription className="text-xs text-muted-foreground">
-              Initialize a clean legal case file. The AI agent will guide you through evidence extraction, BNSS §106 grounding, and statutory letter preparation.
+              We will guide you step by step. There is nothing to pay, and you approve every letter before you send it.
             </DialogDescription>
           </DialogHeader>
 
@@ -56,7 +56,7 @@ export function NewCaseModal() {
             )}
             <div>
               <label className="text-xs font-semibold text-slate-900 dark:text-slate-100 block mb-1">
-                Case Name or Store Name:
+                Case name:
               </label>
               <Input
                 value={title}
@@ -77,7 +77,7 @@ export function NewCaseModal() {
               >
                 <div className="flex items-center gap-2">
                   <Shield className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span className="font-semibold text-xs">What happens next? (Statutory Process)</span>
+                  <span className="font-semibold text-xs">What happens next?</span>
                 </div>
                 {showChecklist ? (
                   <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
@@ -127,7 +127,7 @@ export function NewCaseModal() {
               ) : (
                 <CheckCircle2 className="h-4 w-4" />
               )}
-              {isProcessing ? 'Creating case…' : 'Create Case File'}
+              {isProcessing ? 'Creating case…' : 'Start my case'}
             </Button>
           </DialogFooter>
         </form>

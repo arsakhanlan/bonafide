@@ -85,15 +85,15 @@ export function App() {
 
             <SimpleHeroStatus />
 
-            <CitizenJourneyStepper />
-
             <ReferralCard />
+
+            {caseData.nextStep?.action !== 'SEE_LEGAL_AID' && <NextStepHero />}
+
+            <CitizenJourneyStepper />
 
             <div className="animate-view-in [animation-delay:120ms] grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
               <div className="lg:col-span-8 space-y-4">
                 <MoneyCard />
-
-                <NextStepHero />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <LettersList />

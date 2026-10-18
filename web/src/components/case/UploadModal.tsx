@@ -115,11 +115,11 @@ export function UploadModal() {
             <div className="flex items-center gap-2">
               <Upload className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
-                Upload Freeze Papers & Proofs
+                Add your papers
               </DialogTitle>
             </div>
             <DialogDescription className="text-xs text-muted-foreground">
-              Add your bank SMS, official notice, bank statement, and invoice/chat showing legitimate commercial consideration. PDF, JPG, PNG, WEBP or text — up to 15 MB each.
+              Add a photo or PDF of the bank message and your bank statement. If you have an invoice or chat showing what the payment was for, add that too. Up to 15 MB each.
             </DialogDescription>
           </DialogHeader>
 
@@ -143,7 +143,7 @@ export function UploadModal() {
                     variant="outline"
                     size="sm"
                     onClick={() => handleAddFile('NOTICE', 'Cyber_Notice_SMS.txt')}
-                    className="h-8 text-xs gap-1 active:scale-[0.98] transition-all hover:border-emerald-500/50"
+                    className="h-9 text-xs gap-1 hover:border-emerald-500/50 sm:h-8"
                   >
                     <Plus className="h-3 w-3" /> + Notice / SMS
                   </Button>
@@ -152,7 +152,7 @@ export function UploadModal() {
                     variant="outline"
                     size="sm"
                     onClick={() => handleAddFile('STATEMENT', 'Bank_Statement_Oct.pdf')}
-                    className="h-8 text-xs gap-1 active:scale-[0.98] transition-all hover:border-emerald-500/50"
+                    className="h-9 text-xs gap-1 hover:border-emerald-500/50 sm:h-8"
                   >
                     <Plus className="h-3 w-3" /> + Bank Statement
                   </Button>
@@ -161,7 +161,7 @@ export function UploadModal() {
                     variant="outline"
                     size="sm"
                     onClick={() => handleAddFile('INVOICE', 'Sale_Tax_Invoice.pdf')}
-                    className="h-8 text-xs gap-1 active:scale-[0.98] transition-all hover:border-emerald-500/50"
+                    className="h-9 text-xs gap-1 hover:border-emerald-500/50 sm:h-8"
                   >
                     <Plus className="h-3 w-3" /> + Bill / Invoice
                   </Button>
@@ -170,7 +170,7 @@ export function UploadModal() {
                     variant="outline"
                     size="sm"
                     onClick={() => handleAddFile('CHAT', 'Client_Chat_Receipt.txt')}
-                    className="h-8 text-xs gap-1 active:scale-[0.98] transition-all hover:border-emerald-500/50"
+                    className="h-9 text-xs gap-1 hover:border-emerald-500/50 sm:h-8"
                   >
                     <Plus className="h-3 w-3" /> + Customer Chat
                   </Button>
@@ -232,7 +232,7 @@ export function UploadModal() {
                         size="icon"
                         disabled={isRemoving}
                         onClick={() => handleRemove(f.id)}
-                        className="h-7 w-7 text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 shrink-0 transition-colors"
+                        className="h-9 w-9 text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 shrink-0 transition-colors sm:h-7 sm:w-7"
                         aria-label={`Remove ${f.name}`}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -279,8 +279,8 @@ export function UploadModal() {
                   ? 'Reading papers…'
                   : 'Uploading papers…'
                 : IS_MOCK
-                ? 'Extract Evidence with Reader Agent'
-                : 'Upload & Start Analysis'}
+                ? 'Check my papers'
+                : 'Add papers & check them'}
             </Button>
           </DialogFooter>
         </form>

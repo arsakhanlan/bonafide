@@ -18,7 +18,7 @@ export function MoneyCard() {
           {/* Total Frozen Card */}
           <div className="pt-2 sm:pt-0 sm:pr-4 space-y-1">
             <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
-              TOTAL FROZEN
+              LOCKED BY BANK
             </span>
             <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-foreground num-tabular">
               <AnimatedCounter value={frozen} />
@@ -26,33 +26,33 @@ export function MoneyCard() {
             <p className="text-[11px] text-muted-foreground">
               {resolved
                 ? 'Only the disputed amount remains held'
-                : `Total Frozen = ${bankName || 'your bank'}`}
+                : `Held by ${bankName || 'your bank'}`}
             </p>
           </div>
 
           {/* Disputed Amount */}
           <div className="pt-3 sm:pt-0 sm:px-4 space-y-1">
             <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 block">
-              CONTESTED
+              UNDER DISPUTE
             </span>
             <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-amber-600 dark:text-amber-400 num-tabular">
               <AnimatedCounter value={disputed} />
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Under police dispute
+              Police are checking this amount
             </p>
           </div>
 
           {/* Release Entitlement */}
           <div className="pt-3 sm:pt-0 sm:pl-4 space-y-1">
             <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">
-              MUST BE RELEASED
+              SHOULD BE RELEASED
             </span>
             <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-emerald-600 dark:text-emerald-400 num-tabular">
               <AnimatedCounter value={release} />
             </div>
             <p className="text-[11px] text-muted-foreground">
-              {resolved ? 'Released to your account' : 'Must Be Released'}
+              {resolved ? 'Released to your account' : 'You should be able to use this'}
             </p>
           </div>
         </div>

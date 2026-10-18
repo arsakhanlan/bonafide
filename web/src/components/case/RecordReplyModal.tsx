@@ -57,11 +57,11 @@ export function RecordReplyModal() {
             <div className="flex items-center gap-2">
               <MessageSquare className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
-                Record Bank or Police Response
+                Add their reply
               </DialogTitle>
             </div>
             <DialogDescription className="text-xs text-muted-foreground">
-              Paste the bank's written reply, grievance ticket number, or email statement. Case Boss will automatically analyze compliance and trigger next statutory escalation steps.
+              Paste what the bank or police wrote, or upload their letter. We will read it and tell you what to do next.
             </DialogDescription>
           </DialogHeader>
 
@@ -94,7 +94,7 @@ export function RecordReplyModal() {
 
             <div>
               <label className="text-xs font-semibold text-slate-900 dark:text-slate-100 block mb-1">
-                Response Text / Notice Details:
+                What did they say?
               </label>
               <Textarea
                 value={replyText}
@@ -129,7 +129,7 @@ export function RecordReplyModal() {
               ) : (
                 <Send className="h-4 w-4" />
               )}
-              {isProcessing ? 'Reading the reply…' : 'Process Response with AI Boss'}
+              {isProcessing ? 'Reading the reply…' : 'Work out the next step'}
             </Button>
           </DialogFooter>
         </form>

@@ -276,7 +276,7 @@ export function SwaggerModal({ isOpen, onClose }: SwaggerModalProps) {
                         e.stopPropagation();
                         handleCopy(ep.curl, idx);
                       }}
-                      className="h-7 text-xs gap-1 px-2"
+                      className="h-9 text-xs gap-1 px-2.5 sm:h-7 sm:px-2"
                     >
                       {copiedIndex === idx ? (
                         <Check className="h-3.5 w-3.5 text-emerald-600" />

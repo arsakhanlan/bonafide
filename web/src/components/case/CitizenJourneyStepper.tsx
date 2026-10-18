@@ -56,8 +56,8 @@ export function CitizenJourneyStepper() {
         },
         {
           number: 2,
-          title: 'AI Analysis',
-          desc: caseData.busy ? 'Agents are reading your papers' : 'Money maths and rule check',
+          title: 'AI review',
+          desc: caseData.busy ? 'Agents are reading your papers' : 'We check the amounts and the law',
           status: stepStatus(caseData.busy ? 'ACTIVE' : stage !== 'NEW' && stage !== 'NEEDS_ANSWERS' ? 'COMPLETED' : 'UPCOMING'),
         },
         {
@@ -69,8 +69,8 @@ export function CitizenJourneyStepper() {
         },
         {
           number: 4,
-          title: 'Statutory Clock',
-          desc: done ? 'Funds released' : hasSent ? 'Timer running' : 'Starts when you deliver',
+          title: 'Bank deadline',
+          desc: done ? 'Funds released' : hasSent ? 'Waiting for the bank' : 'Starts when you deliver',
           status: stepStatus(hasSent || done ? (done ? 'COMPLETED' : 'ACTIVE') : 'UPCOMING'),
           onClick: hasSent
             ? () => {
@@ -85,14 +85,83 @@ export function CitizenJourneyStepper() {
     <div className="animate-view-in [animation-delay:80ms] rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-card transition-all">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <span className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
-          <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 stroke-[1.75]" />
-          Statutory Unfreeze Roadmap
-        </span>
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 stroke-[1.75]" />
+          <div>
+            <span className="block text-xs font-bold tracking-tight text-foreground">Your progress</span>
+            <span className="block text-[10px] font-medium text-muted-foreground">
+              What happens, step by step
+            </span>
+          </div>
+        </div>
       </div>
 
-      {/* Clean Stepper: Numbers on a line with descriptions underneath */}
-      <div className={`grid grid-cols-1 gap-4 sm:gap-2 ${steps.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-4'}`}>
+      {/* Mobile: a vertical timeline; the whole row is tappable. */}
+      <ol className="sm:hidden">
+        {steps.map((s, idx) => {
+          const isDone = s.status === 'COMPLETED';
+          const isCurrent = s.status === 'ACTIVE';
+          const next = steps[idx + 1];
+          const lineActive =
+            isDone && (next?.status === 'COMPLETED' || next?.status === 'ACTIVE');
+
+          return (
+            <li
+              key={s.number}
+              onClick={s.onClick}
+              className={cn(
+                'relative flex gap-3 pb-5 last:pb-0',
+                s.onClick && 'cursor-pointer'
+              )}
+            >
+              {idx < steps.length - 1 && (
+                <span className="absolute bottom-0 left-[13px] top-7 w-0.5 overflow-hidden rounded-full bg-border/60">
+                  <span
+                    className={cn(
+                      'block w-full rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/30 transition-[height] duration-700 ease-out',
+                      lineActive ? 'h-full' : 'h-0'
+                    )}
+                  />
+                </span>
+              )}
+              <div
+                className={cn(
+                  'relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-all',
+                  isDone
+                    ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/30'
+                    : isCurrent
+                    ? 'roadmap-node-active bg-emerald-500 text-white shadow-lg shadow-emerald-500/50 ring-4 ring-emerald-500/25'
+                    : 'border border-border/80 bg-secondary text-muted-foreground'
+                )}
+              >
+                {isDone ? (
+                  <Check className="animate-check-pop h-4 w-4 stroke-[3]" />
+                ) : (
+                  <span>{s.number}</span>
+                )}
+              </div>
+              <div className="min-w-0 pb-0.5">
+                <h4
+                  className={cn(
+                    'text-[13px] font-bold leading-tight',
+                    isCurrent
+                      ? 'font-extrabold text-emerald-700 dark:text-emerald-300'
+                      : isDone
+                      ? 'text-foreground'
+                      : 'text-muted-foreground'
+                  )}
+                >
+                  {s.title}
+                </h4>
+                <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">{s.desc}</p>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+
+      {/* Desktop: numbers on a line with descriptions underneath */}
+      <div className={`hidden sm:grid sm:gap-2 ${steps.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-4'}`}>
         {steps.map((s, idx) => {
           const isDone = s.status === 'COMPLETED';
           const isCurrent = s.status === 'ACTIVE';

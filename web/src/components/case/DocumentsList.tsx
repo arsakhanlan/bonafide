@@ -50,13 +50,13 @@ export function DocumentsList({ embedded = false }: DocumentsListProps) {
       <div className="flex items-center justify-between pb-2 border-b border-border/80 text-xs">
         <span className="font-semibold text-foreground flex items-center gap-1.5">
           <FileCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-          Verified Case Dossier ({documents.length})
+          Papers we've read ({documents.length})
         </span>
         <Button
           size="sm"
           variant="outline"
           onClick={() => setModal('UPLOAD_PAPERS')}
-          className="h-7 text-xs gap-1 border-border bg-card hover:bg-secondary text-foreground"
+          className="h-9 text-xs gap-1 border-border bg-card hover:bg-secondary text-foreground sm:h-7"
         >
           <Upload className="h-3 w-3" />
           Upload Papers
@@ -105,7 +105,7 @@ export function DocumentsList({ embedded = false }: DocumentsListProps) {
                     e.stopPropagation();
                     setInspectDoc(doc);
                   }}
-                  className="h-7 px-2 text-[11px] gap-1 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10"
+                  className="h-9 px-2.5 text-[11px] gap-1 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 sm:h-7 sm:px-2"
                 >
                   <Eye className="h-3 w-3" />
                   <span>Check</span>
@@ -199,17 +199,17 @@ export function DocumentsList({ embedded = false }: DocumentsListProps) {
           <div className="flex items-center gap-2">
             <FileCheck className="h-4 w-4 text-slate-800 dark:text-slate-200" />
             <CardTitle className="text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-              Document Repository & Evidence ({documents.length})
+              Your papers ({documents.length})
             </CardTitle>
           </div>
           <Button
             size="sm"
             variant="ghost"
             onClick={() => setModal('UPLOAD_PAPERS')}
-            className="h-8 text-xs gap-1 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="h-10 text-xs gap-1 hover:bg-slate-100 dark:hover:bg-slate-800 sm:h-8"
           >
             <Upload className="h-3.5 w-3.5" />
-            Upload More
+            Add more
           </Button>
         </div>
       </CardHeader>

@@ -38,13 +38,13 @@ export function LettersList() {
         <div className="flex items-center gap-2">
           <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400 stroke-[1.75]" />
           <CardTitle className="text-sm font-bold tracking-tight text-foreground">
-            Letters & Compliance
+            Your letters
           </CardTitle>
         </div>
         <button
           type="button"
           onClick={() => setModal('REVIEW_LETTER', letters[0]?.id)}
-          className="text-[11px] text-muted-foreground hover:text-foreground font-mono transition-colors"
+          className="inline-flex h-9 items-center px-1 text-xs text-muted-foreground hover:text-foreground font-mono transition-colors sm:h-auto sm:px-0 sm:text-[11px]"
         >
           View by date sent
         </button>
@@ -82,7 +82,7 @@ export function LettersList() {
                     size="sm"
                     variant="outline"
                     onClick={() => setModal('REVIEW_LETTER', letter.id)}
-                    className="h-7 px-2.5 text-xs gap-1 bg-card hover:bg-secondary border-border"
+                    className="h-9 px-3 text-xs gap-1 bg-card hover:bg-secondary border-border sm:h-7 sm:px-2.5"
                   >
                     <Printer className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                     <span>Review</span>
@@ -93,7 +93,7 @@ export function LettersList() {
                       size="sm"
                       variant="default"
                       onClick={() => setModal('MARK_SENT', letter.id)}
-                      className="h-7 px-2.5 text-xs gap-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-xs"
+                      className="h-9 px-3 text-xs gap-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-xs sm:h-7 sm:px-2.5"
                     >
                       <Send className="h-3 w-3" />
                       <span>Mark Sent</span>

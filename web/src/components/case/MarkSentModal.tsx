@@ -44,26 +44,26 @@ export function MarkSentModal() {
   const deliveryChannels = [
     {
       id: 'BRANCH' as const,
-      label: 'Branch Counter',
-      desc: 'Handed in person to Branch Manager with acknowledgement stamp',
+      label: 'At the bank',
+      desc: 'Handed in at the branch with a receipt or stamp',
       icon: Building,
     },
     {
       id: 'EMAIL' as const,
-      label: 'Nodal Email',
-      desc: 'Sent directly to the Principal Nodal Officer email address',
+      label: 'By email',
+      desc: "Sent to the bank's official email address",
       icon: Mail,
     },
     {
       id: 'WHATSAPP' as const,
-      label: 'Official WhatsApp',
-      desc: 'Transmitted to verified bank grievance helpline or relationship manager',
+      label: 'By WhatsApp',
+      desc: "Sent to the bank's official grievance number",
       icon: MessageSquare,
     },
     {
       id: 'POST' as const,
-      label: 'Speed Post / AD',
-      desc: 'Sent via India Post Registered Post with postal receipt proof',
+      label: 'By post',
+      desc: 'Sent by registered or speed post',
       icon: Package,
     },
   ];
@@ -76,18 +76,18 @@ export function MarkSentModal() {
             <div className="flex items-center gap-2">
               <Send className="h-5 w-5 text-emerald-600 shrink-0" />
               <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
-                Mark Letter Sent & Start 7-Day Clock
+                When did you send it?
               </DialogTitle>
             </div>
             <DialogDescription className="text-xs text-muted-foreground">
-              Under Section 106 BNSS & MHA Cyber SOP, once the representation is delivered, the bank has 7 calendar days to restrict the lien to the disputed amount.
+              Tell us the date and how you sent it. The bank then has 7 days to act, and we will keep track of that deadline for you.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-3.5 py-1">
             <div>
               <label className="text-xs font-semibold text-slate-900 dark:text-slate-100 block mb-1">
-                Date Letter Was Delivered / Dispatched:
+                Date you sent it:
               </label>
               <Input
                 type="date"
@@ -162,7 +162,7 @@ export function MarkSentModal() {
               ) : (
                 <Clock className="h-4 w-4" />
               )}
-              {isProcessing ? 'Starting clock…' : 'Start 7-Day Grievance Clock'}
+              {isProcessing ? 'Starting countdown…' : 'Save & start the 7-day countdown'}
             </Button>
           </DialogFooter>
         </form>

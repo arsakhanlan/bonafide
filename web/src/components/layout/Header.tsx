@@ -60,7 +60,7 @@ export function Header({ onBrandClick }: { onBrandClick?: () => void }) {
               </Badge>
             </div>
             <p className="hidden md:block text-[11px] text-muted-foreground font-medium">
-              Autonomous Bank Account Freeze Defense
+              Help with a frozen bank account
             </p>
           </div>
         </button>
@@ -74,7 +74,7 @@ export function Header({ onBrandClick }: { onBrandClick?: () => void }) {
                 size="sm"
                 variant="outline"
                 onClick={() => setModal('GUIDED_TOUR')}
-                className="h-8 px-2.5 sm:px-3 gap-1.5 font-semibold text-xs border-emerald-500/30 bg-card text-foreground hover:bg-secondary shadow-xs transition-all hover:border-emerald-500/60 group"
+                className="h-10 px-3 gap-1.5 font-semibold text-xs border-emerald-500/30 bg-card text-foreground hover:bg-secondary shadow-xs transition-all hover:border-emerald-500/60 group sm:h-8 sm:px-2.5"
               >
                 <Play className="h-3 w-3 fill-current text-emerald-600 dark:text-emerald-400 animate-back-and-forth" />
                 <span className="hidden sm:inline">2-Min Demo Tour</span>
@@ -112,7 +112,7 @@ export function Header({ onBrandClick }: { onBrandClick?: () => void }) {
             variant="ghost"
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="h-8 w-8 text-muted-foreground hover:rotate-12 hover:text-foreground"
+            className="h-10 w-10 text-muted-foreground hover:rotate-12 hover:text-foreground sm:h-8 sm:w-8"
           >
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>

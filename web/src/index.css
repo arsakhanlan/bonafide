@@ -5,7 +5,7 @@
 @layer base {
   :root {
     color-scheme: light;
-    --background: 44 33% 98%;
+    --background: 40 38% 98%;
     --foreground: 160 32% 9%;
 
     --card: 0 0% 100%;
@@ -17,20 +17,20 @@
     --primary: 160 84% 27%;
     --primary-foreground: 45 40% 98%;
 
-    --secondary: 152 26% 94%;
+    --secondary: 40 32% 95%;
     --secondary-foreground: 160 32% 12%;
 
-    --muted: 152 26% 94%;
-    --muted-foreground: 155 12% 40%;
+    --muted: 40 32% 95%;
+    --muted-foreground: 155 12% 36%;
 
-    --accent: 158 70% 94%;
+    --accent: 158 60% 94%;
     --accent-foreground: 160 80% 24%;
 
     --destructive: 347 77% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 152 18% 87%;
-    --input: 152 18% 87%;
+    --border: 40 18% 87%;
+    --input: 40 18% 87%;
     --ring: 160 84% 30%;
 
     --radius: 1rem;
@@ -75,6 +75,7 @@
   html {
     scroll-behavior: smooth;
     scrollbar-gutter: stable;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
@@ -746,6 +747,15 @@
 .animate-file-remove {
   animation: fileItemDelete 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   pointer-events: none;
+}
+
+/* iOS zooms the whole page when a focused field is smaller than 16px. */
+@media (max-width: 640px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
 }
 
 /* Respect the OS motion preference everywhere, not just in dialogs. */

@@ -4,6 +4,19 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Shield, Loader2 } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 
+/** Plain names for the internal agent codes shown in the log. */
+const AGENT_LABEL: Record<string, string> = {
+  READER: 'Paper reader',
+  WRITER: 'Letter writer',
+  CHECKER: 'Fact checker',
+  RULES: 'Law check',
+  MONEY: 'Money check',
+  SORTER: 'Safety check',
+  CASE_BOSS: 'Case manager',
+  CLOCK: 'Deadline tracker',
+  SYSTEM: 'Bonafide',
+};
+
 /** Agent steps arrive as ISO instants; show the same date · time shape as history. */
 function eventTime(iso: string): { date: string; time: string } {
   if (!iso) return { date: '', time: '' };
@@ -22,7 +35,7 @@ export function AuditLogActivity() {
   const agentEvents = (steps || [])
     .map((s, idx) => ({
       id: `step-${s.id || idx}`,
-      source: s.agent as string,
+      source: AGENT_LABEL[s.agent] ?? (s.agent as string),
       ...eventTime(s.timestamp),
       text: s.message,
       level: s.level,
@@ -53,7 +66,7 @@ export function AuditLogActivity() {
               <Shield className="h-4 w-4" />
             </span>
             <CardTitle className="text-sm font-bold tracking-tight text-foreground">
-              Activity Log
+              What's happening
             </CardTitle>
           </div>
           {caseData?.busy ? (

@@ -56,7 +56,7 @@ export function StatutoryDeadlinesCard() {
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4 text-emerald-600 dark:text-emerald-400 stroke-[1.75]" />
           <CardTitle className="text-sm font-bold tracking-tight text-foreground">
-            Statutory Compliance Clocks
+            Deadlines
           </CardTitle>
         </div>
 
@@ -193,7 +193,7 @@ export function StatutoryDeadlinesCard() {
               <AlertOctagon className="h-4 w-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
               <div>
                 <h4 className="font-bold text-rose-950 dark:text-rose-200 text-xs">
-                  Statutory Window Lapsed
+                  Deadline passed
                 </h4>
                 <p className="text-[11px] text-rose-900/90 dark:text-rose-300/90 mt-0.5 leading-relaxed">
                   The agents are preparing the next step. Check your letters.
@@ -205,7 +205,7 @@ export function StatutoryDeadlinesCard() {
                 size="sm"
                 variant="destructive"
                 onClick={() => setModal('REVIEW_LETTER', overdueLetterId)}
-                className="h-7 text-xs font-semibold gap-1.5 justify-center w-full sm:w-auto"
+                className="h-10 text-xs font-semibold gap-1.5 justify-center w-full sm:h-7 sm:w-auto"
               >
                 <FileText className="h-3 w-3" />
                 Review Next Letter
@@ -223,7 +223,7 @@ export function StatutoryDeadlinesCard() {
           >
             <span className="flex items-center gap-1.5">
               <Scale className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-              Why these clocks exist
+              Why this deadline matters
             </span>
             {showLegalDetails ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </button>

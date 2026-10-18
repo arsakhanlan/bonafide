@@ -76,11 +76,11 @@ export function QuestionsModal() {
             <div className="flex items-center gap-2">
               <HelpCircle className="h-5 w-5 text-amber-500 shrink-0" />
               <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
-                Clarifications Required
+                A few quick questions
               </DialogTitle>
             </div>
             <DialogDescription className="text-xs text-muted-foreground">
-              To ground your representation in legitimate consideration, please answer these quick questions.
+              These answers help us show that the payment was for genuine work. They are saved with your case.
             </DialogDescription>
           </DialogHeader>
 

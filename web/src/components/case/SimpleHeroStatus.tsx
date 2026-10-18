@@ -90,7 +90,7 @@ export function SimpleHeroStatus() {
             <button
               type="button"
               onClick={() => setShowPersonaPicker(!showPersonaPicker)}
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-border bg-secondary/60 hover:bg-secondary text-xs font-medium text-foreground transition-all"
+              className="inline-flex items-center gap-1 px-2.5 py-2.5 sm:py-1.5 rounded-xl border border-border bg-secondary/60 hover:bg-secondary text-xs font-medium text-foreground transition-all"
               title="Switch demo persona scenario"
             >
               <Users className="h-3.5 w-3.5 text-muted-foreground" />
@@ -104,7 +104,7 @@ export function SimpleHeroStatus() {
             <button
               type="button"
               onClick={() => setIsAccordionOpen(!isAccordionOpen)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs font-semibold transition-all active:scale-[0.98]"
+              className="inline-flex items-center gap-1.5 px-3 py-2.5 sm:py-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs font-semibold transition-all active:scale-[0.98]"
             >
               <Scale className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 stroke-[2]" />
               <span>Statutory Legal Safeguard</span>
@@ -132,7 +132,7 @@ export function SimpleHeroStatus() {
                 selectPersona(p.id);
                 setShowPersonaPicker(false);
               }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
+              className={`px-3 py-2.5 sm:py-1.5 rounded-xl text-xs font-medium transition-all ${
                 selectedPersona === p.id
                   ? 'bg-emerald-600 text-white font-bold shadow-xs'
                   : 'bg-card border border-border text-foreground hover:bg-secondary active:scale-95'
@@ -198,7 +198,7 @@ export function SimpleHeroStatus() {
               variant="outline"
               disabled={isProcessing}
               onClick={() => skipTime(1)}
-              className="h-8 px-2.5 sm:px-3 text-xs bg-card hover:bg-secondary border-border active:scale-[0.98] transition-all"
+              className="h-10 px-3 text-xs bg-card hover:bg-secondary border-border sm:h-8 sm:px-2.5"
             >
               {isProcessing ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Clock className="h-3 w-3 mr-1 text-muted-foreground" />}
               <span>+1 Day</span>
@@ -209,7 +209,7 @@ export function SimpleHeroStatus() {
               variant="outline"
               disabled={isProcessing}
               onClick={() => skipTime(7)}
-              className="h-8 px-2.5 sm:px-3 text-xs bg-card hover:bg-secondary border-border active:scale-[0.98] transition-all"
+              className="h-10 px-3 text-xs bg-card hover:bg-secondary border-border sm:h-8 sm:px-2.5"
             >
               {isProcessing ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <CalendarDays className="h-3 w-3 mr-1 text-muted-foreground" />}
               <span>+7 Days (Bank Clock)</span>
@@ -220,7 +220,7 @@ export function SimpleHeroStatus() {
               variant="default"
               disabled={isProcessing}
               onClick={() => skipTime(30)}
-              className="h-8 px-2.5 sm:px-3 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs active:scale-[0.98] transition-all"
+              className="h-10 px-3 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs sm:h-8 sm:px-2.5"
             >
               {isProcessing ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <FastForward className="h-3 w-3 mr-1" />}
               <span>+30 Days (Standard)</span>
