@@ -2,7 +2,7 @@
 
 **An AI case agent that helps innocent people in India show a wrongly frozen bank account is genuine — and get it released.**
 
-[Live app](https://bonafide-cup-2026.web.app) · [API docs](https://bonafide-cup-2026.web.app/docs) · **Demo video:** in the submission form · **Theme: BFSI** · [GitHub](https://github.com/arsakhanlan/bonafide)
+[Live app](https://bonafide-cup-2026.web.app) · [Demo video](https://drive.google.com/file/d/1gEmlSLECQ52ZEBtPq6tnylLTM7i5WwIg/view?usp=sharing) · [API docs](https://bonafide-cup-2026.web.app/docs) · **Theme: BFSI** · [GitHub](https://github.com/arsakhanlan/bonafide)
 
 > Submitted code is frozen at commit [5f7254f](https://github.com/arsakhanlan/bonafide/commit/5f7254fa46a03a5bcb649147da58129b4e0b61d7); the tag `submission-2026-10-18` points to it. Later changes are README only. Demo data is fake. This is not legal advice, and Bonafide never sends anything on the person's behalf.
 
@@ -10,7 +10,7 @@
 
 ## Try it in 60 seconds (for judges)
 
-The landing page is the judges' page. The clicks take a minute; the **live agents** need a few minutes to prepare the first letter, and the screen updates itself while they work.
+Prefer to watch first? The [demo video](https://drive.google.com/file/d/1gEmlSLECQ52ZEBtPq6tnylLTM7i5WwIg/view?usp=sharing) shows the same path. Otherwise, the landing page is the judges' page: the clicks take a minute, the **live agents** need a few minutes to prepare the first letter, and the screen updates itself while they work.
 
 1. Open [bonafide-cup-2026.web.app](https://bonafide-cup-2026.web.app). Tap **Explore a demo case** (or scroll to **Just exploring?**) and pick **Ravi Sharma** — the phone-shop owner. Optionally, the **2-Min Demo Tour** walks through the same story and finishes by selecting Ravi.
 2. Watch the **What's happening** panel. It shows the Reader, the money check, the law check and the letter writer, with live timestamps.
@@ -269,7 +269,7 @@ The build notes and the full local research are kept in the project handover out
 
 ### Sources
 
-- [Live app](https://bonafide-cup-2026.web.app) · [API docs](https://bonafide-cup-2026.web.app/docs) · [GitHub repository](https://github.com/arsakhanlan/bonafide)
+- [Live app](https://bonafide-cup-2026.web.app) · [Demo video](https://drive.google.com/file/d/1gEmlSLECQ52ZEBtPq6tnylLTM7i5WwIg/view?usp=sharing) · [API docs](https://bonafide-cup-2026.web.app/docs) · [GitHub repository](https://github.com/arsakhanlan/bonafide)
 - [Lok Sabha reply, 21 Jul 2026 — reported](https://the420.in/india-cybercrime-data-i4c-lok-sabha-fraud-losses/)
 - [AP High Court — ₹1,000 payment, ₹8.26 lakh frozen](https://www.scconline.com/blog/post/2026/08/01/ap-hc-directs-unfreezing-bank-account-upi-transaction/)
 - [MP High Court — ₹980 payment, over ₹2.5 crore frozen](https://www.livelaw.in/high-court/madhya-pradesh-high-court/freezing-bank-accounts-guidelines-cybercrime-complaints-grievance-redressal-543201)
